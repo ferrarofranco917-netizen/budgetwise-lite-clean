@@ -1,4 +1,4 @@
-const CACHE = "bw-lite-v8"; // <-- aumenta versione
+const CACHE = "bw-lite-v9"; // <-- aumenta versione
 const ASSETS = [
   "./",
   "./index.html",
@@ -54,6 +54,7 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
 
 
