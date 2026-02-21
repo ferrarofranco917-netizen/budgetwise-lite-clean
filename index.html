@@ -1660,7 +1660,12 @@
     return v.toLocaleString(locale,{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
   }
 
-  function toISODate(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()).toISOString().slice(0,10); }
+  function toISODate(d){
+  const Y = d.getFullYear();
+  const M = String(d.getMonth()+1).padStart(2,"0");
+  const D = String(d.getDate()).padStart(2,"0");
+  return `${Y}-${M}-${D}`;
+}
   function parseISO(iso){
     const [Y,M,D] = iso.split("-").map(Number);
     return new Date(Y, M-1, D);
@@ -1862,3 +1867,4 @@
 </script>
 </body>
 </html>
+
