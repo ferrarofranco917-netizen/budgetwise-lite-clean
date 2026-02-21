@@ -1,4 +1,4 @@
-const CACHE = "bw-clean2-v2";
+const CACHE = "bw-clean2-v3";
 const ASSETS = [
   "./",
   "./index.html",
@@ -53,4 +53,5 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
 
