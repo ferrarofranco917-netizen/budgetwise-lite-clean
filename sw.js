@@ -1,11 +1,11 @@
-const CACHE = "bw-lite-v9"; // <-- aumenta versione
+const CACHE = "bw-clean2-v1";
 const ASSETS = [
   "./",
   "./index.html",
   "./manifest.json",
+  "./sw.js",
   "./icon-192.png",
-  "./icon-512.png",
-  "./sw.js"
+  "./icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -27,8 +27,7 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   const req = event.request;
 
-  // ✅ IMPORTANTISSIMO: per le navigazioni (apertura app / refresh / routing)
-  // vai SEMPRE in rete -> così prendi l’index nuovo e la data corretta.
+  // Network-first per le navigazioni (così prendi sempre l’index nuovo)
   if (req.method === "GET" && req.mode === "navigate") {
     event.respondWith(
       fetch(req, { cache: "no-store" })
@@ -42,7 +41,7 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // default: cache-first
+  // Cache-first per tutto il resto
   event.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;
@@ -54,8 +53,3 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
-
-
-
-
-
