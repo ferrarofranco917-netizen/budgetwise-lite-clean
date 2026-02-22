@@ -1,5 +1,5 @@
 // ============================================
-// BUDGETWISE - VERSIONE CON TRADUZIONE PER ID
+// BUDGETWISE - VERSIONE PROFESSIONALE CON I18N COMPLETO
 // ============================================
 
 class BudgetWise {
@@ -17,15 +17,24 @@ class BudgetWise {
         };
         
         this.chart = null;
+        
+        // ========== SISTEMA DI TRADUZIONE PROFESSIONALE ==========
+        // Organizzato come nelle migliori app finanziarie [citation:5]
         this.translations = {
             it: {
                 // Generali
+                appName: 'BudgetWise',
+                appSubtitle: 'Stipendio a stipendio — gestione intelligente',
                 budgetGiornaliero: 'Budget giornaliero',
                 rimanenza: 'Rimanenza',
                 giorniRimasti: 'Giorni rimasti',
                 periodo: 'Periodo',
                 totEntrate: 'Totale entrate',
                 iniziaEntrate: '👋 Inizia inserendo le tue entrate nella sezione qui sotto!',
+                operazioneOk: '✅ Operazione completata',
+                attenzione: '⚠️ Attenzione',
+                errore: '❌ Errore',
+                multiplo: 'multiplo',
                 
                 // Sezioni
                 entrate: '🏦 Entrate del periodo',
@@ -36,14 +45,25 @@ class BudgetWise {
                 risparmio: '🎯 Obiettivo risparmio',
                 impostazioni: '⚙️ Impostazioni',
                 
-                // Etichette
+                // Form
                 descrizione: 'Descrizione (es. Stipendio)',
                 importo: 'Importo €',
                 nomeSpesa: 'Nome (es. Mutuo)',
                 giorno: 'Giorno (es. 27)',
                 scadenza: 'Data scadenza',
+                categoria: 'Categoria',
                 selezionaData: 'Seleziona data',
                 cosaAcquistato: 'Cosa hai comprato?',
+                
+                // Categorie
+                categorie: {
+                    Alimentari: '🍎 Alimentari',
+                    Trasporti: '🚗 Trasporti',
+                    Svago: '🎮 Svago',
+                    Salute: '💊 Salute',
+                    Abbigliamento: '👕 Abbigliamento',
+                    Altro: '📦 Altro'
+                },
                 
                 // Pulsanti
                 aggiungiEntrata: '➕ Aggiungi entrata',
@@ -55,8 +75,9 @@ class BudgetWise {
                 ripristina: '📂 Ripristina',
                 resetCompleto: '⚠️ Reset completo',
                 esportaCalendario: '📅 Esporta in Calendar',
+                invia: 'Invia',
                 
-                // Testi
+                // Testi informativi
                 nessunaEntrata: 'Nessuna entrata',
                 nessunaSpesaFissa: 'Nessuna spesa fissa',
                 nessunaSpesaGiorno: 'Nessuna spesa in questo giorno',
@@ -67,27 +88,72 @@ class BudgetWise {
                 
                 // Chat
                 chiedimi: 'Ciao! Chiedimi qualsiasi cosa sul tuo budget!',
-                invia: 'Invia',
                 placeholderChat: 'Es. Quanto posso risparmiare?',
                 suggerimento1: '💶 Risparmia 100€',
                 suggerimento2: '🔮 Simula aumento',
+                tu: 'Tu',
+                assistenteNome: 'Assistente',
                 
                 // Risparmio
                 percentuale: 'Percentuale su entrate (%)',
                 obiettivo: 'Obiettivo (€)',
                 
-                // Soglia
+                // Impostazioni
                 sogliaAvviso: '🔔 Soglia avviso (€)',
-                lingua: '🌍 Lingua / Language'
+                lingua: '🌍 Lingua / Language',
+                backup: '📅 Backup dati',
+                
+                // Toast
+                entrataAggiunta: '✅ Entrata aggiunta!',
+                entrataEliminata: '🗑️ Entrata eliminata',
+                spesaFissaAggiunta: '✅ Spesa fissa aggiunta!',
+                spesaEliminata: '🗑️ Spesa eliminata',
+                spesaAggiunta: '✅ Spesa aggiunta!',
+                risparmioApplicato: '💰 Risparmio applicato!',
+                backupScaricato: '💾 Backup scaricato!',
+                datiRipristinati: '📂 Dati ripristinati!',
+                resetCompletato: '🔄 Reset completato',
+                calendarioEsportato: '📅 Calendario esportato!',
+                campiCompilati: '✅ Campi compilati',
+                importoTrovato: '✅ Importo inserito',
+                descrizioneInserita: '✅ Descrizione inserita',
+                superataSoglia: '⚠️ Superata soglia di ',
+                erroreMicrofono: '❌ Errore microfono',
+                compilaCampi: '⚠️ Compila tutti i campi',
+                giornoNonValido: '⚠️ Giorno non valido',
+                importoNonTrovato: '❌ Importo non trovato',
+                fileNonValido: '❌ File non valido',
+                
+                // Risposte chat
+                totaleEntrate: '💰 Totale entrate: ',
+                totaleSpese: '📉 Totale spese: ',
+                puoiRisparmiare: '💪 Puoi risparmiare ',
+                entroMese: ' entro fine mese.',
+                seiInRosso: '⚠️ Sei in rosso! Rivedi le spese.',
+                haiAncora: '💪 Hai ancora ',
+                disponibili: ' disponibili.',
+                
+                // Conferme
+                cancellareDati: 'Cancellare TUTTI i dati?',
+                
+                // Stati spese fisse
+                attivo: '🟢 Attivo',
+                scaduto: '🔴 Scaduto'
             },
             en: {
                 // General
+                appName: 'BudgetWise',
+                appSubtitle: 'Paycheck to paycheck — smart management',
                 budgetGiornaliero: 'Daily budget',
                 rimanenza: 'Remaining',
                 giorniRimasti: 'Days left',
                 periodo: 'Period',
                 totEntrate: 'Total income',
                 iniziaEntrate: '👋 Start by adding your income below!',
+                operazioneOk: '✅ Operation completed',
+                attenzione: '⚠️ Warning',
+                errore: '❌ Error',
+                multiplo: 'multiple',
                 
                 // Sections
                 entrate: '🏦 Period income',
@@ -98,14 +164,25 @@ class BudgetWise {
                 risparmio: '🎯 Savings goal',
                 impostazioni: '⚙️ Settings',
                 
-                // Labels
+                // Form
                 descrizione: 'Description (e.g. Salary)',
                 importo: 'Amount €',
                 nomeSpesa: 'Name (e.g. Mortgage)',
                 giorno: 'Day (e.g. 27)',
                 scadenza: 'Expiry date',
+                categoria: 'Category',
                 selezionaData: 'Select date',
                 cosaAcquistato: 'What did you buy?',
+                
+                // Categories
+                categorie: {
+                    Alimentari: '🍎 Groceries',
+                    Trasporti: '🚗 Transport',
+                    Svago: '🎮 Leisure',
+                    Salute: '💊 Health',
+                    Abbigliamento: '👕 Clothing',
+                    Altro: '📦 Other'
+                },
                 
                 // Buttons
                 aggiungiEntrata: '➕ Add income',
@@ -117,8 +194,9 @@ class BudgetWise {
                 ripristina: '📂 Restore',
                 resetCompleto: '⚠️ Full reset',
                 esportaCalendario: '📅 Export to Calendar',
+                invia: 'Send',
                 
-                // Texts
+                // Info texts
                 nessunaEntrata: 'No income',
                 nessunaSpesaFissa: 'No fixed expenses',
                 nessunaSpesaGiorno: 'No expenses on this day',
@@ -129,18 +207,57 @@ class BudgetWise {
                 
                 // Chat
                 chiedimi: 'Hi! Ask me anything about your budget!',
-                invia: 'Send',
                 placeholderChat: 'E.g. How much can I save?',
                 suggerimento1: '💶 Save 100€',
                 suggerimento2: '🔮 Simulate increase',
+                tu: 'You',
+                assistenteNome: 'Assistant',
                 
                 // Savings
                 percentuale: 'Percentage of income (%)',
                 obiettivo: 'Goal (€)',
                 
-                // Threshold
+                // Settings
                 sogliaAvviso: '🔔 Alert threshold (€)',
-                lingua: '🌍 Language'
+                lingua: '🌍 Language',
+                backup: '📅 Data backup',
+                
+                // Toast
+                entrataAggiunta: '✅ Income added!',
+                entrataEliminata: '🗑️ Income deleted',
+                spesaFissaAggiunta: '✅ Fixed expense added!',
+                spesaEliminata: '🗑️ Expense deleted',
+                spesaAggiunta: '✅ Expense added!',
+                risparmioApplicato: '💰 Savings applied!',
+                backupScaricato: '💾 Backup downloaded!',
+                datiRipristinati: '📂 Data restored!',
+                resetCompletato: '🔄 Reset completed',
+                calendarioEsportato: '📅 Calendar exported!',
+                campiCompilati: '✅ Fields filled',
+                importoTrovato: '✅ Amount entered',
+                descrizioneInserita: '✅ Description entered',
+                superataSoglia: '⚠️ Threshold exceeded ',
+                erroreMicrofono: '❌ Microphone error',
+                compilaCampi: '⚠️ Fill all fields',
+                giornoNonValido: '⚠️ Invalid day',
+                importoNonTrovato: '❌ Amount not found',
+                fileNonValido: '❌ Invalid file',
+                
+                // Chat responses
+                totaleEntrate: '💰 Total income: ',
+                totaleSpese: '📉 Total expenses: ',
+                puoiRisparmiare: '💪 You can save ',
+                entroMese: ' by end of month.',
+                seiInRosso: '⚠️ You are in the red! Review your expenses.',
+                haiAncora: '💪 You still have ',
+                disponibili: ' available.',
+                
+                // Confirmations
+                cancellareDati: 'Delete ALL data?',
+                
+                // Fixed expense status
+                attivo: '🟢 Active',
+                scaduto: '🔴 Expired'
             }
         };
         
@@ -151,10 +268,10 @@ class BudgetWise {
         this.loadData();
         this.setupEventListeners();
         this.applyTheme();
-        this.applyLanguage(); // Applica lingua al caricamento
         this.updateUI();
         this.updateChart();
         this.setupVoice();
+        this.applyLanguage(); // Applica lingua all'avvio
     }
 
     getDefaultPeriodStart() {
@@ -208,46 +325,69 @@ class BudgetWise {
             this.saveData();
         });
 
-        // Event listener per cambio lingua
+        // Event listener cambio lingua
         document.getElementById('languageSelect').addEventListener('change', (e) => {
-            console.log('Lingua cambiata a:', e.target.value);
             this.data.language = e.target.value;
             this.saveData();
             this.applyLanguage();
+            this.updateUI(); // Aggiorna liste con le traduzioni
         });
     }
 
-    // ========== TRADUZIONE ==========
-    t(key) {
-        return this.translations[this.data.language][key] || key;
+    // ========== SISTEMA DI TRADUZIONE PROFESSIONALE ==========
+    t(key, params = {}) {
+        let translation = this.translations[this.data.language];
+        
+        // Supporto per chiavi annidate (es. 'categorie.Alimentari')
+        const keys = key.split('.');
+        for (const k of keys) {
+            if (translation && translation[k] !== undefined) {
+                translation = translation[k];
+            } else {
+                console.warn(`Translation key not found: ${key}`);
+                return key;
+            }
+        }
+        
+        // Sostituisci parametri se presenti
+        if (typeof translation === 'string') {
+            return translation.replace(/\{\{(\w+)\}\}/g, (match, param) => {
+                return params[param] !== undefined ? params[param] : match;
+            });
+        }
+        
+        return translation || key;
     }
 
     applyLanguage() {
-        console.log('Applico lingua:', this.data.language);
+        console.log('🌍 Applico lingua:', this.data.language);
         
         // Imposta il valore del select
-        document.getElementById('languageSelect').value = this.data.language;
+        const languageSelect = document.getElementById('languageSelect');
+        if (languageSelect) languageSelect.value = this.data.language;
         
-        // Traduci i testi usando gli ID
+        // Traduci testi statici [citation:6]
+        document.querySelector('.subtitle').textContent = this.t('appSubtitle');
         document.getElementById('guideMessage').textContent = this.t('iniziaEntrate');
         
-        // Sezioni - usando gli ID delle card (se presenti) o selettori
-        const sectionTitles = document.querySelectorAll('.section-card h2');
-        if (sectionTitles.length >= 7) {
-            sectionTitles[0].innerHTML = this.t('entrate');
-            sectionTitles[1].innerHTML = this.t('speseFisse');
-            sectionTitles[2].innerHTML = this.t('speseVariabili');
-            sectionTitles[3].innerHTML = this.t('grafico');
-            sectionTitles[4].innerHTML = this.t('assistente');
-            sectionTitles[5].innerHTML = this.t('risparmio');
-            sectionTitles[6].innerHTML = this.t('impostazioni');
-        }
+        // Traduci titoli sezioni
+        const h2s = document.querySelectorAll('h2');
+        h2s.forEach(h2 => {
+            const text = h2.textContent;
+            if (text.includes('🏦')) h2.innerHTML = this.t('entrate');
+            else if (text.includes('📌')) h2.innerHTML = this.t('speseFisse');
+            else if (text.includes('🧾')) h2.innerHTML = this.t('speseVariabili');
+            else if (text.includes('📊')) h2.innerHTML = this.t('grafico');
+            else if (text.includes('🤖')) h2.innerHTML = this.t('assistente');
+            else if (text.includes('🎯')) h2.innerHTML = this.t('risparmio');
+            else if (text.includes('⚙️')) h2.innerHTML = this.t('impostazioni');
+        });
         
         // Badge
         const badge = document.querySelector('.badge');
-        if (badge) badge.textContent = this.data.language === 'it' ? 'multiplo' : 'multiple';
+        if (badge) badge.textContent = this.t('multiplo');
         
-        // Placeholder
+        // Placeholder form
         document.getElementById('incomeDesc').placeholder = this.t('descrizione');
         document.getElementById('incomeAmount').placeholder = this.t('importo');
         document.getElementById('addIncomeBtn').innerHTML = this.t('aggiungiEntrata');
@@ -256,11 +396,23 @@ class BudgetWise {
         document.getElementById('fixedAmount').placeholder = this.t('importo');
         document.getElementById('fixedDay').placeholder = this.t('giorno');
         document.getElementById('addFixedBtn').innerHTML = this.t('aggiungiSpesaFissa');
-        
         document.getElementById('fixedVoiceStatus').textContent = this.t('microfonoFisso');
         
-        document.querySelector('.date-selector label').textContent = this.t('selezionaData');
+        const dateLabel = document.querySelector('.date-selector label');
+        if (dateLabel) dateLabel.textContent = this.t('selezionaData');
+        
         document.getElementById('expenseName').placeholder = this.t('cosaAcquistato');
+        
+        // Traduci opzioni select categoria
+        const categorySelect = document.getElementById('expenseCategory');
+        if (categorySelect) {
+            const options = categorySelect.options;
+            for (let i = 0; i < options.length; i++) {
+                const value = options[i].value;
+                options[i].text = this.t(`categorie.${value}`);
+            }
+        }
+        
         document.getElementById('addExpenseBtn').innerHTML = this.t('aggiungiSpesa');
         document.getElementById('resetDayBtn').innerHTML = this.t('cancellaGiorno');
         
@@ -284,27 +436,29 @@ class BudgetWise {
         }
         
         // Risparmio
-        document.querySelector('.input-group label[for="savePercent"]').textContent = this.t('percentuale');
-        document.querySelector('.input-group label[for="saveGoal"]').textContent = this.t('obiettivo');
+        const savePercentLabel = document.querySelector('.input-group label[for="savePercent"]');
+        if (savePercentLabel) savePercentLabel.textContent = this.t('percentuale');
+        
+        const saveGoalLabel = document.querySelector('.input-group label[for="saveGoal"]');
+        if (saveGoalLabel) saveGoalLabel.textContent = this.t('obiettivo');
+        
         document.getElementById('applySaveBtn').textContent = this.t('applicaRisparmio');
         
         // Impostazioni
-        document.querySelector('.setting-item label[for="thresholdInput"]').innerHTML = this.t('sogliaAvviso');
-        document.querySelector('.setting-item label[for="languageSelect"]').innerHTML = this.t('lingua');
+        const settingLabels = document.querySelectorAll('.setting-item label');
+        if (settingLabels.length >= 3) {
+            settingLabels[0].innerHTML = this.t('sogliaAvviso');
+            settingLabels[1].innerHTML = this.t('lingua');
+            settingLabels[2].innerHTML = this.t('backup');
+        }
+        
         document.getElementById('backupBtn').innerHTML = this.t('scaricaBackup');
         document.getElementById('restoreBtn').innerHTML = this.t('ripristina');
         document.getElementById('resetAllBtn').innerHTML = this.t('resetCompleto');
         document.getElementById('exportCalendarBtn').textContent = this.t('esportaCalendario');
         
-        // Help text
         const helpText = document.querySelector('.section-card:nth-child(6) .help-text');
         if (helpText) helpText.textContent = this.t('verraConteggiata');
-        
-        // Aggiorna periodInfo se contiene "Periodo"
-        const periodInfo = document.getElementById('periodInfo');
-        if (periodInfo) {
-            periodInfo.textContent = `📅 ${this.t('periodo')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
-        }
     }
 
     // ========== ENTRATE ==========
@@ -317,7 +471,7 @@ class BudgetWise {
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         
         if (!desc || !amount) {
-            this.showToast('⚠️ Compila tutti i campi', 'error');
+            this.showToast(this.t('compilaCampi'), 'error');
             return;
         }
         
@@ -330,7 +484,7 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        this.showToast('✅ Entrata aggiunta!');
+        this.showToast(this.t('entrataAggiunta'));
         
         document.getElementById('incomeDesc').value = '';
         document.getElementById('incomeAmount').value = '';
@@ -340,7 +494,7 @@ class BudgetWise {
         this.data.incomes = this.data.incomes.filter(inc => inc.id !== id);
         this.saveData();
         this.updateUI();
-        this.showToast('🗑️ Entrata eliminata');
+        this.showToast(this.t('entrataEliminata'));
     }
 
     // ========== SPESE FISSE ==========
@@ -351,12 +505,12 @@ class BudgetWise {
         const endDate = document.getElementById('fixedEndDate').value;
 
         if (!name || !amount || !day || !endDate) {
-            this.showToast('⚠️ Compila tutti i campi', 'error');
+            this.showToast(this.t('compilaCampi'), 'error');
             return;
         }
 
         if (day < 1 || day > 31) {
-            this.showToast('⚠️ Giorno non valido', 'error');
+            this.showToast(this.t('giornoNonValido'), 'error');
             return;
         }
 
@@ -370,7 +524,7 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        this.showToast('✅ Spesa fissa aggiunta!');
+        this.showToast(this.t('spesaFissaAggiunta'));
         
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
@@ -382,7 +536,7 @@ class BudgetWise {
         this.data.fixedExpenses = this.data.fixedExpenses.filter(exp => exp.id !== id);
         this.saveData();
         this.updateUI();
-        this.showToast('🗑️ Spesa eliminata');
+        this.showToast(this.t('spesaEliminata'));
     }
 
     // ========== SPESE VARIABILI ==========
@@ -393,7 +547,7 @@ class BudgetWise {
         const category = document.getElementById('expenseCategory').value;
 
         if (!name || !amount) {
-            this.showToast('⚠️ Inserisci nome e importo', 'error');
+            this.showToast(this.t('compilaCampi'), 'error');
             return;
         }
 
@@ -411,7 +565,7 @@ class BudgetWise {
         this.saveData();
         this.updateUI();
         this.updateChart();
-        this.showToast('✅ Spesa aggiunta!');
+        this.showToast(this.t('spesaAggiunta'));
         
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
@@ -426,7 +580,7 @@ class BudgetWise {
             this.saveData();
             this.updateUI();
             this.updateChart();
-            this.showToast('🗑️ Spesa eliminata');
+            this.showToast(this.t('spesaEliminata'));
         }
     }
 
@@ -437,7 +591,7 @@ class BudgetWise {
             this.saveData();
             this.updateUI();
             this.updateChart();
-            this.showToast('🗑️ Spese del giorno cancellate');
+            this.showToast(this.t('cancellaGiorno'));
         }
     }
 
@@ -447,7 +601,7 @@ class BudgetWise {
         
         const totalSpent = this.calculateTotalVariableExpenses();
         if (totalSpent > this.data.threshold) {
-            this.showToast(`⚠️ Superata soglia di ${this.formatCurrency(this.data.threshold)}`, 'error');
+            this.showToast(this.t('superataSoglia') + this.formatCurrency(this.data.threshold), 'error');
         }
     }
 
@@ -459,7 +613,7 @@ class BudgetWise {
         this.data.savingsGoal = goal;
         this.saveData();
         this.updateUI();
-        this.showToast('💰 Risparmio applicato!');
+        this.showToast(this.t('risparmioApplicato'));
     }
 
     // ========== CALCOLI ==========
@@ -530,6 +684,9 @@ class BudgetWise {
         } else {
             document.getElementById('progressContainer').style.display = 'none';
         }
+
+        document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
+        document.getElementById('guideMessage').textContent = this.t('iniziaEntrate');
     }
 
     updateIncomeList() {
@@ -566,12 +723,13 @@ class BudgetWise {
 
         container.innerHTML = this.data.fixedExpenses.map(exp => {
             const isActive = new Date(exp.endDate) >= new Date();
+            const status = isActive ? this.t('attivo') : this.t('scaduto');
             return `
                 <div class="expense-item">
                     <div>
                         <span class="expense-name">${exp.name}</span>
                         <div class="expense-date">
-                            ${this.t('giorno')} ${exp.day} · ${this.t('scadenza')}: ${exp.endDate} ${isActive ? '🟢' : '🔴'}
+                            ${this.t('giorno')} ${exp.day} · ${this.t('scadenza')}: ${exp.endDate} ${status}
                         </div>
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
@@ -597,7 +755,7 @@ class BudgetWise {
             <div class="expense-item">
                 <div>
                     <span class="expense-name">${exp.name}</span>
-                    <div class="expense-date">${exp.category}</div>
+                    <div class="expense-date">${this.t(`categorie.${exp.category}`)}</div>
                 </div>
                 <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
                 <div class="expense-actions">
@@ -611,7 +769,8 @@ class BudgetWise {
         const categories = {};
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(exp => {
-                categories[exp.category] = (categories[exp.category] || 0) + exp.amount;
+                const catName = this.t(`categorie.${exp.category}`);
+                categories[catName] = (categories[catName] || 0) + exp.amount;
             });
         });
 
@@ -638,7 +797,10 @@ class BudgetWise {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            color: 'var(--text-primary)'
+                        }
                     }
                 }
             }
@@ -697,317 +859,4 @@ class BudgetWise {
     backupData() {
         const dataStr = JSON.stringify(this.data, null, 2);
         const link = document.createElement('a');
-        link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-        link.download = `budgetwise-backup-${new Date().toISOString().split('T')[0]}.json`;
-        link.click();
-        this.showToast('💾 Backup scaricato!');
-    }
-
-    restoreData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                this.data = JSON.parse(e.target.result);
-                this.saveData();
-                this.updateUI();
-                this.updateChart();
-                this.applyLanguage();
-                this.showToast('📂 Dati ripristinati!');
-            } catch {
-                this.showToast('❌ Errore', 'error');
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    resetAll() {
-        if (confirm('Cancellare TUTTI i dati?')) {
-            localStorage.clear();
-            this.data = {
-                incomes: [],
-                fixedExpenses: [],
-                variableExpenses: {},
-                savingsPercent: 0,
-                savingsGoal: 0,
-                threshold: 50,
-                language: this.data.language,
-                periodStart: this.getDefaultPeriodStart(),
-                periodEnd: this.getDefaultPeriodEnd()
-            };
-            this.updateUI();
-            this.updateChart();
-            this.applyLanguage();
-            this.showToast('🔄 Reset completato');
-        }
-    }
-
-    // ========== CHAT ==========
-    handleChat() {
-        const input = document.getElementById('chatInput');
-        const question = input.value.trim();
-        if (!question) return;
-
-        this.addChatMessage('👤 ' + (this.data.language === 'it' ? 'Tu' : 'You'), question);
-        input.value = '';
-
-        setTimeout(() => {
-            const answer = this.generateAnswer(question);
-            this.addChatMessage('🤖 ' + (this.data.language === 'it' ? 'Assistente' : 'Assistant'), answer);
-        }, 500);
-    }
-
-    addChatMessage(sender, text) {
-        const container = document.getElementById('chatMessages');
-        const div = document.createElement('div');
-        div.className = `chat-message ${sender.includes('Tu') || sender.includes('You') ? 'user' : 'bot'}`;
-        div.innerHTML = `<span class="message-sender">${sender}:</span> <span class="message-text">${text}</span>`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-    }
-
-    generateAnswer(question) {
-        const q = question.toLowerCase();
-        const remaining = this.calculateRemaining();
-        const totalIncome = this.formatCurrency(this.calculateTotalIncome());
-        const totalExpenses = this.formatCurrency(this.calculateTotalFixedExpenses() + this.calculateTotalVariableExpenses());
-        
-        if (q.includes('income') || q.includes('earn') || q.includes('entrate') || q.includes('guadagni')) {
-            return `💰 Totale entrate: ${totalIncome}`;
-        }
-        if (q.includes('spese') || q.includes('expenses') || q.includes('speso') || q.includes('spent')) {
-            return `📉 Totale spese: ${totalExpenses}`;
-        }
-        if (q.includes('save') || q.includes('risparmi')) {
-            return `💪 Puoi risparmiare ${this.formatCurrency(remaining)} entro fine mese.`;
-        }
-        if (remaining < 0) {
-            return '⚠️ Sei in rosso! Rivedi le spese.';
-        }
-        return `💪 Hai ancora ${this.formatCurrency(remaining)} disponibili.`;
-    }
-
-    // ========== ESPORTAZIONE CALENDARIO ==========
-    exportToCalendar() {
-        let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
-        
-        this.data.fixedExpenses.forEach(exp => {
-            if (new Date(exp.endDate) >= new Date()) {
-                ics += "BEGIN:VEVENT\n";
-                ics += `SUMMARY:💰 ${exp.name}\n`;
-                ics += `DESCRIPTION:€${exp.amount} - ${this.t('giorno')} ${exp.day}\n`;
-                ics += `DTSTART;VALUE=DATE:${exp.endDate.replace(/-/g, '')}\n`;
-                ics += "END:VEVENT\n";
-            }
-        });
-
-        Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
-            expenses.forEach(exp => {
-                ics += "BEGIN:VEVENT\n";
-                ics += `SUMMARY:🛒 ${exp.name}\n`;
-                ics += `DESCRIPTION:${exp.category} - ${this.formatCurrency(exp.amount)}\n`;
-                ics += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
-                ics += "END:VEVENT\n";
-            });
-        });
-
-        ics += "END:VCALENDAR";
-        
-        const blob = new Blob([ics], { type: 'text/calendar' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `budgetwise-${this.data.periodStart}.ics`;
-        a.click();
-        this.showToast('📅 Calendario esportato!');
-    }
-
-    // ========== VOCE ==========
-    setupVoice() {
-        console.log('Setup voice...');
-        
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            console.log('❌ Riconoscimento vocale non supportato');
-            this.disableVoiceButtons();
-            return;
-        }
-        
-        console.log('✅ Riconoscimento vocale supportato');
-        
-        const micIncomeDesc = document.getElementById('micIncomeDescBtn');
-        if (micIncomeDesc) {
-            micIncomeDesc.addEventListener('click', () => this.startVoice('micIncomeDescBtn'));
-        }
-        
-        const micIncomeAmount = document.getElementById('micIncomeAmountBtn');
-        if (micIncomeAmount) {
-            micIncomeAmount.addEventListener('click', () => this.startVoice('micIncomeAmountBtn'));
-        }
-        
-        const micFixed = document.getElementById('micFixedBtn');
-        if (micFixed) {
-            micFixed.addEventListener('click', () => this.startVoice('micFixedBtn'));
-        }
-        
-        const voiceBtn = document.getElementById('voiceBtn');
-        if (voiceBtn) {
-            voiceBtn.addEventListener('click', () => this.startVoice('voiceBtn'));
-        }
-        
-        const chatVoice = document.getElementById('chatVoiceBtn');
-        if (chatVoice) {
-            chatVoice.addEventListener('click', () => this.startVoice('chatVoiceBtn'));
-        }
-    }
-
-    disableVoiceButtons() {
-        document.querySelectorAll('.mic-icon-btn, .voice-btn, .chat-voice-btn, .voice-fixed-btn').forEach(btn => {
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.title = 'Microfono non supportato';
-        });
-    }
-
-    startVoice(buttonId) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'it-IT';
-        recognition.interimResults = false;
-
-        const button = document.getElementById(buttonId);
-        if (!button) return;
-        
-        button.classList.add('listening');
-        
-        let timeoutSeconds = 5;
-        let message = '🎤 Ascolto...';
-        
-        if (buttonId === 'micFixedBtn') {
-            timeoutSeconds = 15;
-            message = '🎤 Parla con calma (15 secondi)...';
-        } else if (buttonId === 'voiceBtn') {
-            timeoutSeconds = 8;
-            message = '🎤 Parla ora (8 secondi)...';
-        } else if (buttonId === 'chatVoiceBtn') {
-            timeoutSeconds = 10;
-            message = '🎤 Fai la tua domanda...';
-        }
-        
-        this.showToast(message, 'success');
-
-        recognition.onresult = (event) => {
-            const text = event.results[0][0].transcript;
-            console.log('Riconosciuto:', text);
-            
-            switch(buttonId) {
-                case 'micIncomeDescBtn':
-                    document.getElementById('incomeDesc').value = text;
-                    this.showToast('✅ Descrizione inserita');
-                    break;
-                    
-                case 'micIncomeAmountBtn':
-                    const numbers = text.match(/(\d+[.,]?\d*)/);
-                    if (numbers) {
-                        document.getElementById('incomeAmount').value = parseFloat(numbers[0].replace(',', '.'));
-                        this.showToast('✅ Importo inserito');
-                    }
-                    break;
-                    
-                case 'micFixedBtn':
-                    this.parseFixedExpense(text);
-                    break;
-                    
-                case 'voiceBtn':
-                    this.parseVariableExpense(text);
-                    break;
-                    
-                case 'chatVoiceBtn':
-                    document.getElementById('chatInput').value = text;
-                    this.handleChat();
-                    break;
-            }
-            
-            button.classList.remove('listening');
-        };
-
-        recognition.onerror = (event) => {
-            console.error('Errore microfono:', event.error);
-            this.showToast('❌ Errore microfono', 'error');
-            button.classList.remove('listening');
-        };
-
-        recognition.onend = () => {
-            button.classList.remove('listening');
-        };
-
-        recognition.start();
-
-        setTimeout(() => {
-            recognition.stop();
-            button.classList.remove('listening');
-        }, timeoutSeconds * 1000);
-    }
-
-    parseFixedExpense(text) {
-        const words = text.split(' ');
-        let name = words[0] || 'Spesa';
-        if (name.length > 20) name = name.substring(0, 20);
-        
-        const amountMatch = text.match(/(\d+[.,]?\d*)/);
-        const amount = amountMatch ? parseFloat(amountMatch[0].replace(',', '.')) : 0;
-        
-        const dayMatch = text.match(/(\d{1,2})/g);
-        let day = 1;
-        if (dayMatch && dayMatch.length > 0) {
-            for (let d of dayMatch) {
-                const candidate = parseInt(d);
-                if (candidate >= 1 && candidate <= 31 && candidate !== Math.round(amount)) {
-                    day = candidate;
-                    break;
-                }
-            }
-        }
-        
-        const dateMatch = text.match(/(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/);
-        let endDate = '';
-        if (dateMatch) {
-            endDate = `${dateMatch[3]}-${dateMatch[2].padStart(2,'0')}-${dateMatch[1].padStart(2,'0')}`;
-        } else {
-            const d = new Date();
-            d.setFullYear(d.getFullYear() + 10);
-            endDate = d.toISOString().split('T')[0];
-        }
-        
-        document.getElementById('fixedName').value = name;
-        document.getElementById('fixedAmount').value = amount;
-        document.getElementById('fixedDay').value = day;
-        document.getElementById('fixedEndDate').value = endDate;
-        
-        this.showToast('✅ Campi compilati');
-    }
-
-    parseVariableExpense(text) {
-        const amountMatch = text.match(/(\d+[.,]?\d*)/);
-        if (!amountMatch) {
-            this.showToast('❌ Importo non trovato', 'error');
-            return;
-        }
-        
-        const amount = parseFloat(amountMatch[0].replace(',', '.'));
-        let description = text.replace(amountMatch[0], '').replace(/euro|€/gi, '').trim();
-        
-        document.getElementById('expenseName').value = description || 'Spesa';
-        document.getElementById('expenseAmount').value = amount;
-        
-        this.showToast('✅ Spesa inserita');
-    }
-}
-
-// ============================================
-// AVVIO
-// ============================================
-
-const app = new BudgetWise();
-window.app = app;
+        link.href = 'data:application/json;charset=utf-
