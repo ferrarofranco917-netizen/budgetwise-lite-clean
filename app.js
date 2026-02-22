@@ -552,8 +552,20 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        alert(this.t('fixedAdded'));
-        
+
+        // === FEEDBACK PERSONALIZZATO PER SPESE FISSE ===
+        const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
+        this.showToast(
+            `💰 ${name} €${amount} – giorno ${day} (scad. ${endDate}) ${status}`,
+            'success'
+        );
+
+        this.highlightField('fixedName');
+        this.highlightField('fixedAmount');
+        this.highlightField('fixedDay');
+        this.highlightField('fixedEndDate');
+        // ================================================
+
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
         document.getElementById('fixedDay').value = '';
@@ -593,8 +605,31 @@ class BudgetWise {
         this.saveData();
         this.updateUI();
         this.updateChart();
-        alert(this.t('expenseAdded'));
-        
+
+        // === FEEDBACK PERSONALIZZATO ===
+        const categoryEmoji = {
+            Alimentari: '🍎',
+            Trasporti: '🚗',
+            Svago: '🎮',
+            Salute: '💊',
+            Abbigliamento: '👕',
+            Altro: '📦'
+        }[category] || '💰';
+
+        const suggestion = this.data.language === 'it'
+            ? `Vuoi impostare un budget settimanale per ${name}?`
+            : `Do you want to set a weekly budget for ${name}?`;
+
+        this.showToast(
+            `${categoryEmoji} ${name} ${this.formatCurrency(amount)} ${this.t('expenseAdded')} ${suggestion}`,
+            'success'
+        );
+
+        // Evidenzia i campi appena inseriti
+        this.highlightField('expenseName');
+        this.highlightField('expenseAmount');
+        // ================================
+
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
         
@@ -889,6 +924,19 @@ class BudgetWise {
 
     formatCurrency(amount) {
         return amount.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    // Evidenzia temporaneamente un campo di input
+    highlightField(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+        field.style.transition = 'background-color 0.3s ease';
+        field.style.backgroundColor = '#d4edda';
+        field.style.borderColor = '#28a745';
+        setTimeout(() => {
+            field.style.backgroundColor = '';
+            field.style.borderColor = '';
+        }, 800);
     }
 
     // ========== CHAT ASSISTANT ==========
