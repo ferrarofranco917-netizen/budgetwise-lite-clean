@@ -527,64 +527,33 @@ class BudgetWise {
 
     // ========== SPESE FISSE ==========
     addFixedExpense() {
-    const name = document.getElementById('fixedName').value.trim();
-    const amount = parseFloat(document.getElementById('fixedAmount').value);
-    const day = parseInt(document.getElementById('fixedDay').value);
-    const endDate = document.getElementById('fixedEndDate').value;
+        const name = document.getElementById('fixedName').value.trim();
+        const amount = parseFloat(document.getElementById('fixedAmount').value);
+        const day = parseInt(document.getElementById('fixedDay').value);
+        const endDate = document.getElementById('fixedEndDate').value;
 
-    if (!name || !amount || !day || !endDate) {
-        alert(this.t('fillFields'));
-        return;
-    }
+        if (!name || !amount || !day || !endDate) {
+            alert(this.t('fillFields'));
+            return;
+        }
 
-    if (day < 1 || day > 31) {
-        alert(this.t('invalidDay'));
-        return;
-    }
+        if (day < 1 || day > 31) {
+            alert(this.t('invalidDay'));
+            return;
+        }
 
-    this.data.fixedExpenses.push({
-        name,
-        amount,
-        day,
-        endDate,
-        id: Date.now()
-    });
-
-    this.saveData();
-    this.updateUI();
-
-    // === FEEDBACK ===
-    const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
-    this.showToast(
-        `💰 ${name} ${this.formatCurrency(amount)} – giorno ${day} (scad. ${endDate}) ${status}`,
-        'success'
-    );
-
-    this.highlightField('fixedName');
-    this.highlightField('fixedAmount');
-    this.highlightField('fixedDay');
-    this.highlightField('fixedEndDate');
-    // ==============
-
-    document.getElementById('fixedName').value = '';
-    document.getElementById('fixedAmount').value = '';
-    document.getElementById('fixedDay').value = '';
-    document.getElementById('fixedEndDate').value = '';
-}
-
-        // === FEEDBACK PERSONALIZZATO PER SPESE FISSE ===
-        const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
-        this.showToast(
-            `💰 ${name} €${amount} – giorno ${day} (scad. ${endDate}) ${status}`,
-            'success'
-        );
-
-        this.highlightField('fixedName');
-        this.highlightField('fixedAmount');
-        this.highlightField('fixedDay');
-        this.highlightField('fixedEndDate');
-        // ================================================
-
+        this.data.fixedExpenses.push({ 
+            name, 
+            amount, 
+            day,
+            endDate,
+            id: Date.now()
+        });
+        
+        this.saveData();
+        this.updateUI();
+        alert(this.t('fixedAdded'));
+        
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
         document.getElementById('fixedDay').value = '';
@@ -600,79 +569,32 @@ class BudgetWise {
 
     // ========== SPESE VARIABILI ==========
     addVariableExpense() {
-    const date = document.getElementById('expenseDate').value;
-    const name = document.getElementById('expenseName').value.trim();
-    const amount = parseFloat(document.getElementById('expenseAmount').value);
-    const category = document.getElementById('expenseCategory').value;
+        const date = document.getElementById('expenseDate').value;
+        const name = document.getElementById('expenseName').value.trim();
+        const amount = parseFloat(document.getElementById('expenseAmount').value);
+        const category = document.getElementById('expenseCategory').value;
 
-    if (!name || !amount) {
-        alert(this.t('fillFields'));
-        return;
-    }
+        if (!name || !amount) {
+            alert(this.t('fillFields'));
+            return;
+        }
 
-    if (!this.data.variableExpenses[date]) {
-        this.data.variableExpenses[date] = [];
-    }
+        if (!this.data.variableExpenses[date]) {
+            this.data.variableExpenses[date] = [];
+        }
 
-    this.data.variableExpenses[date].push({
-        name,
-        amount,
-        category,
-        id: Date.now()
-    });
+        this.data.variableExpenses[date].push({
+            name,
+            amount,
+            category,
+            id: Date.now()
+        });
 
-    this.saveData();
-    this.updateUI();
-    this.updateChart();
-
-    // === FEEDBACK ===
-    const categoryEmoji = {
-        Alimentari: '🍎',
-        Trasporti: '🚗',
-        Svago: '🎮',
-        Salute: '💊',
-        Abbigliamento: '👕',
-        Altro: '📦'
-    }[category] || '💰';
-
-    this.showToast(
-        `${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`,
-        'success'
-    );
-
-    this.highlightField('expenseName');
-    this.highlightField('expenseAmount');
-    // ==============
-
-    document.getElementById('expenseName').value = '';
-    document.getElementById('expenseAmount').value = '';
-
-    this.checkThreshold(date);
-}
-        // === FEEDBACK PERSONALIZZATO ===
-        const categoryEmoji = {
-            Alimentari: '🍎',
-            Trasporti: '🚗',
-            Svago: '🎮',
-            Salute: '💊',
-            Abbigliamento: '👕',
-            Altro: '📦'
-        }[category] || '💰';
-
-        const suggestion = this.data.language === 'it'
-            ? `Vuoi impostare un budget settimanale per ${name}?`
-            : `Do you want to set a weekly budget for ${name}?`;
-
-        this.showToast(
-            `${categoryEmoji} ${name} ${this.formatCurrency(amount)} ${this.t('expenseAdded')} ${suggestion}`,
-            'success'
-        );
-
-        // Evidenzia i campi appena inseriti
-        this.highlightField('expenseName');
-        this.highlightField('expenseAmount');
-        // ================================
-
+        this.saveData();
+        this.updateUI();
+        this.updateChart();
+        alert(this.t('expenseAdded'));
+        
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
         
@@ -967,19 +889,6 @@ class BudgetWise {
 
     formatCurrency(amount) {
         return amount.toFixed(2).replace('.', ',') + ' €';
-    }
-
-    // Evidenzia temporaneamente un campo di input
-    highlightField(fieldId) {
-        const field = document.getElementById(fieldId);
-        if (!field) return;
-        field.style.transition = 'background-color 0.3s ease';
-        field.style.backgroundColor = '#d4edda';
-        field.style.borderColor = '#28a745';
-        setTimeout(() => {
-            field.style.backgroundColor = '';
-            field.style.borderColor = '';
-        }, 800);
     }
 
     // ========== CHAT ASSISTANT ==========
@@ -1387,5 +1296,3 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
-
-
