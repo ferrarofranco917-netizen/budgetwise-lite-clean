@@ -110,6 +110,9 @@ const translations = {
         toastFillAllFields: '⚠️ Compila tutti i campi',
         toastInvalidDay: '⚠️ Il giorno deve essere tra 1 e 31',
         toastInvalidFile: '❌ File non valido',
+        
+        // Testo per pulsante stop ascolto
+        stopListening: '⏹️ Ferma ascolto',
     },
     en: {
         // General
@@ -217,6 +220,9 @@ const translations = {
         toastFillAllFields: '⚠️ Please fill in all fields',
         toastInvalidDay: '⚠️ Day must be between 1 and 31',
         toastInvalidFile: '❌ Invalid file',
+        
+        // Text for stop listening button
+        stopListening: '⏹️ Stop listening',
     }
 };
 
@@ -229,7 +235,7 @@ class BudgetWise {
             savingsPercent: 0,
             savingsGoal: 0,
             threshold: 50,
-            language: 'it', // Lingua predefinita
+            language: 'it',
             periodStart: this.getDefaultPeriodStart(),
             periodEnd: this.getDefaultPeriodEnd()
         };
@@ -242,11 +248,11 @@ class BudgetWise {
     t(key, params = {}) {
         const lang = this.data.language || 'it';
         const langData = translations[lang] || translations.it;
-        let text = langData[key] || key; // Fallback alla chiave se non trovata
+        let text = langData[key] || key;
 
         // Sostituisci i parametri (es. {start})
         for (const [param, value] of Object.entries(params)) {
-            text = text.replace(`{${param}}`, value);
+            text = text.replace(new RegExp(`{${param}}`, 'g'), value);
         }
         return text;
     }
@@ -310,8 +316,11 @@ class BudgetWise {
         document.getElementById('languageSelect').addEventListener('change', (e) => {
             this.data.language = e.target.value;
             this.saveData();
-            this.updateUI(); // <-- Questo ora tradurrà tutta l'interfaccia
-            this.updateChart(); // Per tradurre eventuali testi nel grafico (se ce ne fossero)
+            this.updateUI();
+            this.updateChart();
+            
+            // Aggiorna anche i suggerimenti dell'assistente
+            this.updateSuggestionChips();
         });
 
         // Salvataggio automatico
@@ -441,13 +450,11 @@ class BudgetWise {
         const currentYear = today.getFullYear();
         
         return this.data.fixedExpenses.reduce((sum, exp) => {
-            // Verifica se la spesa è ancora attiva (non scaduta)
             const endDate = new Date(exp.endDate);
-            if (endDate < today) return sum; // Spesa scaduta, non la contare
+            if (endDate < today) return sum;
             
-            // Verifica se il giorno di pagamento è già passato questo mese
             const paymentDate = new Date(currentYear, currentMonth, exp.day);
-            if (paymentDate > today) return sum; // Deve ancora venire, non contarla ora
+            if (paymentDate > today) return sum;
             
             return sum + exp.amount;
         }, 0);
@@ -513,42 +520,51 @@ class BudgetWise {
         });
 
         // Aggiorna intestazioni delle sezioni
-        document.querySelector('.section-card:nth-of-type(1) h2').textContent = this.t('incomeSection');
-        document.querySelector('.section-card:nth-of-type(2) h2').textContent = this.t('fixedExpensesSection');
-        document.querySelector('.section-card:nth-of-type(3) h2').textContent = this.t('variableExpensesSection');
-        document.querySelector('.section-card:nth-of-type(4) h2').textContent = this.t('chartSection');
-        document.querySelector('.section-card:nth-of-type(5) h2').textContent = this.t('assistantSection');
-        document.querySelector('.section-card:nth-of-type(6) h2').textContent = this.t('savingsSection');
-        document.querySelector('.section-card:nth-of-type(7) h2').textContent = this.t('settingsSection');
+        const sectionTitles = document.querySelectorAll('.section-card h2');
+        if (sectionTitles.length >= 7) {
+            sectionTitles[0].textContent = this.t('incomeSection');
+            sectionTitles[1].textContent = this.t('fixedExpensesSection');
+            sectionTitles[2].textContent = this.t('variableExpensesSection');
+            sectionTitles[3].textContent = this.t('chartSection');
+            sectionTitles[4].textContent = this.t('assistantSection');
+            sectionTitles[5].textContent = this.t('savingsSection');
+            sectionTitles[6].textContent = this.t('settingsSection');
+        }
 
         // Aggiorna labels e placeholder
-        document.querySelector('label[for="incomeInput"]').textContent = this.t('labelTotalIncome');
+        const labels = document.querySelectorAll('label');
+        labels.forEach(label => {
+            const htmlFor = label.getAttribute('for');
+            if (htmlFor === 'incomeInput') label.textContent = this.t('labelTotalIncome');
+            else if (htmlFor === 'fixedDay') label.textContent = this.t('labelDayOfMonth');
+            else if (htmlFor === 'fixedEndDate') label.textContent = this.t('labelEndDate');
+            else if (htmlFor === 'expenseDate') label.textContent = this.t('labelSelectDate');
+            else if (htmlFor === 'thresholdInput') label.textContent = this.t('labelThreshold');
+            else if (htmlFor === 'languageSelect') label.textContent = this.t('labelLanguage');
+            else if (htmlFor === 'savePercent') label.textContent = this.t('labelSavingsPercent');
+            else if (htmlFor === 'saveGoal') label.textContent = this.t('labelSavingsGoal');
+        });
+
         document.getElementById('incomeInput').placeholder = this.t('placeholderAmount');
-        
         document.getElementById('fixedName').placeholder = this.t('placeholderName');
         document.getElementById('fixedAmount').placeholder = this.t('placeholderAmount');
-        document.querySelector('label[for="fixedDay"]').textContent = this.t('labelDayOfMonth');
         document.getElementById('fixedDay').placeholder = this.t('placeholderDay');
-        document.querySelector('label[for="fixedEndDate"]').textContent = this.t('labelEndDate');
-        
-        document.querySelector('label[for="expenseDate"]').textContent = this.t('labelSelectDate');
         document.getElementById('expenseName').placeholder = this.t('placeholderWhatBought');
         document.getElementById('expenseAmount').placeholder = this.t('placeholderAmount');
         
         // Aggiorna opzioni del select delle categorie
         const categorySelect = document.getElementById('expenseCategory');
-        categorySelect.options[0].text = this.t('categoryGrocery');
-        categorySelect.options[1].text = this.t('categoryTransport');
-        categorySelect.options[2].text = this.t('categoryEntertainment');
-        categorySelect.options[3].text = this.t('categoryHealth');
-        categorySelect.options[4].text = this.t('categoryClothing');
-        categorySelect.options[5].text = this.t('categoryOther');
-        
-        document.querySelector('label[for="thresholdInput"]').textContent = this.t('labelThreshold');
-        document.querySelector('label[for="languageSelect"]').textContent = this.t('labelLanguage');
-        
-        document.querySelector('label[for="savePercent"]').textContent = this.t('labelSavingsPercent');
-        document.querySelector('label[for="saveGoal"]').textContent = this.t('labelSavingsGoal');
+        if (categorySelect) {
+            const options = categorySelect.options;
+            if (options.length >= 6) {
+                options[0].text = this.t('categoryGrocery');
+                options[1].text = this.t('categoryTransport');
+                options[2].text = this.t('categoryEntertainment');
+                options[3].text = this.t('categoryHealth');
+                options[4].text = this.t('categoryClothing');
+                options[5].text = this.t('categoryOther');
+            }
+        }
         
         // Aggiorna testi dei bottoni
         document.getElementById('saveIncomeBtn').textContent = this.t('btnSaveIncome');
@@ -569,13 +585,7 @@ class BudgetWise {
         document.getElementById('chatInput').placeholder = this.t('placeholderAskAssistant');
         
         // Aggiorna chip dei suggerimenti
-        const suggestionChips = document.querySelectorAll('.suggestion-chip');
-        if (suggestionChips.length >= 4) {
-            suggestionChips[0].textContent = this.t('suggestionSave100');
-            suggestionChips[1].textContent = this.t('suggestionSimulate');
-            suggestionChips[2].textContent = this.t('suggestionGoal');
-            suggestionChips[3].textContent = this.t('suggestionTopCategory');
-        }
+        this.updateSuggestionChips();
 
         // Aggiorna lista spese fisse
         this.updateFixedExpensesList();
@@ -606,9 +616,25 @@ class BudgetWise {
         this.updateAssistantWelcome();
     }
     
+    updateSuggestionChips() {
+        const suggestionChips = document.querySelectorAll('.suggestion-chip');
+        if (suggestionChips.length >= 4) {
+            suggestionChips[0].textContent = this.t('suggestionSave100');
+            suggestionChips[0].setAttribute('data-question', this.data.language === 'it' ? 'Come posso risparmiare 100€ questo mese?' : 'How can I save 100€ this month?');
+            
+            suggestionChips[1].textContent = this.t('suggestionSimulate');
+            suggestionChips[1].setAttribute('data-question', this.data.language === 'it' ? 'Cosa succede se aumento le spese del 20%?' : 'What happens if I increase expenses by 20%?');
+            
+            suggestionChips[2].textContent = this.t('suggestionGoal');
+            suggestionChips[2].setAttribute('data-question', this.data.language === 'it' ? 'Quando raggiungerò il mio obiettivo?' : 'When will I reach my goal?');
+            
+            suggestionChips[3].textContent = this.t('suggestionTopCategory');
+            suggestionChips[3].setAttribute('data-question', this.data.language === 'it' ? 'Qual è la categoria dove spendo di più?' : 'What is the category where I spend the most?');
+        }
+    }
+    
     updateAssistantWelcome() {
         const chatMessages = document.getElementById('chatMessages');
-        // Se c'è solo il messaggio di benvenuto (e nessun altro messaggio)
         if (chatMessages.children.length === 1) {
             const welcomeMessage = chatMessages.querySelector('.chat-message.bot .message-text');
             if (welcomeMessage) {
@@ -658,7 +684,6 @@ class BudgetWise {
         }
 
         container.innerHTML = expenses.map(exp => {
-            // Traduci la categoria per visualizzarla
             let categoryKey = 'categoryOther';
             switch(exp.category) {
                 case 'Alimentari': categoryKey = 'categoryGrocery'; break;
@@ -689,7 +714,6 @@ class BudgetWise {
         
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(expense => {
-                // Raggruppa per categoria originale, ma per il grafico useremo le chiavi tradotte
                 categories[expense.category] = (categories[expense.category] || 0) + expense.amount;
             });
         });
@@ -705,7 +729,6 @@ class BudgetWise {
 
         if (this.chart) this.chart.destroy();
 
-        // Prepara le etichette tradotte per il grafico
         const translatedLabels = Object.keys(categories).map(cat => {
             switch(cat) {
                 case 'Alimentari': return this.t('categoryGrocery');
@@ -849,7 +872,7 @@ class BudgetWise {
     }
 
     resetAll() {
-        if (confirm('Sei sicuro di voler cancellare TUTTI i dati?')) {
+        if (confirm(this.data.language === 'it' ? 'Sei sicuro di voler cancellare TUTTI i dati?' : 'Are you sure you want to delete ALL data?')) {
             localStorage.clear();
             this.data = {
                 income: 0,
@@ -858,7 +881,7 @@ class BudgetWise {
                 savingsPercent: 0,
                 savingsGoal: 0,
                 threshold: 50,
-                language: 'it',
+                language: this.data.language,
                 periodStart: this.getDefaultPeriodStart(),
                 periodEnd: this.getDefaultPeriodEnd()
             };
@@ -895,14 +918,12 @@ class BudgetWise {
     exportToCalendar() {
         let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
         
-        // Aggiungi spese fisse (solo quelle attive con ricorrenza)
         this.data.fixedExpenses.forEach(exp => {
             const endDate = new Date(exp.endDate);
-            if (endDate >= new Date()) { // Solo spese non scadute
+            if (endDate >= new Date()) {
                 icsContent += "BEGIN:VEVENT\n";
                 icsContent += `SUMMARY:💰 ${exp.name}\n`;
-                icsContent += `DESCRIPTION:Spesa fissa di ${this.formatCurrency(exp.amount)} - Ogni giorno ${exp.day}\n`;
-                // Crea un evento il prossimo giorno di pagamento
+                icsContent += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa di' : 'Fixed expense of'} ${this.formatCurrency(exp.amount)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day}\n`;
                 const nextDate = this.getNextPaymentDate(exp.day);
                 icsContent += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
                 icsContent += `RRULE:FREQ=MONTHLY;UNTIL=${exp.endDate.replace(/-/g, '')}\n`;
@@ -910,7 +931,6 @@ class BudgetWise {
             }
         });
 
-        // Aggiungi spese variabili
         Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
             expenses.forEach(exp => {
                 icsContent += "BEGIN:VEVENT\n";
@@ -969,7 +989,6 @@ class FinancialAssistant {
         this.addMessage(question, 'user');
         input.value = '';
 
-        // Simula "thinking"
         setTimeout(() => {
             const answer = this.generateAnswer(question);
             this.addMessage(answer, 'bot');
@@ -997,38 +1016,36 @@ class FinancialAssistant {
         const totalFixed = this.app.calculateTotalFixedExpenses();
         const daysLeft = this.app.getDaysLeft();
 
-        // Risposte intelligenti basate sui dati reali
-        if (q.includes('risparmi') || q.includes('risparmiare')) {
+        if (q.includes('risparmi') || q.includes('risparmiare') || q.includes('save') || q.includes('saving')) {
             const match = q.match(/(\d+)/);
             if (match) {
                 const target = parseInt(match[0]);
                 const daily = dailyBudget;
                 if (daily * daysLeft >= target) {
-                    return `✅ Sì! Puoi risparmiare ${target}€ entro fine mese. Ti basterebbe risparmiare ${(target/daysLeft).toFixed(2)}€ al giorno. Il tuo budget giornaliero attuale è ${this.app.formatCurrency(daily)}.`;
+                    return `✅ ${this.app.data.language === 'it' ? 'Sì! Puoi risparmiare' : 'Yes! You can save'} ${target}€ ${this.app.data.language === 'it' ? 'entro fine mese. Ti basterebbe risparmiare' : 'by the end of the month. You would need to save'} ${(target/daysLeft).toFixed(2)}€ ${this.app.data.language === 'it' ? 'al giorno. Il tuo budget giornaliero attuale è' : 'per day. Your current daily budget is'} ${this.app.formatCurrency(daily)}.`;
                 } else {
-                    return `⚠️ Con l'attuale budget di ${this.app.formatCurrency(daily)} al giorno, in ${daysLeft} giorni avrai ${this.app.formatCurrency(daily * daysLeft)}. Per risparmiare ${target}€, dovresti ridurre le spese giornaliere di ${((target - (daily * daysLeft))/daysLeft).toFixed(2)}€.`;
+                    return `⚠️ ${this.app.data.language === 'it' ? 'Con l\'attuale budget di' : 'With the current budget of'} ${this.app.formatCurrency(daily)} ${this.app.data.language === 'it' ? 'al giorno, in' : 'per day, in'} ${daysLeft} ${this.app.data.language === 'it' ? 'giorni avrai' : 'days you will have'} ${this.app.formatCurrency(daily * daysLeft)}. ${this.app.data.language === 'it' ? 'Per risparmiare' : 'To save'} ${target}€, ${this.app.data.language === 'it' ? 'dovresti ridurre le spese giornaliere di' : 'you should reduce daily expenses by'} ${((target - (daily * daysLeft))/daysLeft).toFixed(2)}€.`;
                 }
             }
             return this.getGenericSavingsAdvice();
         }
 
-        if (q.includes('simul') || q.includes('cosa succede se')) {
+        if (q.includes('simul') || q.includes('cosa succede se') || q.includes('what if') || q.includes('simulate')) {
             return this.handleSimulation(q);
         }
 
-        if (q.includes('quando raggiunger') || q.includes('obiettivo')) {
+        if (q.includes('quando raggiunger') || q.includes('obiettivo') || q.includes('when will') || q.includes('goal')) {
             return this.handleGoalPrediction();
         }
 
-        if (q.includes('categoria') || q.includes('spendo di più')) {
+        if (q.includes('categoria') || q.includes('spendo di più') || q.includes('category') || q.includes('spend the most')) {
             return this.getTopCategory();
         }
 
-        if (q.includes('quanto ho speso')) {
+        if (q.includes('quanto ho speso') || q.includes('how much did i spend')) {
             return this.handleExpenseQuery(q);
         }
 
-        // Risposte contestuali generali
         return this.getContextualAdvice();
     }
 
@@ -1038,37 +1055,39 @@ class FinancialAssistant {
         const daysLeft = this.app.getDaysLeft();
         
         if (totalSpent > this.app.data.threshold) {
-            return `⚠️ Attenzione: hai già superato la soglia di ${this.app.formatCurrency(this.app.data.threshold)}. Ti consiglio di ridurre le spese non essenziali per i prossimi giorni. Il budget giornaliero è di ${this.app.formatCurrency(dailyBudget)}.`;
+            return `⚠️ ${this.app.data.language === 'it' ? 'Attenzione: hai già superato la soglia di' : 'Warning: you have already exceeded the threshold of'} ${this.app.formatCurrency(this.app.data.threshold)}. ${this.app.data.language === 'it' ? 'Ti consiglio di ridurre le spese non essenziali per i prossimi giorni. Il budget giornaliero è di' : 'I recommend reducing non-essential expenses for the next few days. The daily budget is'} ${this.app.formatCurrency(dailyBudget)}.`;
         }
         
-        return `📊 Analisi: al momento hai speso ${this.app.formatCurrency(totalSpent)}. Hai ancora ${this.app.formatCurrency(this.app.calculateRemaining())} disponibili fino al ${this.app.data.periodEnd}.`;
+        return `📊 ${this.app.data.language === 'it' ? 'Analisi: al momento hai speso' : 'Analysis: you have spent so far'} ${this.app.formatCurrency(totalSpent)}. ${this.app.data.language === 'it' ? 'Hai ancora' : 'You still have'} ${this.app.formatCurrency(this.app.calculateRemaining())} ${this.app.data.language === 'it' ? 'disponibili fino al' : 'available until'} ${this.app.data.periodEnd}.`;
     }
 
     handleSimulation(q) {
         const dailyBudget = this.app.calculateDailyBudget();
         const daysLeft = this.app.getDaysLeft();
         
-        if (q.includes('aument') || q.includes('+')) {
+        if (q.includes('aument') || q.includes('+') || q.includes('increase')) {
             const match = q.match(/(\d+)/);
             if (match) {
                 const percent = parseInt(match[0]);
                 const newDaily = dailyBudget * (1 + percent/100);
                 const totalIncrease = (newDaily - dailyBudget) * daysLeft;
-                return `🔮 Se aumenti le spese del ${percent}%, il budget giornaliero diventerebbe ${this.app.formatCurrency(newDaily)}. Alla fine del periodo avrai ${this.app.formatCurrency(this.app.calculateRemaining() - totalIncrease)} invece di ${this.app.formatCurrency(this.app.calculateRemaining())}. Sei sicuro?`;
+                return `🔮 ${this.app.data.language === 'it' ? 'Se aumenti le spese del' : 'If you increase expenses by'} ${percent}%, ${this.app.data.language === 'it' ? 'il budget giornaliero diventerebbe' : 'the daily budget would become'} ${this.app.formatCurrency(newDaily)}. ${this.app.data.language === 'it' ? 'Alla fine del periodo avrai' : 'At the end of the period you will have'} ${this.app.formatCurrency(this.app.calculateRemaining() - totalIncrease)} ${this.app.data.language === 'it' ? 'invece di' : 'instead of'} ${this.app.formatCurrency(this.app.calculateRemaining())}. ${this.app.data.language === 'it' ? 'Sei sicuro?' : 'Are you sure?'}`;
             }
         }
         
-        if (q.includes('riduc') || q.includes('-')) {
+        if (q.includes('riduc') || q.includes('-') || q.includes('reduce')) {
             const match = q.match(/(\d+)/);
             if (match) {
                 const percent = parseInt(match[0]);
                 const newDaily = dailyBudget * (1 - percent/100);
                 const totalSave = (dailyBudget - newDaily) * daysLeft;
-                return `💡 Riducendo le spese del ${percent}%, risparmieresti ${this.app.formatCurrency(totalSave)} entro fine mese! Il nuovo budget giornaliero sarebbe ${this.app.formatCurrency(newDaily)}.`;
+                return `💡 ${this.app.data.language === 'it' ? 'Riducendo le spese del' : 'By reducing expenses by'} ${percent}%, ${this.app.data.language === 'it' ? 'risparmieresti' : 'you would save'} ${this.app.formatCurrency(totalSave)} ${this.app.data.language === 'it' ? 'entro fine mese! Il nuovo budget giornaliero sarebbe' : 'by the end of the month! The new daily budget would be'} ${this.app.formatCurrency(newDaily)}.`;
             }
         }
         
-        return "Dimmi cosa vuoi simulare (es. 'cosa succede se aumento le spese del 20%?')";
+        return this.app.data.language === 'it' ? 
+            "Dimmi cosa vuoi simulare (es. 'cosa succede se aumento le spese del 20%?')" : 
+            "Tell me what you want to simulate (e.g., 'what if I increase expenses by 20%?')";
     }
 
     handleGoalPrediction() {
@@ -1077,18 +1096,20 @@ class FinancialAssistant {
         const income = this.app.data.income;
         
         if (!goal || !percent) {
-            return "Non hai ancora impostato un obiettivo di risparmio. Vai nella sezione 🎯 e impostalo!";
+            return this.app.data.language === 'it' ? 
+                "Non hai ancora impostato un obiettivo di risparmio. Vai nella sezione 🎯 e impostalo!" : 
+                "You haven't set a savings goal yet. Go to the 🎯 section and set it!";
         }
         
         const savedPerMonth = (income * percent) / 100;
         const monthsNeeded = Math.ceil(goal / savedPerMonth);
         
         if (monthsNeeded < 12) {
-            return `🎯 Al ritmo attuale, raggiungerai l'obiettivo di ${this.app.formatCurrency(goal)} in ${monthsNeeded} mesi.`;
+            return `🎯 ${this.app.data.language === 'it' ? 'Al ritmo attuale, raggiungerai l\'obiettivo di' : 'At the current rate, you will reach the goal of'} ${this.app.formatCurrency(goal)} ${this.app.data.language === 'it' ? 'in' : 'in'} ${monthsNeeded} ${this.app.data.language === 'it' ? 'mesi' : 'months'}.`;
         } else {
             const years = Math.floor(monthsNeeded/12);
             const months = monthsNeeded % 12;
-            return `🎯 Raggiungerai l'obiettivo in ${years} anni e ${months} mesi. Se aumentassi il risparmio al ${percent+5}%, ci impiegheresti meno!`;
+            return `🎯 ${this.app.data.language === 'it' ? 'Raggiungerai l\'obiettivo in' : 'You will reach the goal in'} ${years} ${this.app.data.language === 'it' ? 'anni e' : 'years and'} ${months} ${this.app.data.language === 'it' ? 'mesi' : 'months'}. ${this.app.data.language === 'it' ? 'Se aumentassi il risparmio al' : 'If you increased savings to'} ${percent+5}%, ${this.app.data.language === 'it' ? 'ci impiegheresti meno!' : 'it would take less time!'}`;
         }
     }
 
@@ -1101,12 +1122,13 @@ class FinancialAssistant {
         });
         
         if (Object.keys(categories).length === 0) {
-            return "Non hai ancora spese registrate. Aggiungine qualcuna per avere un'analisi!";
+            return this.app.data.language === 'it' ? 
+                "Non hai ancora spese registrate. Aggiungine qualcuna per avere un'analisi!" : 
+                "You haven't recorded any expenses yet. Add some to get an analysis!";
         }
         
         const top = Object.entries(categories).sort((a,b) => b[1] - a[1])[0];
         
-        // Traduci la categoria per il messaggio
         let categoryKey = 'categoryOther';
         switch(top[0]) {
             case 'Alimentari': categoryKey = 'categoryGrocery'; break;
@@ -1117,23 +1139,21 @@ class FinancialAssistant {
         }
         const translatedCategory = this.app.t(categoryKey);
         
-        return `📊 La categoria in cui spendi di più è "${translatedCategory}" con ${this.app.formatCurrency(top[1])}. Vuoi qualche consiglio su come ridurre queste spese?`;
+        return `📊 ${this.app.data.language === 'it' ? 'La categoria in cui spendi di più è' : 'The category where you spend the most is'} "${translatedCategory}" ${this.app.data.language === 'it' ? 'con' : 'with'} ${this.app.formatCurrency(top[1])}. ${this.app.data.language === 'it' ? 'Vuoi qualche consiglio su come ridurre queste spese?' : 'Do you want some advice on how to reduce these expenses?'}`;
     }
 
     handleExpenseQuery(q) {
-        if (q.includes('questo mese')) {
+        if (q.includes('questo mese') || q.includes('this month')) {
             const total = this.app.calculateTotalVariableExpenses();
-            return `📊 In questo periodo (dal ${this.app.data.periodStart} a oggi) hai speso ${this.app.formatCurrency(total)}.`;
+            return `📊 ${this.app.data.language === 'it' ? 'In questo periodo (dal' : 'In this period (from'} ${this.app.data.periodStart} ${this.app.data.language === 'it' ? 'a oggi) hai speso' : 'to today) you spent'} ${this.app.formatCurrency(total)}.`;
         }
         
-        // Cerca menzione di categoria
         const categories = ['alimentari', 'trasporti', 'svago', 'salute', 'abbigliamento', 'altro'];
         for (let cat of categories) {
             if (q.includes(cat)) {
                 let total = 0;
                 Object.values(this.app.data.variableExpenses).forEach(day => {
                     day.forEach(exp => {
-                        // Confronta con la categoria in italiano
                         let italianCat = '';
                         switch(cat) {
                             case 'alimentari': italianCat = 'Alimentari'; break;
@@ -1147,8 +1167,8 @@ class FinancialAssistant {
                     });
                 });
                 return total > 0 
-                    ? `In ${cat} hai speso ${this.app.formatCurrency(total)}.`
-                    : `Non hai spese in ${cat} in questo periodo.`;
+                    ? `${this.app.data.language === 'it' ? 'In' : 'In'} ${cat} ${this.app.data.language === 'it' ? 'hai speso' : 'you spent'} ${this.app.formatCurrency(total)}.`
+                    : `${this.app.data.language === 'it' ? 'Non hai spese in' : 'You have no expenses in'} ${cat} ${this.app.data.language === 'it' ? 'in questo periodo' : 'in this period'}.`;
             }
         }
         
@@ -1160,11 +1180,13 @@ class FinancialAssistant {
         const dailyBudget = this.app.calculateDailyBudget();
         
         if (remaining < 0) {
-            return "⚠️ Sei in rosso! Hai speso più del budget. Ti consiglio di rivedere le spese fisse o trovare fonti di risparmio immediate.";
+            return this.app.data.language === 'it' ? 
+                "⚠️ Sei in rosso! Hai speso più del budget. Ti consiglio di rivedere le spese fisse o trovare fonti di risparmio immediate." : 
+                "⚠️ You're in the red! You've spent more than your budget. I recommend reviewing fixed expenses or finding immediate savings.";
         } else if (remaining < dailyBudget * 7) {
-            return `⚠️ Attenzione: ti rimangono solo ${this.app.formatCurrency(remaining)} per i prossimi giorni. Forse è meglio ridurre le spese variabili.`;
+            return `⚠️ ${this.app.data.language === 'it' ? 'Attenzione: ti rimangono solo' : 'Warning: you only have'} ${this.app.formatCurrency(remaining)} ${this.app.data.language === 'it' ? 'per i prossimi giorni. Forse è meglio ridurre le spese variabili.' : 'for the next few days. Maybe it\'s better to reduce variable expenses.'}`;
         } else {
-            return `💪 Vai bene! Hai ancora ${this.app.formatCurrency(remaining)} di margine. Ricorda che puoi sempre chiedermi simulazioni o consigli personalizzati.`;
+            return `💪 ${this.app.data.language === 'it' ? 'Vai bene! Hai ancora' : 'You\'re doing well! You still have'} ${this.app.formatCurrency(remaining)} ${this.app.data.language === 'it' ? 'di margine. Ricorda che puoi sempre chiedermi simulazioni o consigli personalizzati.' : 'of margin. Remember you can always ask me for simulations or personalized advice.'}`;
         }
     }
 }
@@ -1182,31 +1204,25 @@ class VoiceAssistant {
     }
 
     init() {
-        // Verifica supporto browser
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.warn('Riconoscimento vocale non supportato');
             const voiceBtn = document.getElementById('voiceBtn');
             if (voiceBtn) {
                 voiceBtn.disabled = true;
-                voiceBtn.innerHTML = '🎤 Non supportato';
+                voiceBtn.innerHTML = '🎤 ' + (this.app.data.language === 'it' ? 'Non supportato' : 'Not supported');
             }
             return;
         }
 
-        // Inizializza riconoscimento vocale
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         this.recognition = new SpeechRecognition();
         
-        // Configurazione 
         this.recognition.continuous = false;
         this.recognition.interimResults = true;
-        this.recognition.lang = 'it-IT'; // Mantieni italiano per il riconoscimento
+        this.recognition.lang = 'it-IT';
         this.recognition.maxAlternatives = 1;
 
-        // Setup eventi
         this.setupEventListeners();
-        
-        // Aggiungi suggerimenti vocali
         this.addVoiceSuggestions();
     }
 
@@ -1300,7 +1316,7 @@ class VoiceAssistant {
         switch(state) {
             case 'listening':
                 voiceBtn.classList.add('listening');
-                voiceBtn.innerHTML = '⏹️ <span>' + (this.app.data.language === 'it' ? 'Ferma ascolto' : 'Stop listening') + '</span>';
+                voiceBtn.innerHTML = '⏹️ <span>' + this.app.t('stopListening') + '</span>';
                 break;
             case 'success':
                 voiceBtn.classList.add('success');
@@ -1332,28 +1348,24 @@ class VoiceAssistant {
         let amount = 0;
         let category = 'Altro';
         
-        // Estrai importo
         const amountMatch = transcript.match(/(\d+[.,]?\d*)/);
         if (amountMatch) {
             amount = parseFloat(amountMatch[1].replace(',', '.'));
         }
         
         if (amount === 0) {
-            this.updateUI('error', '❌ Importo non riconosciuto');
+            this.updateUI('error', '❌ ' + (this.app.data.language === 'it' ? 'Importo non riconosciuto' : 'Amount not recognized'));
             return;
         }
         
-        // Rimuovi l'importo e "euro" dal testo
         let remainingText = transcript
             .replace(amountMatch[1], '')
             .replace(/euro?|€/gi, '')
             .trim();
         
-        // Controlla se c'è una categoria
         const categories = ['alimentari', 'trasporti', 'svago', 'salute', 'abbigliamento', 'altro'];
         for (let cat of categories) {
             if (remainingText.includes(cat)) {
-                // Mappa al valore italiano per la categoria
                 switch(cat) {
                     case 'alimentari': category = 'Alimentari'; break;
                     case 'trasporti': category = 'Trasporti'; break;
@@ -1367,9 +1379,8 @@ class VoiceAssistant {
             }
         }
         
-        name = remainingText || 'Spesa vocale';
+        name = remainingText || (this.app.data.language === 'it' ? 'Spesa vocale' : 'Voice expense');
         
-        // Compila i campi
         document.getElementById('expenseName').value = name;
         document.getElementById('expenseAmount').value = amount;
         document.getElementById('expenseCategory').value = category;
@@ -1377,9 +1388,9 @@ class VoiceAssistant {
         this.highlightFields();
         
         setTimeout(() => {
-            if (confirm(`✅ Aggiungere "${name}" da €${amount} in categoria ${category}?`)) {
+            if (confirm(`✅ ${this.app.data.language === 'it' ? 'Aggiungere' : 'Add'} "${name}" ${this.app.data.language === 'it' ? 'da' : 'for'} €${amount} ${this.app.data.language === 'it' ? 'in categoria' : 'in category'} ${category}?`)) {
                 document.getElementById('addExpenseBtn').click();
-                this.updateUI('success', `✓ Aggiunto: ${name} ${amount}€`);
+                this.updateUI('success', `✓ ${this.app.data.language === 'it' ? 'Aggiunto' : 'Added'}: ${name} ${amount}€`);
             } else {
                 this.updateUI('idle', this.app.t('statusEditBeforeAdd'));
             }
@@ -1407,7 +1418,7 @@ class VoiceAssistant {
         const suggestionsDiv = document.createElement('div');
         suggestionsDiv.className = 'voice-suggestions';
         suggestionsDiv.innerHTML = `
-            <div class="voice-suggestions-title">💡 Prova a dire:</div>
+            <div class="voice-suggestions-title">💡 ${this.app.data.language === 'it' ? 'Prova a dire' : 'Try saying'}:</div>
             <div class="voice-suggestion-chips">
                 <span class="voice-chip" data-voice="caffè 1.50">☕ caffè 1.50</span>
                 <span class="voice-chip" data-voice="pranzo 12.50 alimentari">🍝 pranzo 12.50</span>
@@ -1421,7 +1432,7 @@ class VoiceAssistant {
         document.querySelectorAll('.voice-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const voiceText = chip.dataset.voice;
-                document.getElementById('voiceStatus').textContent = `🔊 Simulo: "${voiceText}"`;
+                document.getElementById('voiceStatus').textContent = `🔊 ${this.app.data.language === 'it' ? 'Simulo' : 'Simulating'}: "${voiceText}"`;
                 this.processVoiceCommand(voiceText);
             });
         });
@@ -1436,7 +1447,6 @@ const app = new BudgetWise();
 const assistant = new FinancialAssistant(app);
 const voiceAssistant = new VoiceAssistant(app);
 
-// Esponi le istanze globalmente
 window.app = app;
 window.assistant = assistant;
 window.voiceAssistant = voiceAssistant;
