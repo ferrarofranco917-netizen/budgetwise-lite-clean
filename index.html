@@ -109,6 +109,7 @@
                     <div class="input-group half">
                         <label id="endDateLabel">Data scadenza (fine)</label>
                         <input type="date" id="fixedEndDate">
+                        <small class="date-hint" id="dateHintFixed">gg/mm/aaaa</small>
                     </div>
                 </div>
                 
@@ -131,6 +132,7 @@
                 <div class="date-selector">
                     <label id="dateLabel">Seleziona data:</label>
                     <input type="date" id="expenseDate" class="date-input">
+                    <small class="date-hint" id="dateHintVariable">gg/mm/aaaa</small>
                 </div>
                 
                 <div id="variableExpensesList" class="expenses-list">
@@ -180,7 +182,7 @@
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="chat-message bot">
-                            <span class="message-sender" id="assistantNameLabel">🤖 Assistente:</span>
+                            <span class="message-sender" id="assistantNameLabel">🤖 <span id="assistantNameText">Assistente</span>:</span>
                             <span class="message-text" id="welcomeMessage">Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget!</span>
                         </div>
                     </div>
