@@ -9,52 +9,59 @@
     <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BudgetWise">
     <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
+    <meta name="format-detection" content="telephone=no">
     
-    <!-- Google Fonts - Inter per una tipografia moderna -->
+    <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Chart.js per i grafici -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
-    <!-- Meta tags per social sharing (Open Graph) -->
+    <!-- Meta tags social -->
     <meta property="og:title" content="BudgetWise 2.0">
     <meta property="og:description" content="Gestione finanziaria intelligente con assistente AI">
     <meta property="og:image" content="icon-512.png">
     <meta property="og:url" content="https://budgetwise.app">
     <meta property="og:type" content="website">
-    
-    <!-- Meta tags per Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="BudgetWise 2.0">
     <meta name="twitter:description" content="Gestisci le tue finanze con intelligenza artificiale">
     <meta name="twitter:image" content="icon-512.png">
     
-    <!-- Favicon per tutti i dispositivi -->
+    <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
     <link rel="mask-icon" href="icon-512.png" color="#6366f1">
     
-    <!-- iOS specific meta tags -->
-    <meta name="apple-mobile-web-app-title" content="BudgetWise">
-    <meta name="format-detection" content="telephone=no">
+    <!-- iOS Splash Screen (opzionale, creare le immagini nella cartella splash) -->
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 </head>
 <body>
     <div class="container">
-        <!-- HEADER CON TITOLO E TEMA -->
+        <!-- HEADER -->
         <div class="header">
             <h1>💰 BudgetWise <span class="version">2.0</span></h1>
             <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
         </div>
         <p class="subtitle">Stipendio a stipendio — gestione intelligente con AI</p>
 
-        <!-- TOAST PER NOTIFICHE -->
+        <!-- TOAST -->
         <div id="toast" class="toast">✅ Operazione completata</div>
 
-        <!-- RIEPILOGO PRINCIPALE -->
+        <!-- RIEPILOGO -->
         <div class="summary-card">
             <div class="summary-grid">
                 <div class="summary-item">
@@ -75,7 +82,7 @@
             </div>
         </div>
 
-        <!-- MESSAGGIO GUIDA -->
+        <!-- GUIDA -->
         <div class="guide-message" id="guideMessage">
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
@@ -95,13 +102,12 @@
             </div>
         </div>
 
-        <!-- SPESE FISSE CON DATA SCADENZA -->
+        <!-- SPESE FISSE -->
         <div class="section-card">
             <h2>📌 Spese fisse mensili</h2>
             <div class="section-content">
                 <div id="fixedExpensesList"></div>
                 
-                <!-- FORM CON GIORNO E DATA SCADENZA -->
                 <div class="input-group-row">
                     <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)">
                     <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01">
@@ -121,7 +127,7 @@
             </div>
         </div>
 
-        <!-- SPESE VARIABILI CON MICROFONO -->
+        <!-- SPESE VARIABILI -->
         <div class="section-card">
             <h2>🧾 Spese variabili</h2>
             <div class="section-content">
@@ -133,7 +139,6 @@
                     <p class="chart-note">Nessuna spesa in questo giorno</p>
                 </div>
                 
-                <!-- Input con microfono - Design migliorato -->
                 <div class="voice-input-container">
                     <div class="input-group-row">
                         <input type="text" id="expenseName" placeholder="Cosa hai comprato?">
@@ -148,7 +153,6 @@
                         </select>
                     </div>
                     
-                    <!-- Pulsante microfono e area stato -->
                     <div class="voice-row">
                         <button id="voiceBtn" class="voice-btn">
                             🎤 <span>Inserisci con voce</span>
@@ -171,7 +175,7 @@
             </div>
         </div>
 
-        <!-- ASSISTENTE INTELLIGENTE -->
+        <!-- ASSISTENTE -->
         <div class="section-card">
             <h2>🤖 Assistente Finanziario AI</h2>
             <div class="section-content">
@@ -250,32 +254,31 @@
         </div>
     </div>
 
-    <!-- Service Worker per PWA -->
+    <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js')
                     .then(registration => {
-                        console.log('✅ ServiceWorker registrato con successo:', registration.scope);
+                        console.log('✅ ServiceWorker registrato:', registration.scope);
                     })
                     .catch(error => {
-                        console.log('❌ ServiceWorker registrazione fallita:', error);
+                        console.log('❌ ServiceWorker errore:', error);
                     });
             });
         }
 
-        // Verifica che le icone siano accessibili (utile per debug)
+        // Verifica icone
         window.addEventListener('load', () => {
             fetch('icon-192.png')
-                .then(r => console.log('✅ Icona 192px caricata'))
-                .catch(e => console.warn('⚠️ Icona 192px non trovata'));
+                .then(() => console.log('✅ Icona 192px OK'))
+                .catch(() => console.warn('⚠️ Icona 192px non trovata'));
             fetch('icon-512.png')
-                .then(r => console.log('✅ Icona 512px caricata'))
-                .catch(e => console.warn('⚠️ Icona 512px non trovata'));
+                .then(() => console.log('✅ Icona 512px OK'))
+                .catch(() => console.warn('⚠️ Icona 512px non trovata'));
         });
     </script>
 
-    <!-- CARICA APP.JS -->
     <script src="app.js"></script>
 </body>
 </html>
