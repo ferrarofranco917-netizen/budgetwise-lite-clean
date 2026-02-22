@@ -737,3 +737,53 @@ input:focus, select:focus {
     margin-top: 2px;
     font-style: italic;
 }
+/* Dettaglio categoria */
+.category-detail {
+    margin-top: 20px;
+    padding: 20px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    animation: slideIn 0.3s ease;
+}
+
+.category-detail h3 {
+    margin-bottom: 15px;
+    color: var(--accent);
+    font-size: 1.3rem;
+}
+
+.category-detail p {
+    margin: 5px 0;
+    font-size: 1rem;
+}
+
+.detail-expenses-list {
+    margin: 15px 0;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.detail-expense-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-primary);
+    border-radius: var(--radius-md);
+    margin-bottom: 5px;
+    border-left: 3px solid var(--accent);
+}
+
+.detail-expense-item .expense-name {
+    font-weight: 500;
+}
+
+.detail-expense-item .expense-amount {
+    color: var(--danger);
+    font-weight: 600;
+}
+
+#closeDetailBtn {
+    width: 100%;
+    margin-top: 10px;
+}
