@@ -795,26 +795,28 @@ class BudgetWise {
     updateIncomeList() {
         const container = document.getElementById('incomeList');
         if (!container) return;
-        
+
         if (this.data.incomes.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
-            return;
+        } else {
+            container.innerHTML = this.data.incomes.map(inc => `
+                <div class="expense-item">
+                    <div class="expense-info">
+                        <span class="expense-name">${inc.desc}</span>
+                        <span class="expense-category">${inc.date}</span>
+                    </div>
+                    <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount)}</span>
+                    <div class="expense-actions">
+                        <button onclick="app.deleteIncome(${inc.id})">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
         }
-        
-        container.innerHTML = this.data.incomes.map(inc => `
-            <div class="expense-item">
-                <div class="expense-info">
-                    <span class="expense-name">${inc.desc}</span>
-                    <span class="expense-category">${inc.date}</span>
-                </div>
-                <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount)}</span>
-                <div class="expense-actions">
-                    <button onclick="app.deleteIncome(${inc.id})">🗑️</button>
-                </div>
-            </div>
-        `).join('');
-        
-        document.getElementById('totalIncomeDisplay').textContent = this.formatCurrency(this.calculateTotalIncome());
+
+        const totalDisplay = document.getElementById('totalIncomeDisplay');
+        if (totalDisplay) {
+            totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
+        }
     }
 
     updateFixedExpensesList() {
