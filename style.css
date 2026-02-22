@@ -505,7 +505,21 @@ input:focus, select:focus {
     margin-top: 12px;
     flex-wrap: wrap;
 }
+/* Stile per selettore lingua */
+.language-select {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+}
 
+.language-select:hover {
+    border-color: var(--accent);
+}
 /* Stili per la chat */
 .chat-container {
     border: 1px solid var(--border);
@@ -698,3 +712,4 @@ input:focus, select:focus {
         font-size: 1.5rem;
     }
 }
+
