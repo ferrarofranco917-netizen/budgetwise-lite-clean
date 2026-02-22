@@ -3,31 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
+    <title>💰 BudgetWise 2.0</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#4361ee">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="BudgetWise">
-    <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
-    
-    <!-- Google Fonts - Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="container">
         <!-- HEADER -->
         <div class="header">
-            <h1 id="appTitle">💰 BudgetWise <span class="version" id="appVersion">2.0</span></h1>
+            <h1>💰 BudgetWise <span class="version">2.0</span></h1>
             <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
         </div>
-        <p class="subtitle" id="appSubtitle">Stipendio a stipendio — gestione intelligente con AI</p>
+        <p class="subtitle">Stipendio a stipendio — gestione intelligente</p>
 
         <!-- TOAST -->
         <div id="toast" class="toast">✅ Operazione completata</div>
@@ -36,15 +27,15 @@
         <div class="summary-card">
             <div class="summary-grid">
                 <div class="summary-item">
-                    <span class="summary-label" id="labelDailyBudget">Budget giornaliero</span>
+                    <span class="summary-label">Budget giornaliero</span>
                     <span class="summary-value" id="dailyBudget">0,00 €</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label" id="labelRemaining">Rimanenza</span>
+                    <span class="summary-label">Rimanenza</span>
                     <span class="summary-value" id="remaining">0,00 €</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label" id="labelDaysLeft">Giorni rimasti</span>
+                    <span class="summary-label">Giorni rimasti</span>
                     <span class="summary-value" id="daysLeft">28</span>
                 </div>
             </div>
@@ -53,57 +44,69 @@
             </div>
         </div>
 
-        <!-- GUIDA -->
+        <!-- MESSAGGIO GUIDA -->
         <div class="guide-message" id="guideMessage">
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-        <!-- ENTRATE -->
+        <!-- ENTRATE MULTIPLE CON MICROFONI -->
         <div class="section-card">
             <div class="section-header">
-                <h2 id="sectionIncome">🏦 Entrate del periodo</h2>
-                <span class="badge" id="badgeNew">nuovo</span>
+                <h2>🏦 Entrate del periodo</h2>
+                <span class="badge">multiplo</span>
             </div>
             <div class="section-content">
-                <div class="input-group">
-                    <label for="incomeInput" id="labelTotalIncome">Totale entrate (€)</label>
-                    <input type="number" id="incomeInput" placeholder="0,00" step="0.01" min="0">
+                <div id="incomeList" class="expenses-list"></div>
+                
+                <div class="input-group-row">
+                    <div class="input-with-mic" style="flex: 2;">
+                        <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
+                        <button class="mic-icon-btn" id="micIncomeDescBtn" title="Inserisci descrizione">🎤</button>
+                    </div>
+                    <div class="input-with-mic" style="flex: 1;">
+                        <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
+                        <button class="mic-icon-btn" id="micIncomeAmountBtn" title="Inserisci importo">🎤</button>
+                    </div>
                 </div>
-                <button class="btn-primary" id="saveIncomeBtn">Salva entrate</button>
+                
+                <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
+                <p class="help-text">📊 Totale entrate: <span id="totalIncomeDisplay">0,00 €</span></p>
             </div>
         </div>
 
-        <!-- SPESE FISSE -->
+        <!-- SPESE FISSE CON MICROFONO UNICO -->
         <div class="section-card">
-            <h2 id="sectionFixedExpenses">📌 Spese fisse mensili</h2>
+            <h2>📌 Spese fisse mensili</h2>
             <div class="section-content">
                 <div id="fixedExpensesList"></div>
                 
                 <div class="input-group-row">
-                    <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)">
-                    <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01">
+                    <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)" style="flex: 2;">
+                    <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01" style="flex: 1;">
                 </div>
                 <div class="input-group-row">
-                    <div class="input-group half">
-                        <label for="fixedDay" id="labelDayOfMonth">Giorno del mese</label>
-                        <input type="number" id="fixedDay" placeholder="es. 27" min="1" max="31">
-                    </div>
-                    <div class="input-group half">
-                        <label for="fixedEndDate" id="labelEndDate">Data scadenza (fine)</label>
-                        <input type="date" id="fixedEndDate">
-                    </div>
+                    <input type="number" id="fixedDay" placeholder="Giorno (es. 27)" min="1" max="31" style="flex: 1;">
+                    <input type="date" id="fixedEndDate" style="flex: 2;">
                 </div>
-                <button class="btn-secondary" id="addFixedBtn">➕ Aggiungi spesa fissa ricorrente</button>
-                <p class="help-text" id="fixedHelpText">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
+                
+                <div class="voice-fixed-container">
+                    <button id="micFixedBtn" class="voice-fixed-btn">
+                        🎤 <span>Inserisci spesa fissa con voce</span>
+                    </button>
+                    <div id="fixedVoiceStatus" class="voice-status">🎤 Tocca e di' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")</div>
+                </div>
+                
+                <button class="btn-secondary" id="addFixedBtn">➕ Aggiungi spesa fissa</button>
+                <p class="help-text">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
             </div>
         </div>
 
-        <!-- SPESE VARIABILI -->
+        <!-- SPESE VARIABILI CON MICROFONO -->
         <div class="section-card">
-            <h2 id="sectionVariableExpenses">🧾 Spese variabili</h2>
+            <h2>🧾 Spese variabili</h2>
             <div class="section-content">
                 <div class="date-selector">
-                    <label for="expenseDate" id="labelSelectDate">Seleziona data:</label>
+                    <label>Seleziona data:</label>
                     <input type="date" id="expenseDate" class="date-input">
                 </div>
                 <div id="variableExpensesList">
@@ -126,7 +129,7 @@
                     
                     <div class="voice-row">
                         <button id="voiceBtn" class="voice-btn">
-                            🎤 <span id="voiceBtnText">Inserisci con voce</span>
+                            🎤 <span>Inserisci con voce</span>
                         </button>
                         <div id="voiceStatus" class="voice-status">🎤 Tocca per parlare</div>
                     </div>
@@ -139,74 +142,66 @@
 
         <!-- GRAFICO -->
         <div class="section-card">
-            <h2 id="sectionChart">📊 Distribuzione spese</h2>
+            <h2>📊 Distribuzione spese</h2>
             <div class="section-content">
                 <canvas id="expenseChart" width="400" height="300"></canvas>
                 <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
             </div>
         </div>
 
-        <!-- ASSISTENTE -->
+        <!-- ASSISTENTE CON MICROFONO -->
         <div class="section-card">
-            <h2 id="sectionAssistant">🤖 Assistente Finanziario AI</h2>
+            <h2>🤖 Assistente Finanziario</h2>
             <div class="section-content">
-                <div class="chat-container" id="chatContainer">
+                <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="chat-message bot">
                             <span class="message-sender">🤖 Assistente:</span>
-                            <span class="message-text" id="assistantWelcomeMessage">Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget o chiedimi di simulare scenari futuri!</span>
+                            <span class="message-text">Ciao! Chiedimi qualsiasi cosa sul tuo budget!</span>
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chatInput" placeholder="Es. Quanto posso risparmiare questo mese?" class="chat-input">
+                        <input type="text" id="chatInput" placeholder="Es. Quanto posso risparmiare?" class="chat-input">
+                        <button class="chat-voice-btn" id="chatVoiceBtn" title="Parla">🎤</button>
                         <button id="sendChatBtn" class="chat-send-btn">Invia</button>
                     </div>
                 </div>
                 <div class="chat-suggestions">
-                    <button class="suggestion-chip" id="suggestion1" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
-                    <button class="suggestion-chip" id="suggestion2" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
-                    <button class="suggestion-chip" id="suggestion3" data-question="Quando raggiungerò il mio obiettivo?">🎯 Obiettivo</button>
-                    <button class="suggestion-chip" id="suggestion4" data-question="Qual è la categoria dove spendo di più?">📊 Top categoria</button>
+                    <button class="suggestion-chip" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
+                    <button class="suggestion-chip" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
                 </div>
             </div>
         </div>
 
         <!-- RISPARMIO -->
         <div class="section-card">
-            <h2 id="sectionSavings">🎯 Obiettivo risparmio</h2>
+            <h2>🎯 Obiettivo risparmio</h2>
             <div class="section-content">
                 <div class="input-group">
-                    <label for="savePercent" id="labelSavingsPercent">Percentuale su entrate (%)</label>
+                    <label>Percentuale su entrate (%)</label>
                     <input type="number" id="savePercent" placeholder="10" min="0" max="100" step="1">
                 </div>
                 <div class="input-group">
-                    <label for="saveGoal" id="labelSavingsGoal">Obiettivo (€)</label>
+                    <label>Obiettivo (€)</label>
                     <input type="number" id="saveGoal" placeholder="1000" step="100">
                 </div>
                 <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
                 <div class="progress-container" id="progressContainer" style="display: none;">
-                    <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
+                    <div class="progress-bar" id="progressBar">0%</div>
                 </div>
             </div>
         </div>
 
         <!-- IMPOSTAZIONI -->
         <div class="section-card">
-            <h2 id="sectionSettings">⚙️ Impostazioni</h2>
+            <h2>⚙️ Impostazioni</h2>
             <div class="section-content">
                 <div class="setting-item">
-                    <label for="thresholdInput" id="labelThreshold">🔔 Soglia avviso (€)</label>
+                    <label>🔔 Soglia avviso (€)</label>
                     <input type="number" id="thresholdInput" value="50" step="5">
                 </div>
                 <div class="setting-item">
-                    <label for="languageSelect" id="labelLanguage">🌍 Lingua</label>
-                    <select id="languageSelect">
-                        <option value="it">Italiano</option>
-                        <option value="en">English</option>
-                    </select>
-                </div>
-                <div class="setting-item">
-                    <label id="labelBackup">📅 Backup dati</label>
+                    <label>📅 Backup dati</label>
                     <div class="button-group">
                         <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
                         <input type="file" id="restoreFile" accept=".json" style="display: none;">
@@ -219,26 +214,10 @@
 
         <!-- FOOTER -->
         <div class="footer">
-            <p id="footerText">BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
-            <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Google Calendar</button>
-            <p style="margin-top: 1rem; font-size: 0.8rem;" id="footerFeatures">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
+            <p>BudgetWise 2.0 — Gestione intelligente</p>
+            <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Calendar</button>
         </div>
     </div>
-
-    <!-- Service Worker -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('✅ ServiceWorker registrato:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('❌ ServiceWorker errore:', error);
-                    });
-            });
-        }
-    </script>
 
     <script src="app.js"></script>
 </body>
