@@ -2,6 +2,224 @@
 // BUDGETWISE 2.0 - APP COMPLETA CON ASSISTENTE E VOCE
 // ============================================
 
+// ---- SISTEMA DI TRADUZIONE ----
+const translations = {
+    it: {
+        // Generali
+        appTitle: '💰 BudgetWise',
+        appSubtitle: 'Stipendio a stipendio — gestione intelligente con AI',
+        version: '2.0',
+        periodInfo: '📅 Periodo: {start} → {end}',
+
+        // Riepilogo
+        dailyBudget: 'Budget giornaliero',
+        remaining: 'Rimanenza',
+        daysLeft: 'Giorni rimasti',
+
+        // Sezioni
+        incomeSection: '🏦 Entrate del periodo',
+        fixedExpensesSection: '📌 Spese fisse mensili',
+        variableExpensesSection: '🧾 Spese variabili',
+        chartSection: '📊 Distribuzione spese',
+        assistantSection: '🤖 Assistente Finanziario AI',
+        savingsSection: '🎯 Obiettivo risparmio',
+        settingsSection: '⚙️ Impostazioni',
+
+        // Guide e Messaggi
+        guideMessage: '👋 Inizia inserendo le tue entrate nella sezione qui sotto!',
+        noFixedExpenses: 'Nessuna spesa fissa',
+        noVariableExpenses: 'Nessuna spesa in questo giorno',
+        noChartData: 'Aggiungi spese per vedere il grafico',
+        fixedExpenseDetail: '📅 Giorno {day} di ogni mese · Scadenza: {endDate} {status}',
+        statusActive: '🟢 Attivo',
+        statusExpired: '🔴 Scaduto',
+
+        // Etichette Form
+        labelTotalIncome: 'Totale entrate (€)',
+        labelName: 'Nome (es. Mutuo)',
+        labelAmount: 'Importo €',
+        labelDayOfMonth: 'Giorno del mese',
+        labelEndDate: 'Data scadenza (fine)',
+        labelSelectDate: 'Seleziona data:',
+        labelWhatBought: 'Cosa hai comprato?',
+        labelCategory: 'Categoria',
+        labelThreshold: '🔔 Soglia avviso (€)',
+        labelLanguage: '🌍 Lingua',
+        labelBackup: '📅 Backup dati',
+        labelSavingsPercent: 'Percentuale su entrate (%)',
+        labelSavingsGoal: 'Obiettivo (€)',
+
+        // Placeholder
+        placeholderName: 'es. Mutuo',
+        placeholderAmount: '0,00',
+        placeholderDay: 'es. 27',
+        placeholderWhatBought: 'Caffè...',
+        placeholderAskAssistant: 'Es. Quanto posso risparmiare questo mese?',
+
+        // Bottoni
+        btnSaveIncome: 'Salva entrate',
+        btnAddFixedExpense: '➕ Aggiungi spesa fissa ricorrente',
+        btnAddExpense: '➕ Aggiungi spesa',
+        btnResetDay: '🗑️ Cancella spese del giorno',
+        btnApplySavings: 'Applica risparmio',
+        btnDownloadBackup: '💾 Scarica backup',
+        btnRestoreBackup: '📂 Ripristina',
+        btnResetAll: '⚠️ Reset completo',
+        btnExportCalendar: '📅 Esporta in Google Calendar',
+        btnSend: 'Invia',
+        btnVoice: '🎤 Inserisci con voce',
+
+        // Categorie
+        categoryGrocery: '🍎 Alimentari',
+        categoryTransport: '🚗 Trasporti',
+        categoryEntertainment: '🎮 Svago',
+        categoryHealth: '💊 Salute',
+        categoryClothing: '👕 Abbigliamento',
+        categoryOther: '📦 Altro',
+
+        // Assistente - Messaggi
+        assistantWelcome: 'Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget o chiedimi di simulare scenari futuri!',
+        suggestionSave100: '💶 Risparmia 100€',
+        suggestionSimulate: '🔮 Simula aumento',
+        suggestionGoal: '🎯 Obiettivo',
+        suggestionTopCategory: '📊 Top categoria',
+
+        // Stati e messaggi vari
+        statusListening: '🎤 Parlare...',
+        statusTapToSpeak: '🎤 Tocca per parlare',
+        statusHeard: '🔊 Sento: {text}...',
+        statusRecognized: '✓ Riconosciuto: "{text}"',
+        statusError: '❌ Errore',
+        statusMicrophoneDenied: '❌ Permesso microfono negato',
+        statusNoSpeech: '❌ Nessun parlato rilevato',
+        statusNetworkError: '❌ Errore di rete',
+        statusEditBeforeAdd: '✏️ Puoi modificare prima di aggiungere',
+
+        // Toast
+        toastIncomeSaved: '✅ Entrate salvate!',
+        toastFixedAdded: '✅ Spesa fissa ricorrente aggiunta!',
+        toastExpenseAdded: '✅ Spesa aggiunta!',
+        toastDayReset: '🗑️ Spese del giorno cancellate',
+        toastSavingsApplied: '💰 Risparmio applicato!',
+        toastBackupDownloaded: '💾 Backup scaricato!',
+        toastDataRestored: '📂 Dati ripristinati!',
+        toastResetCompleted: '🔄 Reset completato',
+        toastExpenseDeleted: '🗑️ Spesa eliminata',
+        toastCalendarExported: '📅 Calendario esportato!',
+        toastThresholdExceeded: '⚠️ Attenzione! Hai superato la soglia di {amount}',
+        toastFillAllFields: '⚠️ Compila tutti i campi',
+        toastInvalidDay: '⚠️ Il giorno deve essere tra 1 e 31',
+        toastInvalidFile: '❌ File non valido',
+    },
+    en: {
+        // General
+        appTitle: '💰 BudgetWise',
+        appSubtitle: 'Paycheck to paycheck — smart management with AI',
+        version: '2.0',
+        periodInfo: '📅 Period: {start} → {end}',
+
+        // Summary
+        dailyBudget: 'Daily budget',
+        remaining: 'Remaining',
+        daysLeft: 'Days left',
+
+        // Sections
+        incomeSection: '🏦 Period Income',
+        fixedExpensesSection: '📌 Monthly Fixed Expenses',
+        variableExpensesSection: '🧾 Variable Expenses',
+        chartSection: '📊 Expense Distribution',
+        assistantSection: '🤖 AI Financial Assistant',
+        savingsSection: '🎯 Savings Goal',
+        settingsSection: '⚙️ Settings',
+
+        // Guides & Messages
+        guideMessage: '👋 Start by entering your income in the section below!',
+        noFixedExpenses: 'No fixed expenses',
+        noVariableExpenses: 'No expenses on this day',
+        noChartData: 'Add expenses to see the chart',
+        fixedExpenseDetail: '📅 Day {day} of each month · Expires: {endDate} {status}',
+        statusActive: '🟢 Active',
+        statusExpired: '🔴 Expired',
+
+        // Form Labels
+        labelTotalIncome: 'Total income (€)',
+        labelName: 'Name (e.g., Mortgage)',
+        labelAmount: 'Amount €',
+        labelDayOfMonth: 'Day of month',
+        labelEndDate: 'End date',
+        labelSelectDate: 'Select date:',
+        labelWhatBought: 'What did you buy?',
+        labelCategory: 'Category',
+        labelThreshold: '🔔 Alert threshold (€)',
+        labelLanguage: '🌍 Language',
+        labelBackup: '📅 Data backup',
+        labelSavingsPercent: 'Percentage of income (%)',
+        labelSavingsGoal: 'Goal (€)',
+
+        // Placeholders
+        placeholderName: 'e.g., Mortgage',
+        placeholderAmount: '0.00',
+        placeholderDay: 'e.g., 27',
+        placeholderWhatBought: 'Coffee...',
+        placeholderAskAssistant: 'E.g., How much can I save this month?',
+
+        // Buttons
+        btnSaveIncome: 'Save income',
+        btnAddFixedExpense: '➕ Add recurring fixed expense',
+        btnAddExpense: '➕ Add expense',
+        btnResetDay: '🗑️ Clear day expenses',
+        btnApplySavings: 'Apply savings',
+        btnDownloadBackup: '💾 Download backup',
+        btnRestoreBackup: '📂 Restore',
+        btnResetAll: '⚠️ Full reset',
+        btnExportCalendar: '📅 Export to Google Calendar',
+        btnSend: 'Send',
+        btnVoice: '🎤 Voice input',
+
+        // Categories
+        categoryGrocery: '🍎 Groceries',
+        categoryTransport: '🚗 Transport',
+        categoryEntertainment: '🎮 Entertainment',
+        categoryHealth: '💊 Health',
+        categoryClothing: '👕 Clothing',
+        categoryOther: '📦 Other',
+
+        // Assistant - Messages
+        assistantWelcome: 'Hi! I am your financial assistant. Ask me anything about your budget or ask me to simulate future scenarios!',
+        suggestionSave100: '💶 Save 100€',
+        suggestionSimulate: '🔮 Simulate increase',
+        suggestionGoal: '🎯 Goal',
+        suggestionTopCategory: '📊 Top category',
+
+        // Status and various messages
+        statusListening: '🎤 Listening...',
+        statusTapToSpeak: '🎤 Tap to speak',
+        statusHeard: '🔊 Hearing: {text}...',
+        statusRecognized: '✓ Recognized: "{text}"',
+        statusError: '❌ Error',
+        statusMicrophoneDenied: '❌ Microphone permission denied',
+        statusNoSpeech: '❌ No speech detected',
+        statusNetworkError: '❌ Network error',
+        statusEditBeforeAdd: '✏️ You can edit before adding',
+
+        // Toast
+        toastIncomeSaved: '✅ Income saved!',
+        toastFixedAdded: '✅ Recurring fixed expense added!',
+        toastExpenseAdded: '✅ Expense added!',
+        toastDayReset: '🗑️ Day expenses cleared',
+        toastSavingsApplied: '💰 Savings applied!',
+        toastBackupDownloaded: '💾 Backup downloaded!',
+        toastDataRestored: '📂 Data restored!',
+        toastResetCompleted: '🔄 Reset completed',
+        toastExpenseDeleted: '🗑️ Expense deleted',
+        toastCalendarExported: '📅 Calendar exported!',
+        toastThresholdExceeded: '⚠️ Warning! You have exceeded the threshold of {amount}',
+        toastFillAllFields: '⚠️ Please fill in all fields',
+        toastInvalidDay: '⚠️ Day must be between 1 and 31',
+        toastInvalidFile: '❌ Invalid file',
+    }
+};
+
 class BudgetWise {
     constructor() {
         this.data = {
@@ -11,13 +229,26 @@ class BudgetWise {
             savingsPercent: 0,
             savingsGoal: 0,
             threshold: 50,
-            language: 'it',
+            language: 'it', // Lingua predefinita
             periodStart: this.getDefaultPeriodStart(),
             periodEnd: this.getDefaultPeriodEnd()
         };
         
         this.chart = null;
         this.init();
+    }
+
+    // Funzione di traduzione
+    t(key, params = {}) {
+        const lang = this.data.language || 'it';
+        const langData = translations[lang] || translations.it;
+        let text = langData[key] || key; // Fallback alla chiave se non trovata
+
+        // Sostituisci i parametri (es. {start})
+        for (const [param, value] of Object.entries(params)) {
+            text = text.replace(`{${param}}`, value);
+        }
+        return text;
     }
 
     init() {
@@ -79,7 +310,8 @@ class BudgetWise {
         document.getElementById('languageSelect').addEventListener('change', (e) => {
             this.data.language = e.target.value;
             this.saveData();
-            this.updateUI();
+            this.updateUI(); // <-- Questo ora tradurrà tutta l'interfaccia
+            this.updateChart(); // Per tradurre eventuali testi nel grafico (se ce ne fossero)
         });
 
         // Salvataggio automatico
@@ -96,7 +328,7 @@ class BudgetWise {
         this.data.income = income;
         this.saveData();
         this.updateUI();
-        this.showToast('✅ Entrate salvate!');
+        this.showToast(this.t('toastIncomeSaved'));
     }
 
     addFixedExpense() {
@@ -106,12 +338,12 @@ class BudgetWise {
         const endDate = document.getElementById('fixedEndDate').value;
 
         if (!name || !amount || !day || !endDate) {
-            this.showToast('⚠️ Compila tutti i campi', 'error');
+            this.showToast(this.t('toastFillAllFields'), 'error');
             return;
         }
 
         if (day < 1 || day > 31) {
-            this.showToast('⚠️ Il giorno deve essere tra 1 e 31', 'error');
+            this.showToast(this.t('toastInvalidDay'), 'error');
             return;
         }
 
@@ -125,7 +357,7 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        this.showToast('✅ Spesa fissa ricorrente aggiunta!');
+        this.showToast(this.t('toastFixedAdded'));
         
         // Reset campi
         document.getElementById('fixedName').value = '';
@@ -141,7 +373,7 @@ class BudgetWise {
         const category = document.getElementById('expenseCategory').value;
 
         if (!name || !amount) {
-            this.showToast('⚠️ Inserisci nome e importo', 'error');
+            this.showToast(this.t('toastFillAllFields'), 'error');
             return;
         }
 
@@ -159,7 +391,7 @@ class BudgetWise {
         this.saveData();
         this.updateUI();
         this.updateChart();
-        this.showToast('✅ Spesa aggiunta!');
+        this.showToast(this.t('toastExpenseAdded'));
         
         // Reset campi
         document.getElementById('expenseName').value = '';
@@ -176,7 +408,7 @@ class BudgetWise {
             this.saveData();
             this.updateUI();
             this.updateChart();
-            this.showToast('🗑️ Spese del giorno cancellate');
+            this.showToast(this.t('toastDayReset'));
         }
     }
 
@@ -188,7 +420,7 @@ class BudgetWise {
         this.data.savingsGoal = goal;
         this.saveData();
         this.updateUI();
-        this.showToast('💰 Risparmio applicato!');
+        this.showToast(this.t('toastSavingsApplied'));
     }
 
     // ========== CALCOLI ==========
@@ -265,14 +497,85 @@ class BudgetWise {
     // ========== UI UPDATES ==========
 
     updateUI() {
+        // Aggiorna titoli e testi statici con le traduzioni
+        document.querySelector('h1').innerHTML = `${this.t('appTitle')} <span class="version">${this.t('version')}</span>`;
+        document.querySelector('.subtitle').textContent = this.t('appSubtitle');
+        
         // Aggiorna valori principali
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
         
         // Aggiorna info periodo
-        document.getElementById('periodInfo').textContent = 
-            `📅 Periodo: ${this.data.periodStart} → ${this.data.periodEnd}`;
+        document.getElementById('periodInfo').textContent = this.t('periodInfo', { 
+            start: this.data.periodStart, 
+            end: this.data.periodEnd 
+        });
+
+        // Aggiorna intestazioni delle sezioni
+        document.querySelector('.section-card:nth-of-type(1) h2').textContent = this.t('incomeSection');
+        document.querySelector('.section-card:nth-of-type(2) h2').textContent = this.t('fixedExpensesSection');
+        document.querySelector('.section-card:nth-of-type(3) h2').textContent = this.t('variableExpensesSection');
+        document.querySelector('.section-card:nth-of-type(4) h2').textContent = this.t('chartSection');
+        document.querySelector('.section-card:nth-of-type(5) h2').textContent = this.t('assistantSection');
+        document.querySelector('.section-card:nth-of-type(6) h2').textContent = this.t('savingsSection');
+        document.querySelector('.section-card:nth-of-type(7) h2').textContent = this.t('settingsSection');
+
+        // Aggiorna labels e placeholder
+        document.querySelector('label[for="incomeInput"]').textContent = this.t('labelTotalIncome');
+        document.getElementById('incomeInput').placeholder = this.t('placeholderAmount');
+        
+        document.getElementById('fixedName').placeholder = this.t('placeholderName');
+        document.getElementById('fixedAmount').placeholder = this.t('placeholderAmount');
+        document.querySelector('label[for="fixedDay"]').textContent = this.t('labelDayOfMonth');
+        document.getElementById('fixedDay').placeholder = this.t('placeholderDay');
+        document.querySelector('label[for="fixedEndDate"]').textContent = this.t('labelEndDate');
+        
+        document.querySelector('label[for="expenseDate"]').textContent = this.t('labelSelectDate');
+        document.getElementById('expenseName').placeholder = this.t('placeholderWhatBought');
+        document.getElementById('expenseAmount').placeholder = this.t('placeholderAmount');
+        
+        // Aggiorna opzioni del select delle categorie
+        const categorySelect = document.getElementById('expenseCategory');
+        categorySelect.options[0].text = this.t('categoryGrocery');
+        categorySelect.options[1].text = this.t('categoryTransport');
+        categorySelect.options[2].text = this.t('categoryEntertainment');
+        categorySelect.options[3].text = this.t('categoryHealth');
+        categorySelect.options[4].text = this.t('categoryClothing');
+        categorySelect.options[5].text = this.t('categoryOther');
+        
+        document.querySelector('label[for="thresholdInput"]').textContent = this.t('labelThreshold');
+        document.querySelector('label[for="languageSelect"]').textContent = this.t('labelLanguage');
+        
+        document.querySelector('label[for="savePercent"]').textContent = this.t('labelSavingsPercent');
+        document.querySelector('label[for="saveGoal"]').textContent = this.t('labelSavingsGoal');
+        
+        // Aggiorna testi dei bottoni
+        document.getElementById('saveIncomeBtn').textContent = this.t('btnSaveIncome');
+        document.getElementById('addFixedBtn').textContent = this.t('btnAddFixedExpense');
+        document.getElementById('addExpenseBtn').textContent = this.t('btnAddExpense');
+        document.getElementById('resetDayBtn').textContent = this.t('btnResetDay');
+        document.getElementById('applySaveBtn').textContent = this.t('btnApplySavings');
+        document.getElementById('backupBtn').textContent = this.t('btnDownloadBackup');
+        document.getElementById('restoreBtn').textContent = this.t('btnRestoreBackup');
+        document.getElementById('resetAllBtn').textContent = this.t('btnResetAll');
+        document.getElementById('exportCalendarBtn').textContent = this.t('btnExportCalendar');
+        document.getElementById('sendChatBtn').textContent = this.t('btnSend');
+        
+        const voiceBtnSpan = document.querySelector('#voiceBtn span');
+        if (voiceBtnSpan) voiceBtnSpan.textContent = this.t('btnVoice');
+        
+        // Aggiorna placeholder della chat
+        document.getElementById('chatInput').placeholder = this.t('placeholderAskAssistant');
+        
+        // Aggiorna chip dei suggerimenti
+        const suggestionChips = document.querySelectorAll('.suggestion-chip');
+        if (suggestionChips.length >= 4) {
+            suggestionChips[0].textContent = this.t('suggestionSave100');
+            suggestionChips[1].textContent = this.t('suggestionSimulate');
+            suggestionChips[2].textContent = this.t('suggestionGoal');
+            suggestionChips[3].textContent = this.t('suggestionTopCategory');
+        }
 
         // Aggiorna lista spese fisse
         this.updateFixedExpensesList();
@@ -297,17 +600,27 @@ class BudgetWise {
         }
 
         // Aggiorna messaggio guida
-        if (this.data.income === 0) {
-            document.getElementById('guideMessage').style.display = 'block';
-        } else {
-            document.getElementById('guideMessage').style.display = 'none';
+        this.showGuideMessage();
+        
+        // Aggiorna il messaggio di benvenuto dell'assistente se è il primo messaggio
+        this.updateAssistantWelcome();
+    }
+    
+    updateAssistantWelcome() {
+        const chatMessages = document.getElementById('chatMessages');
+        // Se c'è solo il messaggio di benvenuto (e nessun altro messaggio)
+        if (chatMessages.children.length === 1) {
+            const welcomeMessage = chatMessages.querySelector('.chat-message.bot .message-text');
+            if (welcomeMessage) {
+                welcomeMessage.textContent = this.t('assistantWelcome');
+            }
         }
     }
 
     updateFixedExpensesList() {
         const container = document.getElementById('fixedExpensesList');
         if (this.data.fixedExpenses.length === 0) {
-            container.innerHTML = '<p class="chart-note">Nessuna spesa fissa</p>';
+            container.innerHTML = `<p class="chart-note">${this.t('noFixedExpenses')}</p>`;
             return;
         }
 
@@ -315,14 +628,14 @@ class BudgetWise {
             const today = new Date();
             const endDate = new Date(exp.endDate);
             const isActive = endDate >= today;
-            const status = isActive ? '🟢 Attivo' : '🔴 Scaduto';
+            const status = isActive ? this.t('statusActive') : this.t('statusExpired');
             
             return `
                 <div class="expense-item">
                     <div class="expense-info">
                         <span class="expense-name">${exp.name}</span>
                         <span class="fixed-expense-detail">
-                            📅 Giorno ${exp.day} di ogni mese · Scadenza: ${exp.endDate} ${status}
+                            ${this.t('fixedExpenseDetail', { day: exp.day, endDate: exp.endDate, status: status })}
                         </span>
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
@@ -340,22 +653,35 @@ class BudgetWise {
         const expenses = this.data.variableExpenses[date] || [];
 
         if (expenses.length === 0) {
-            container.innerHTML = '<p class="chart-note">Nessuna spesa in questo giorno</p>';
+            container.innerHTML = `<p class="chart-note">${this.t('noVariableExpenses')}</p>`;
             return;
         }
 
-        container.innerHTML = expenses.map(exp => `
+        container.innerHTML = expenses.map(exp => {
+            // Traduci la categoria per visualizzarla
+            let categoryKey = 'categoryOther';
+            switch(exp.category) {
+                case 'Alimentari': categoryKey = 'categoryGrocery'; break;
+                case 'Trasporti': categoryKey = 'categoryTransport'; break;
+                case 'Svago': categoryKey = 'categoryEntertainment'; break;
+                case 'Salute': categoryKey = 'categoryHealth'; break;
+                case 'Abbigliamento': categoryKey = 'categoryClothing'; break;
+                default: categoryKey = 'categoryOther';
+            }
+            const translatedCategory = this.t(categoryKey);
+            
+            return `
             <div class="expense-item">
                 <div class="expense-info">
                     <span class="expense-name">${exp.name}</span>
-                    <span class="expense-category">${exp.category}</span>
+                    <span class="expense-category">${translatedCategory}</span>
                 </div>
                 <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
                 <div class="expense-actions">
                     <button onclick="app.deleteVariableExpense('${date}', ${exp.id})">🗑️</button>
                 </div>
             </div>
-        `).join('');
+        `}).join('');
     }
 
     updateChart() {
@@ -363,12 +689,14 @@ class BudgetWise {
         
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(expense => {
+                // Raggruppa per categoria originale, ma per il grafico useremo le chiavi tradotte
                 categories[expense.category] = (categories[expense.category] || 0) + expense.amount;
             });
         });
 
         if (Object.keys(categories).length === 0) {
             document.getElementById('chartNote').style.display = 'block';
+            document.getElementById('chartNote').textContent = this.t('noChartData');
             if (this.chart) this.chart.destroy();
             return;
         }
@@ -377,11 +705,23 @@ class BudgetWise {
 
         if (this.chart) this.chart.destroy();
 
+        // Prepara le etichette tradotte per il grafico
+        const translatedLabels = Object.keys(categories).map(cat => {
+            switch(cat) {
+                case 'Alimentari': return this.t('categoryGrocery');
+                case 'Trasporti': return this.t('categoryTransport');
+                case 'Svago': return this.t('categoryEntertainment');
+                case 'Salute': return this.t('categoryHealth');
+                case 'Abbigliamento': return this.t('categoryClothing');
+                default: return this.t('categoryOther');
+            }
+        });
+
         const ctx = document.getElementById('expenseChart').getContext('2d');
         this.chart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: Object.keys(categories),
+                labels: translatedLabels,
                 datasets: [{
                     data: Object.values(categories),
                     backgroundColor: [
@@ -418,8 +758,12 @@ class BudgetWise {
     }
 
     showGuideMessage() {
+        const guideMsg = document.getElementById('guideMessage');
         if (this.data.income === 0) {
-            document.getElementById('guideMessage').style.display = 'block';
+            guideMsg.style.display = 'block';
+            guideMsg.textContent = this.t('guideMessage');
+        } else {
+            guideMsg.style.display = 'none';
         }
     }
 
@@ -429,7 +773,7 @@ class BudgetWise {
 
         const totalSpent = this.calculateTotalVariableExpenses();
         if (totalSpent > this.data.threshold) {
-            this.showToast(`⚠️ Attenzione! Hai superato la soglia di ${this.formatCurrency(this.data.threshold)}`, 'error');
+            this.showToast(this.t('toastThresholdExceeded', { amount: this.formatCurrency(this.data.threshold) }), 'error');
         }
     }
 
@@ -482,7 +826,7 @@ class BudgetWise {
         linkElement.setAttribute('download', exportFileDefaultName);
         linkElement.click();
         
-        this.showToast('💾 Backup scaricato!');
+        this.showToast(this.t('toastBackupDownloaded'));
     }
 
     restoreData(event) {
@@ -496,9 +840,9 @@ class BudgetWise {
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
-                this.showToast('📂 Dati ripristinati!');
+                this.showToast(this.t('toastDataRestored'));
             } catch (error) {
-                this.showToast('❌ File non valido', 'error');
+                this.showToast(this.t('toastInvalidFile'), 'error');
             }
         };
         reader.readAsText(file);
@@ -520,7 +864,7 @@ class BudgetWise {
             };
             this.updateUI();
             this.updateChart();
-            this.showToast('🔄 Reset completato');
+            this.showToast(this.t('toastResetCompleted'));
         }
     }
 
@@ -530,7 +874,7 @@ class BudgetWise {
         this.data.fixedExpenses = this.data.fixedExpenses.filter(exp => exp.id !== id);
         this.saveData();
         this.updateUI();
-        this.showToast('🗑️ Spesa eliminata');
+        this.showToast(this.t('toastExpenseDeleted'));
     }
 
     deleteVariableExpense(date, id) {
@@ -542,7 +886,7 @@ class BudgetWise {
             this.saveData();
             this.updateUI();
             this.updateChart();
-            this.showToast('🗑️ Spesa eliminata');
+            this.showToast(this.t('toastExpenseDeleted'));
         }
     }
 
@@ -587,7 +931,7 @@ class BudgetWise {
         a.download = `budgetwise-${this.data.periodStart}.ics`;
         a.click();
         
-        this.showToast('📅 Calendario esportato!');
+        this.showToast(this.t('toastCalendarExported'));
     }
 }
 
@@ -761,7 +1105,19 @@ class FinancialAssistant {
         }
         
         const top = Object.entries(categories).sort((a,b) => b[1] - a[1])[0];
-        return `📊 La categoria in cui spendi di più è "${top[0]}" con ${this.app.formatCurrency(top[1])}. Vuoi qualche consiglio su come ridurre queste spese?`;
+        
+        // Traduci la categoria per il messaggio
+        let categoryKey = 'categoryOther';
+        switch(top[0]) {
+            case 'Alimentari': categoryKey = 'categoryGrocery'; break;
+            case 'Trasporti': categoryKey = 'categoryTransport'; break;
+            case 'Svago': categoryKey = 'categoryEntertainment'; break;
+            case 'Salute': categoryKey = 'categoryHealth'; break;
+            case 'Abbigliamento': categoryKey = 'categoryClothing'; break;
+        }
+        const translatedCategory = this.app.t(categoryKey);
+        
+        return `📊 La categoria in cui spendi di più è "${translatedCategory}" con ${this.app.formatCurrency(top[1])}. Vuoi qualche consiglio su come ridurre queste spese?`;
     }
 
     handleExpenseQuery(q) {
@@ -777,7 +1133,17 @@ class FinancialAssistant {
                 let total = 0;
                 Object.values(this.app.data.variableExpenses).forEach(day => {
                     day.forEach(exp => {
-                        if (exp.category.toLowerCase() === cat) total += exp.amount;
+                        // Confronta con la categoria in italiano
+                        let italianCat = '';
+                        switch(cat) {
+                            case 'alimentari': italianCat = 'Alimentari'; break;
+                            case 'trasporti': italianCat = 'Trasporti'; break;
+                            case 'svago': italianCat = 'Svago'; break;
+                            case 'salute': italianCat = 'Salute'; break;
+                            case 'abbigliamento': italianCat = 'Abbigliamento'; break;
+                            default: italianCat = 'Altro';
+                        }
+                        if (exp.category === italianCat) total += exp.amount;
                     });
                 });
                 return total > 0 
@@ -834,7 +1200,7 @@ class VoiceAssistant {
         // Configurazione 
         this.recognition.continuous = false;
         this.recognition.interimResults = true;
-        this.recognition.lang = 'it-IT';
+        this.recognition.lang = 'it-IT'; // Mantieni italiano per il riconoscimento
         this.recognition.maxAlternatives = 1;
 
         // Setup eventi
@@ -852,7 +1218,7 @@ class VoiceAssistant {
 
         this.recognition.onstart = () => {
             this.isListening = true;
-            this.updateUI('listening', '🎤 Parlare...');
+            this.updateUI('listening', this.app.t('statusListening'));
         };
 
         this.recognition.onresult = (event) => {
@@ -861,29 +1227,29 @@ class VoiceAssistant {
             
             if (result.isFinal) {
                 this.processVoiceCommand(transcript);
-                this.updateUI('success', `✓ Riconosciuto: "${transcript}"`);
+                this.updateUI('success', this.app.t('statusRecognized', { text: transcript }));
             } else {
-                this.updateUI('listening', `🔊 Sento: ${transcript}...`);
+                this.updateUI('listening', this.app.t('statusHeard', { text: transcript }));
             }
         };
 
         this.recognition.onerror = (event) => {
             console.error('Errore riconoscimento vocale:', event.error);
-            let message = '❌ Errore';
+            let messageKey = 'statusError';
             
             switch(event.error) {
                 case 'not-allowed':
-                    message = '❌ Permesso microfono negato';
+                    messageKey = 'statusMicrophoneDenied';
                     break;
                 case 'no-speech':
-                    message = '❌ Nessun parlato rilevato';
+                    messageKey = 'statusNoSpeech';
                     break;
                 case 'network':
-                    message = '❌ Errore di rete';
+                    messageKey = 'statusNetworkError';
                     break;
             }
             
-            this.updateUI('error', message);
+            this.updateUI('error', this.app.t(messageKey));
             this.isListening = false;
         };
 
@@ -895,7 +1261,7 @@ class VoiceAssistant {
                     }
                 }, 100);
             } else {
-                this.updateUI('idle', '🎤 Tocca per parlare');
+                this.updateUI('idle', this.app.t('statusTapToSpeak'));
             }
         };
     }
@@ -913,14 +1279,14 @@ class VoiceAssistant {
             this.recognition.start();
         } catch (error) {
             console.error('Errore avvio:', error);
-            this.updateUI('error', '❌ Errore avvio');
+            this.updateUI('error', this.app.t('statusError'));
         }
     }
 
     stopListening() {
         this.isListening = false;
         this.recognition.stop();
-        this.updateUI('idle', '🎤 Tocca per parlare');
+        this.updateUI('idle', this.app.t('statusTapToSpeak'));
     }
 
     updateUI(state, message) {
@@ -934,18 +1300,18 @@ class VoiceAssistant {
         switch(state) {
             case 'listening':
                 voiceBtn.classList.add('listening');
-                voiceBtn.innerHTML = '⏹️ <span>Ferma ascolto</span>';
+                voiceBtn.innerHTML = '⏹️ <span>' + (this.app.data.language === 'it' ? 'Ferma ascolto' : 'Stop listening') + '</span>';
                 break;
             case 'success':
                 voiceBtn.classList.add('success');
-                voiceBtn.innerHTML = '🎤 <span>Inserisci con voce</span>';
+                voiceBtn.innerHTML = '🎤 <span>' + this.app.t('btnVoice') + '</span>';
                 break;
             case 'error':
                 voiceBtn.classList.add('error');
-                voiceBtn.innerHTML = '🎤 <span>Inserisci con voce</span>';
+                voiceBtn.innerHTML = '🎤 <span>' + this.app.t('btnVoice') + '</span>';
                 break;
             default:
-                voiceBtn.innerHTML = '🎤 <span>Inserisci con voce</span>';
+                voiceBtn.innerHTML = '🎤 <span>' + this.app.t('btnVoice') + '</span>';
         }
         
         voiceStatus.textContent = message;
@@ -953,7 +1319,7 @@ class VoiceAssistant {
         if (state !== 'listening') {
             setTimeout(() => {
                 if (!this.isListening) {
-                    voiceStatus.textContent = '🎤 Tocca per parlare';
+                    voiceStatus.textContent = this.app.t('statusTapToSpeak');
                 }
             }, 3000);
         }
@@ -987,7 +1353,15 @@ class VoiceAssistant {
         const categories = ['alimentari', 'trasporti', 'svago', 'salute', 'abbigliamento', 'altro'];
         for (let cat of categories) {
             if (remainingText.includes(cat)) {
-                category = cat.charAt(0).toUpperCase() + cat.slice(1);
+                // Mappa al valore italiano per la categoria
+                switch(cat) {
+                    case 'alimentari': category = 'Alimentari'; break;
+                    case 'trasporti': category = 'Trasporti'; break;
+                    case 'svago': category = 'Svago'; break;
+                    case 'salute': category = 'Salute'; break;
+                    case 'abbigliamento': category = 'Abbigliamento'; break;
+                    default: category = 'Altro';
+                }
                 remainingText = remainingText.replace(cat, '').trim();
                 break;
             }
@@ -1007,7 +1381,7 @@ class VoiceAssistant {
                 document.getElementById('addExpenseBtn').click();
                 this.updateUI('success', `✓ Aggiunto: ${name} ${amount}€`);
             } else {
-                this.updateUI('idle', '✏️ Puoi modificare prima di aggiungere');
+                this.updateUI('idle', this.app.t('statusEditBeforeAdd'));
             }
         }, 500);
     }
