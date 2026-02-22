@@ -33,6 +33,7 @@ const translations = {
         fixedExpenseDetail: '📅 Giorno {day} di ogni mese · Scadenza: {endDate} {status}',
         statusActive: '🟢 Attivo',
         statusExpired: '🔴 Scaduto',
+        fixedHelpText: '⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza',
 
         // Etichette Form
         labelTotalIncome: 'Totale entrate (€)',
@@ -113,6 +114,10 @@ const translations = {
         
         // Testo per pulsante stop ascolto
         stopListening: '⏹️ Ferma ascolto',
+        
+        // Footer
+        footerText: 'BudgetWise 2.0 — Gestione intelligente delle tue finanze',
+        footerFeatures: '✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro',
     },
     en: {
         // General
@@ -143,6 +148,7 @@ const translations = {
         fixedExpenseDetail: '📅 Day {day} of each month · Expires: {endDate} {status}',
         statusActive: '🟢 Active',
         statusExpired: '🔴 Expired',
+        fixedHelpText: '⏰ It will be automatically counted every month until expiration',
 
         // Form Labels
         labelTotalIncome: 'Total income (€)',
@@ -223,6 +229,10 @@ const translations = {
         
         // Text for stop listening button
         stopListening: '⏹️ Stop listening',
+        
+        // Footer
+        footerText: 'BudgetWise 2.0 — Intelligent management of your finances',
+        footerFeatures: '✨ Integrated AI Assistant • Voice Recognition • Dark Theme',
     }
 };
 
@@ -250,7 +260,6 @@ class BudgetWise {
         const langData = translations[lang] || translations.it;
         let text = langData[key] || key;
 
-        // Sostituisci i parametri (es. {start})
         for (const [param, value] of Object.entries(params)) {
             text = text.replace(new RegExp(`{${param}}`, 'g'), value);
         }
@@ -278,52 +287,31 @@ class BudgetWise {
     }
 
     setupEventListeners() {
-        // Tema
         document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
-
-        // Entrate
         document.getElementById('saveIncomeBtn').addEventListener('click', () => this.saveIncome());
-
-        // Spese fisse
         document.getElementById('addFixedBtn').addEventListener('click', () => this.addFixedExpense());
-
-        // Spese variabili
         document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
         document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
         document.getElementById('expenseDate').valueAsDate = new Date();
-
-        // Risparmio
         document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
-
-        // Backup
         document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
         document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
         document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
-
-        // Reset
         document.getElementById('resetAllBtn').addEventListener('click', () => this.resetAll());
-
-        // Esportazione calendario
         document.getElementById('exportCalendarBtn').addEventListener('click', () => this.exportToCalendar());
 
-        // Soglia
         document.getElementById('thresholdInput').addEventListener('change', (e) => {
             this.data.threshold = parseFloat(e.target.value) || 50;
             this.saveData();
         });
 
-        // Lingua
         document.getElementById('languageSelect').addEventListener('change', (e) => {
             this.data.language = e.target.value;
             this.saveData();
             this.updateUI();
             this.updateChart();
-            
-            // Aggiorna anche i suggerimenti dell'assistente
-            this.updateSuggestionChips();
         });
 
-        // Salvataggio automatico
         document.getElementById('savePercent').addEventListener('input', (e) => {
             this.data.savingsPercent = parseFloat(e.target.value) || 0;
             this.saveData();
@@ -368,7 +356,6 @@ class BudgetWise {
         this.updateUI();
         this.showToast(this.t('toastFixedAdded'));
         
-        // Reset campi
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
         document.getElementById('fixedDay').value = '';
@@ -402,11 +389,9 @@ class BudgetWise {
         this.updateChart();
         this.showToast(this.t('toastExpenseAdded'));
         
-        // Reset campi
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
         
-        // Controllo soglia
         this.checkThreshold(date);
     }
 
@@ -504,11 +489,11 @@ class BudgetWise {
     // ========== UI UPDATES ==========
 
     updateUI() {
-        // Aggiorna titoli e testi statici con le traduzioni
-        document.querySelector('h1').innerHTML = `${this.t('appTitle')} <span class="version">${this.t('version')}</span>`;
-        document.querySelector('.subtitle').textContent = this.t('appSubtitle');
+        // Aggiorna titoli principali
+        document.getElementById('appTitle').innerHTML = `${this.t('appTitle')} <span class="version">${this.t('version')}</span>`;
+        document.getElementById('appSubtitle').textContent = this.t('appSubtitle');
         
-        // Aggiorna valori principali
+        // Aggiorna valori
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
@@ -519,38 +504,42 @@ class BudgetWise {
             end: this.data.periodEnd 
         });
 
-        // Aggiorna intestazioni delle sezioni
-        const sectionTitles = document.querySelectorAll('.section-card h2');
-        if (sectionTitles.length >= 7) {
-            sectionTitles[0].textContent = this.t('incomeSection');
-            sectionTitles[1].textContent = this.t('fixedExpensesSection');
-            sectionTitles[2].textContent = this.t('variableExpensesSection');
-            sectionTitles[3].textContent = this.t('chartSection');
-            sectionTitles[4].textContent = this.t('assistantSection');
-            sectionTitles[5].textContent = this.t('savingsSection');
-            sectionTitles[6].textContent = this.t('settingsSection');
-        }
+        // Aggiorna etichette del riepilogo
+        document.getElementById('labelDailyBudget').textContent = this.t('dailyBudget');
+        document.getElementById('labelRemaining').textContent = this.t('remaining');
+        document.getElementById('labelDaysLeft').textContent = this.t('daysLeft');
 
-        // Aggiorna labels e placeholder
-        const labels = document.querySelectorAll('label');
-        labels.forEach(label => {
-            const htmlFor = label.getAttribute('for');
-            if (htmlFor === 'incomeInput') label.textContent = this.t('labelTotalIncome');
-            else if (htmlFor === 'fixedDay') label.textContent = this.t('labelDayOfMonth');
-            else if (htmlFor === 'fixedEndDate') label.textContent = this.t('labelEndDate');
-            else if (htmlFor === 'expenseDate') label.textContent = this.t('labelSelectDate');
-            else if (htmlFor === 'thresholdInput') label.textContent = this.t('labelThreshold');
-            else if (htmlFor === 'languageSelect') label.textContent = this.t('labelLanguage');
-            else if (htmlFor === 'savePercent') label.textContent = this.t('labelSavingsPercent');
-            else if (htmlFor === 'saveGoal') label.textContent = this.t('labelSavingsGoal');
-        });
+        // Aggiorna sezioni
+        document.getElementById('sectionIncome').textContent = this.t('incomeSection');
+        document.getElementById('sectionFixedExpenses').textContent = this.t('fixedExpensesSection');
+        document.getElementById('sectionVariableExpenses').textContent = this.t('variableExpensesSection');
+        document.getElementById('sectionChart').textContent = this.t('chartSection');
+        document.getElementById('sectionAssistant').textContent = this.t('assistantSection');
+        document.getElementById('sectionSavings').textContent = this.t('savingsSection');
+        document.getElementById('sectionSettings').textContent = this.t('settingsSection');
 
+        // Aggiorna etichette dei form
+        document.getElementById('labelTotalIncome').textContent = this.t('labelTotalIncome');
+        document.getElementById('labelDayOfMonth').textContent = this.t('labelDayOfMonth');
+        document.getElementById('labelEndDate').textContent = this.t('labelEndDate');
+        document.getElementById('labelSelectDate').textContent = this.t('labelSelectDate');
+        document.getElementById('labelThreshold').textContent = this.t('labelThreshold');
+        document.getElementById('labelLanguage').textContent = this.t('labelLanguage');
+        document.getElementById('labelBackup').textContent = this.t('labelBackup');
+        document.getElementById('labelSavingsPercent').textContent = this.t('labelSavingsPercent');
+        document.getElementById('labelSavingsGoal').textContent = this.t('labelSavingsGoal');
+
+        // Aggiorna placeholder
         document.getElementById('incomeInput').placeholder = this.t('placeholderAmount');
         document.getElementById('fixedName').placeholder = this.t('placeholderName');
         document.getElementById('fixedAmount').placeholder = this.t('placeholderAmount');
         document.getElementById('fixedDay').placeholder = this.t('placeholderDay');
         document.getElementById('expenseName').placeholder = this.t('placeholderWhatBought');
         document.getElementById('expenseAmount').placeholder = this.t('placeholderAmount');
+        document.getElementById('chatInput').placeholder = this.t('placeholderAskAssistant');
+        
+        // Aggiorna help text
+        document.getElementById('fixedHelpText').textContent = this.t('fixedHelpText');
         
         // Aggiorna opzioni del select delle categorie
         const categorySelect = document.getElementById('expenseCategory');
@@ -566,7 +555,7 @@ class BudgetWise {
             }
         }
         
-        // Aggiorna testi dei bottoni
+        // Aggiorna bottoni
         document.getElementById('saveIncomeBtn').textContent = this.t('btnSaveIncome');
         document.getElementById('addFixedBtn').textContent = this.t('btnAddFixedExpense');
         document.getElementById('addExpenseBtn').textContent = this.t('btnAddExpense');
@@ -577,20 +566,22 @@ class BudgetWise {
         document.getElementById('resetAllBtn').textContent = this.t('btnResetAll');
         document.getElementById('exportCalendarBtn').textContent = this.t('btnExportCalendar');
         document.getElementById('sendChatBtn').textContent = this.t('btnSend');
+        document.getElementById('voiceBtnText').textContent = this.t('btnVoice');
         
-        const voiceBtnSpan = document.querySelector('#voiceBtn span');
-        if (voiceBtnSpan) voiceBtnSpan.textContent = this.t('btnVoice');
-        
-        // Aggiorna placeholder della chat
-        document.getElementById('chatInput').placeholder = this.t('placeholderAskAssistant');
+        // Aggiorna footer
+        document.getElementById('footerText').textContent = this.t('footerText');
+        document.getElementById('footerFeatures').textContent = this.t('footerFeatures');
         
         // Aggiorna chip dei suggerimenti
         this.updateSuggestionChips();
 
+        // Aggiorna messaggio di benvenuto dell'assistente
+        document.getElementById('assistantWelcomeMessage').textContent = this.t('assistantWelcome');
+
         // Aggiorna lista spese fisse
         this.updateFixedExpensesList();
         
-        // Aggiorna lista spese variabili per data selezionata
+        // Aggiorna lista spese variabili
         this.updateVariableExpensesList();
         
         // Aggiorna input con valori correnti
@@ -599,7 +590,7 @@ class BudgetWise {
         document.getElementById('thresholdInput').value = this.data.threshold;
         document.getElementById('languageSelect').value = this.data.language;
 
-        // Aggiorna progress bar risparmio
+        // Aggiorna progress bar
         const progress = this.calculateSavingsProgress();
         if (progress > 0 && this.data.savingsGoal) {
             document.getElementById('progressContainer').style.display = 'block';
@@ -611,35 +602,32 @@ class BudgetWise {
 
         // Aggiorna messaggio guida
         this.showGuideMessage();
-        
-        // Aggiorna il messaggio di benvenuto dell'assistente se è il primo messaggio
-        this.updateAssistantWelcome();
     }
     
     updateSuggestionChips() {
-        const suggestionChips = document.querySelectorAll('.suggestion-chip');
-        if (suggestionChips.length >= 4) {
-            suggestionChips[0].textContent = this.t('suggestionSave100');
-            suggestionChips[0].setAttribute('data-question', this.data.language === 'it' ? 'Come posso risparmiare 100€ questo mese?' : 'How can I save 100€ this month?');
-            
-            suggestionChips[1].textContent = this.t('suggestionSimulate');
-            suggestionChips[1].setAttribute('data-question', this.data.language === 'it' ? 'Cosa succede se aumento le spese del 20%?' : 'What happens if I increase expenses by 20%?');
-            
-            suggestionChips[2].textContent = this.t('suggestionGoal');
-            suggestionChips[2].setAttribute('data-question', this.data.language === 'it' ? 'Quando raggiungerò il mio obiettivo?' : 'When will I reach my goal?');
-            
-            suggestionChips[3].textContent = this.t('suggestionTopCategory');
-            suggestionChips[3].setAttribute('data-question', this.data.language === 'it' ? 'Qual è la categoria dove spendo di più?' : 'What is the category where I spend the most?');
+        const suggestion1 = document.getElementById('suggestion1');
+        const suggestion2 = document.getElementById('suggestion2');
+        const suggestion3 = document.getElementById('suggestion3');
+        const suggestion4 = document.getElementById('suggestion4');
+        
+        if (suggestion1) {
+            suggestion1.textContent = this.t('suggestionSave100');
+            suggestion1.setAttribute('data-question', this.data.language === 'it' ? 'Come posso risparmiare 100€ questo mese?' : 'How can I save 100€ this month?');
         }
-    }
-    
-    updateAssistantWelcome() {
-        const chatMessages = document.getElementById('chatMessages');
-        if (chatMessages.children.length === 1) {
-            const welcomeMessage = chatMessages.querySelector('.chat-message.bot .message-text');
-            if (welcomeMessage) {
-                welcomeMessage.textContent = this.t('assistantWelcome');
-            }
+        
+        if (suggestion2) {
+            suggestion2.textContent = this.t('suggestionSimulate');
+            suggestion2.setAttribute('data-question', this.data.language === 'it' ? 'Cosa succede se aumento le spese del 20%?' : 'What happens if I increase expenses by 20%?');
+        }
+        
+        if (suggestion3) {
+            suggestion3.textContent = this.t('suggestionGoal');
+            suggestion3.setAttribute('data-question', this.data.language === 'it' ? 'Quando raggiungerò il mio obiettivo?' : 'When will I reach my goal?');
+        }
+        
+        if (suggestion4) {
+            suggestion4.textContent = this.t('suggestionTopCategory');
+            suggestion4.setAttribute('data-question', this.data.language === 'it' ? 'Qual è la categoria dove spendo di più?' : 'What is the category where I spend the most?');
         }
     }
 
@@ -972,7 +960,6 @@ class FinancialAssistant {
             if (e.key === 'Enter') this.handleUserInput();
         });
         
-        // Chip suggerimenti
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.getElementById('chatInput').value = chip.dataset.question;
@@ -999,8 +986,9 @@ class FinancialAssistant {
         const container = document.getElementById('chatMessages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${sender}`;
+        const senderName = sender === 'bot' ? (this.app.data.language === 'it' ? '🤖 Assistente' : '🤖 Assistant') : '👤 Tu';
         messageDiv.innerHTML = `
-            <span class="message-sender">${sender === 'bot' ? '🤖 Assistente' : '👤 Tu'}:</span>
+            <span class="message-sender">${senderName}:</span>
             <span class="message-text">${text}</span>
         `;
         container.appendChild(messageDiv);
@@ -1316,18 +1304,18 @@ class VoiceAssistant {
         switch(state) {
             case 'listening':
                 voiceBtn.classList.add('listening');
-                voiceBtn.innerHTML = '⏹️ <span>' + this.app.t('stopListening') + '</span>';
+                document.getElementById('voiceBtnText').textContent = this.app.t('stopListening');
                 break;
             case 'success':
                 voiceBtn.classList.add('success');
-                voiceBtn.innerHTML = '🎤 <span>' + this.app.t('btnVoice') + '</span>';
+                document.getElementById('voiceBtnText').textContent = this.app.t('btnVoice');
                 break;
             case 'error':
                 voiceBtn.classList.add('error');
-                voiceBtn.innerHTML = '🎤 <span>' + this.app.t('btnVoice') + '</span>';
+                document.getElementById('voiceBtnText').textContent = this.app.t('btnVoice');
                 break;
             default:
-                voiceBtn.innerHTML = '🎤 <span>' + this.app.t('btnVoice') + '</span>';
+                document.getElementById('voiceBtnText').textContent = this.app.t('btnVoice');
         }
         
         voiceStatus.textContent = message;
@@ -1414,6 +1402,9 @@ class VoiceAssistant {
     addVoiceSuggestions() {
         const voiceRow = document.querySelector('.voice-row');
         if (!voiceRow) return;
+        
+        // Controlla se già esiste per non duplicare
+        if (document.querySelector('.voice-suggestions')) return;
         
         const suggestionsDiv = document.createElement('div');
         suggestionsDiv.className = 'voice-suggestions';
