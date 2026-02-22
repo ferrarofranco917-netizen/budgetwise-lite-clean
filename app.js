@@ -1128,53 +1128,75 @@ class BudgetWise {
             }
             return;
         }
-// Microfono spese fisse
-const micFixed = document.getElementById('micFixedBtn');
-if (micFixed) {
-    micFixed.addEventListener('click', () => this.startVoice('micFixedBtn'));
-}
+
         console.log('✅ Riconoscimento vocale supportato');
-        
+
+        // Microfono spese fisse
+        const micFixed = document.getElementById('micFixedBtn');
+        if (micFixed) {
+            micFixed.addEventListener('click', () => this.startVoiceInput('fixed'));
+        }
+
+        // Microfono spese variabili
         const voiceBtn = document.getElementById('voiceBtn');
         if (voiceBtn) {
-            voiceBtn.addEventListener('click', () => this.startVoiceInput());
+            voiceBtn.addEventListener('click', () => this.startVoiceInput('variable'));
+        }
+
+        // Microfono chat (se presente)
+        const chatVoice = document.getElementById('chatVoiceBtn');
+        if (chatVoice) {
+            chatVoice.addEventListener('click', () => this.startVoiceInput('chat'));
         }
     }
 
-    startVoiceInput() {
+    startVoiceInput(type = 'variable') {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
         recognition.lang = this.data.language === 'it' ? 'it-IT' : 'en-US';
         recognition.interimResults = true;
 
-        const voiceBtn = document.getElementById('voiceBtn');
-        const voiceStatus = document.getElementById('voiceStatus');
-        
-        voiceBtn.classList.add('listening');
-        voiceStatus.textContent = '🎤 ' + (this.data.language === 'it' ? 'Parlare...' : 'Speak...');
+        let button, statusElement;
+
+        if (type === 'fixed') {
+            button = document.getElementById('micFixedBtn');
+            statusElement = document.getElementById('fixedVoiceStatus');
+        } else {
+            button = document.getElementById('voiceBtn');
+            statusElement = document.getElementById('voiceStatus');
+        }
+
+        if (!button) return;
+
+        button.classList.add('listening');
+        statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Parlare...' : 'Speak...');
 
         recognition.onresult = (event) => {
             const result = event.results[event.results.length - 1];
             const transcript = result[0].transcript.trim();
-            
+
             if (result.isFinal) {
-                this.processVoiceCommand(transcript);
-                voiceStatus.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+                if (type === 'fixed') {
+                    this.processFixedVoiceCommand(transcript);
+                } else {
+                    this.processVoiceCommand(transcript);
+                }
+                statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
             } else {
-                voiceStatus.textContent = `🔊 ${transcript}...`;
+                statusElement.textContent = `🔊 ${transcript}...`;
             }
         };
 
         recognition.onerror = () => {
-            voiceBtn.classList.remove('listening');
-            voiceStatus.textContent = '❌ ' + (this.data.language === 'it' ? 'Errore' : 'Error');
+            button.classList.remove('listening');
+            statusElement.textContent = '❌ ' + (this.data.language === 'it' ? 'Errore' : 'Error');
             setTimeout(() => {
-                voiceStatus.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+                statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
             }, 2000);
         };
 
         recognition.onend = () => {
-            voiceBtn.classList.remove('listening');
+            button.classList.remove('listening');
         };
 
         recognition.start();
@@ -1194,6 +1216,47 @@ if (micFixed) {
                 : `✅ Detected: ${description || 'Expense'} €${amount}`);
         }
     }
+
+    processFixedVoiceCommand(transcript) {
+        // Esempio: "Mutuo 800 euro giorno 27 scadenza 31 12 2030"
+        const words = transcript.split(' ');
+        let name = words[0] || 'Spesa';
+        if (name.length > 20) name = name.substring(0, 20);
+
+        const amountMatch = transcript.match(/(\d+[.,]?\d*)/);
+        const amount = amountMatch ? parseFloat(amountMatch[0].replace(',', '.')) : 0;
+
+        const dayMatch = transcript.match(/(\d{1,2})/g);
+        let day = 1;
+        if (dayMatch && dayMatch.length > 0) {
+            for (let d of dayMatch) {
+                const candidate = parseInt(d);
+                if (candidate >= 1 && candidate <= 31 && candidate !== Math.round(amount)) {
+                    day = candidate;
+                    break;
+                }
+            }
+        }
+
+        const dateMatch = transcript.match(/(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/);
+        let endDate = '';
+        if (dateMatch) {
+            endDate = `${dateMatch[3]}-${dateMatch[2].padStart(2, '0')}-${dateMatch[1].padStart(2, '0')}`;
+        } else {
+            const d = new Date();
+            d.setFullYear(d.getFullYear() + 10);
+            endDate = d.toISOString().split('T')[0];
+        }
+
+        document.getElementById('fixedName').value = name;
+        document.getElementById('fixedAmount').value = amount;
+        document.getElementById('fixedDay').value = day;
+        document.getElementById('fixedEndDate').value = endDate;
+
+        alert(this.data.language === 'it'
+            ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
+            : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
+    }
 }
 
 // ============================================
@@ -1202,4 +1265,3 @@ if (micFixed) {
 
 const app = new BudgetWise();
 window.app = app;
-
