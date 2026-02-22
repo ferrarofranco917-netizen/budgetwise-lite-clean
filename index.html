@@ -49,11 +49,11 @@
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-        <!-- ENTRATE MULTIPLE CON MICROFONI -->
+        <!-- ENTRATE -->
         <div class="section-card">
             <div class="section-header">
-                <h2>🏦 Entrate del periodo</h2>
-                <span class="badge">multiplo</span>
+                <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
+                <span class="badge" id="badge">multiplo</span>
             </div>
             <div class="section-content">
                 <div id="incomeList" class="expenses-list"></div>
@@ -74,9 +74,9 @@
             </div>
         </div>
 
-        <!-- SPESE FISSE CON MICROFONO UNICO -->
+        <!-- SPESE FISSE -->
         <div class="section-card">
-            <h2>📌 Spese fisse mensili</h2>
+            <h2 id="fixedTitle">📌 Spese fisse mensili</h2>
             <div class="section-content">
                 <div id="fixedExpensesList"></div>
                 
@@ -97,16 +97,16 @@
                 </div>
                 
                 <button class="btn-secondary" id="addFixedBtn">➕ Aggiungi spesa fissa</button>
-                <p class="help-text">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
+                <p class="help-text" id="fixedHelp">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
             </div>
         </div>
 
-        <!-- SPESE VARIABILI CON MICROFONO -->
+        <!-- SPESE VARIABILI -->
         <div class="section-card">
-            <h2>🧾 Spese variabili</h2>
+            <h2 id="variableTitle">🧾 Spese variabili</h2>
             <div class="section-content">
                 <div class="date-selector">
-                    <label>Seleziona data:</label>
+                    <label id="dateLabel">Seleziona data:</label>
                     <input type="date" id="expenseDate" class="date-input">
                 </div>
                 <div id="variableExpensesList">
@@ -142,22 +142,22 @@
 
         <!-- GRAFICO -->
         <div class="section-card">
-            <h2>📊 Distribuzione spese</h2>
+            <h2 id="chartTitle">📊 Distribuzione spese</h2>
             <div class="section-content">
                 <canvas id="expenseChart" width="400" height="300"></canvas>
                 <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
             </div>
         </div>
 
-        <!-- ASSISTENTE CON MICROFONO -->
+        <!-- ASSISTENTE -->
         <div class="section-card">
-            <h2>🤖 Assistente Finanziario</h2>
+            <h2 id="assistantTitle">🤖 Assistente Finanziario</h2>
             <div class="section-content">
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="chat-message bot">
-                            <span class="message-sender">🤖 Assistente:</span>
-                            <span class="message-text">Ciao! Chiedimi qualsiasi cosa sul tuo budget!</span>
+                            <span class="message-sender" id="assistantName">🤖 Assistente:</span>
+                            <span class="message-text" id="welcomeMessage">Ciao! Chiedimi qualsiasi cosa sul tuo budget!</span>
                         </div>
                     </div>
                     <div class="chat-input-area">
@@ -167,22 +167,22 @@
                     </div>
                 </div>
                 <div class="chat-suggestions">
-                    <button class="suggestion-chip" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
-                    <button class="suggestion-chip" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
+                    <button class="suggestion-chip" id="suggestion1" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
+                    <button class="suggestion-chip" id="suggestion2" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
                 </div>
             </div>
         </div>
 
         <!-- RISPARMIO -->
         <div class="section-card">
-            <h2>🎯 Obiettivo risparmio</h2>
+            <h2 id="savingsTitle">🎯 Obiettivo risparmio</h2>
             <div class="section-content">
                 <div class="input-group">
-                    <label>Percentuale su entrate (%)</label>
+                    <label for="savePercent" id="percentLabel">Percentuale su entrate (%)</label>
                     <input type="number" id="savePercent" placeholder="10" min="0" max="100" step="1">
                 </div>
                 <div class="input-group">
-                    <label>Obiettivo (€)</label>
+                    <label for="saveGoal" id="goalLabel">Obiettivo (€)</label>
                     <input type="number" id="saveGoal" placeholder="1000" step="100">
                 </div>
                 <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
@@ -193,34 +193,35 @@
         </div>
 
         <!-- IMPOSTAZIONI CON LINGUA -->
-<div class="section-card">
-    <h2>⚙️ Impostazioni</h2>
-    <div class="section-content">
-        <div class="setting-item">
-            <label>🔔 Soglia avviso (€)</label>
-            <input type="number" id="thresholdInput" value="50" step="5">
-        </div>
-        
-        <!-- SELEZIONE LINGUA (NUOVO) -->
-        <div class="setting-item">
-            <label>🌍 Lingua / Language</label>
-            <select id="languageSelect" class="language-select">
-                <option value="it">🇮🇹 Italiano</option>
-                <option value="en">🇬🇧 English</option>
-            </select>
-        </div>
-        
-        <div class="setting-item">
-            <label>📅 Backup dati</label>
-            <div class="button-group">
-                <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
-                <input type="file" id="restoreFile" accept=".json" style="display: none;">
-                <button class="btn-secondary" id="restoreBtn">📂 Ripristina</button>
+        <div class="section-card">
+            <h2 id="settingsTitle">⚙️ Impostazioni</h2>
+            <div class="section-content">
+                <div class="setting-item">
+                    <label for="thresholdInput" id="thresholdLabel">🔔 Soglia avviso (€)</label>
+                    <input type="number" id="thresholdInput" value="50" step="5">
+                </div>
+                
+                <!-- MENU LINGUA (FUNZIONANTE) -->
+                <div class="setting-item">
+                    <label for="languageSelect" id="languageLabel">🌍 Lingua / Language</label>
+                    <select id="languageSelect" class="language-select">
+                        <option value="it">🇮🇹 Italiano</option>
+                        <option value="en">🇬🇧 English</option>
+                    </select>
+                </div>
+                
+                <div class="setting-item">
+                    <label id="backupLabel">📅 Backup dati</label>
+                    <div class="button-group">
+                        <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                        <button class="btn-secondary" id="restoreBtn">📂 Ripristina</button>
+                    </div>
+                </div>
+                <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
             </div>
         </div>
-        <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
-    </div>
-</div>
+
         <!-- FOOTER -->
         <div class="footer">
             <p>BudgetWise 2.0 — Gestione intelligente</p>
@@ -231,4 +232,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-
