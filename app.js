@@ -455,8 +455,8 @@ class BudgetWise {
         if (daysLabel) daysLabel.textContent = this.t('days');
         
         // Traduci il nome dell'assistente nella chat
-const assistantNameText = document.getElementById('assistantNameText');
-if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
+        const assistantNameText = document.getElementById('assistantNameText');
+        if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
         
         // Traduci le categorie nel select
         const categorySelect = document.getElementById('expenseCategory');
@@ -468,6 +468,18 @@ if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
             options[3].text = this.t('categorySalute');
             options[4].text = this.t('categoryAbbigliamento');
             options[5].text = this.t('categoryAltro');
+        }
+        
+        // ===== NUOVE RIGHE PER GLI HINT DELLE DATE (SOLO QUESTE 10 RIGHE) =====
+        // Traduci gli hint delle date
+        const dateHintFixed = document.getElementById('dateHintFixed');
+        if (dateHintFixed) {
+            dateHintFixed.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+        }
+
+        const dateHintVariable = document.getElementById('dateHintVariable');
+        if (dateHintVariable) {
+            dateHintVariable.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
         }
         
         this.updatePeriodInfo();
@@ -1186,4 +1198,3 @@ if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
 
 const app = new BudgetWise();
 window.app = app;
-
