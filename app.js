@@ -118,6 +118,9 @@ const translations = {
         // Footer
         footerText: 'BudgetWise 2.0 — Gestione intelligente delle tue finanze',
         footerFeatures: '✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro',
+        
+        // Badge nuovo
+        badgeNew: 'nuovo',
     },
     en: {
         // General
@@ -233,6 +236,9 @@ const translations = {
         // Footer
         footerText: 'BudgetWise 2.0 — Intelligent management of your finances',
         footerFeatures: '✨ Integrated AI Assistant • Voice Recognition • Dark Theme',
+        
+        // Badge new
+        badgeNew: 'new',
     }
 };
 
@@ -256,14 +262,19 @@ class BudgetWise {
 
     // Funzione di traduzione
     t(key, params = {}) {
-        const lang = this.data.language || 'it';
-        const langData = translations[lang] || translations.it;
-        let text = langData[key] || key;
-
-        for (const [param, value] of Object.entries(params)) {
-            text = text.replace(new RegExp(`{${param}}`, 'g'), value);
+        try {
+            const lang = this.data?.language || 'it';
+            const langData = translations[lang] || translations.it;
+            let text = langData[key] || key;
+            
+            for (const [param, value] of Object.entries(params)) {
+                text = text.replace(new RegExp(`{${param}}`, 'g'), value);
+            }
+            return text;
+        } catch (e) {
+            console.warn('Errore traduzione:', e);
+            return key;
         }
-        return text;
     }
 
     init() {
@@ -271,7 +282,6 @@ class BudgetWise {
         this.setupEventListeners();
         this.applyTheme();
         this.updateUI();
-        this.showGuideMessage();
         this.updateChart();
     }
 
@@ -287,41 +297,120 @@ class BudgetWise {
     }
 
     setupEventListeners() {
-        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
-        document.getElementById('saveIncomeBtn').addEventListener('click', () => this.saveIncome());
-        document.getElementById('addFixedBtn').addEventListener('click', () => this.addFixedExpense());
-        document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
-        document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
-        document.getElementById('expenseDate').valueAsDate = new Date();
-        document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
-        document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
-        document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
-        document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
-        document.getElementById('resetAllBtn').addEventListener('click', () => this.resetAll());
-        document.getElementById('exportCalendarBtn').addEventListener('click', () => this.exportToCalendar());
+        // Tema
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+        }
 
-        document.getElementById('thresholdInput').addEventListener('change', (e) => {
-            this.data.threshold = parseFloat(e.target.value) || 50;
-            this.saveData();
-        });
+        // Entrate
+        const saveIncomeBtn = document.getElementById('saveIncomeBtn');
+        if (saveIncomeBtn) {
+            saveIncomeBtn.addEventListener('click', () => this.saveIncome());
+        }
 
-        document.getElementById('languageSelect').addEventListener('change', (e) => {
-            this.data.language = e.target.value;
-            this.saveData();
-            this.updateUI();
-            this.updateChart();
-        });
+        // Spese fisse
+        const addFixedBtn = document.getElementById('addFixedBtn');
+        if (addFixedBtn) {
+            addFixedBtn.addEventListener('click', () => this.addFixedExpense());
+        }
 
-        document.getElementById('savePercent').addEventListener('input', (e) => {
-            this.data.savingsPercent = parseFloat(e.target.value) || 0;
-            this.saveData();
-        });
+        // Spese variabili
+        const addExpenseBtn = document.getElementById('addExpenseBtn');
+        if (addExpenseBtn) {
+            addExpenseBtn.addEventListener('click', () => this.addVariableExpense());
+        }
+        
+        const resetDayBtn = document.getElementById('resetDayBtn');
+        if (resetDayBtn) {
+            resetDayBtn.addEventListener('click', () => this.resetDay());
+        }
+        
+        const expenseDate = document.getElementById('expenseDate');
+        if (expenseDate) {
+            expenseDate.valueAsDate = new Date();
+        }
+
+        // Risparmio
+        const applySaveBtn = document.getElementById('applySaveBtn');
+        if (applySaveBtn) {
+            applySaveBtn.addEventListener('click', () => this.applySavings());
+        }
+
+        // Backup
+        const backupBtn = document.getElementById('backupBtn');
+        if (backupBtn) {
+            backupBtn.addEventListener('click', () => this.backupData());
+        }
+        
+        const restoreBtn = document.getElementById('restoreBtn');
+        if (restoreBtn) {
+            restoreBtn.addEventListener('click', () => document.getElementById('restoreFile')?.click());
+        }
+        
+        const restoreFile = document.getElementById('restoreFile');
+        if (restoreFile) {
+            restoreFile.addEventListener('change', (e) => this.restoreData(e));
+        }
+
+        // Reset
+        const resetAllBtn = document.getElementById('resetAllBtn');
+        if (resetAllBtn) {
+            resetAllBtn.addEventListener('click', () => this.resetAll());
+        }
+
+        // Esportazione calendario
+        const exportCalendarBtn = document.getElementById('exportCalendarBtn');
+        if (exportCalendarBtn) {
+            exportCalendarBtn.addEventListener('click', () => this.exportToCalendar());
+        }
+
+        // Soglia
+        const thresholdInput = document.getElementById('thresholdInput');
+        if (thresholdInput) {
+            thresholdInput.addEventListener('change', (e) => {
+                this.data.threshold = parseFloat(e.target.value) || 50;
+                this.saveData();
+            });
+        }
+
+        // Lingua
+        const languageSelect = document.getElementById('languageSelect');
+        if (languageSelect) {
+            languageSelect.addEventListener('change', (e) => {
+                this.data.language = e.target.value;
+                this.saveData();
+                this.updateUI();
+                this.updateChart();
+            });
+        }
+
+        // Salvataggio automatico percentuale
+        const savePercent = document.getElementById('savePercent');
+        if (savePercent) {
+            savePercent.addEventListener('input', (e) => {
+                this.data.savingsPercent = parseFloat(e.target.value) || 0;
+                this.saveData();
+            });
+        }
+        
+        // Salvataggio automatico obiettivo
+        const saveGoal = document.getElementById('saveGoal');
+        if (saveGoal) {
+            saveGoal.addEventListener('input', (e) => {
+                this.data.savingsGoal = parseFloat(e.target.value) || 0;
+                this.saveData();
+            });
+        }
     }
 
     // ========== FUNZIONI PRINCIPALI ==========
 
     saveIncome() {
-        const income = parseFloat(document.getElementById('incomeInput').value) || 0;
+        const incomeInput = document.getElementById('incomeInput');
+        if (!incomeInput) return;
+        
+        const income = parseFloat(incomeInput.value) || 0;
         this.data.income = income;
         this.saveData();
         this.updateUI();
@@ -329,10 +418,17 @@ class BudgetWise {
     }
 
     addFixedExpense() {
-        const name = document.getElementById('fixedName').value.trim();
-        const amount = parseFloat(document.getElementById('fixedAmount').value);
-        const day = parseInt(document.getElementById('fixedDay').value);
-        const endDate = document.getElementById('fixedEndDate').value;
+        const nameInput = document.getElementById('fixedName');
+        const amountInput = document.getElementById('fixedAmount');
+        const dayInput = document.getElementById('fixedDay');
+        const endDateInput = document.getElementById('fixedEndDate');
+        
+        if (!nameInput || !amountInput || !dayInput || !endDateInput) return;
+        
+        const name = nameInput.value.trim();
+        const amount = parseFloat(amountInput.value);
+        const day = parseInt(dayInput.value);
+        const endDate = endDateInput.value;
 
         if (!name || !amount || !day || !endDate) {
             this.showToast(this.t('toastFillAllFields'), 'error');
@@ -356,17 +452,25 @@ class BudgetWise {
         this.updateUI();
         this.showToast(this.t('toastFixedAdded'));
         
-        document.getElementById('fixedName').value = '';
-        document.getElementById('fixedAmount').value = '';
-        document.getElementById('fixedDay').value = '';
-        document.getElementById('fixedEndDate').value = '';
+        // Reset campi
+        nameInput.value = '';
+        amountInput.value = '';
+        dayInput.value = '';
+        endDateInput.value = '';
     }
 
     addVariableExpense() {
-        const date = document.getElementById('expenseDate').value;
-        const name = document.getElementById('expenseName').value.trim();
-        const amount = parseFloat(document.getElementById('expenseAmount').value);
-        const category = document.getElementById('expenseCategory').value;
+        const dateInput = document.getElementById('expenseDate');
+        const nameInput = document.getElementById('expenseName');
+        const amountInput = document.getElementById('expenseAmount');
+        const categorySelect = document.getElementById('expenseCategory');
+        
+        if (!dateInput || !nameInput || !amountInput || !categorySelect) return;
+        
+        const date = dateInput.value;
+        const name = nameInput.value.trim();
+        const amount = parseFloat(amountInput.value);
+        const category = categorySelect.value;
 
         if (!name || !amount) {
             this.showToast(this.t('toastFillAllFields'), 'error');
@@ -389,14 +493,19 @@ class BudgetWise {
         this.updateChart();
         this.showToast(this.t('toastExpenseAdded'));
         
-        document.getElementById('expenseName').value = '';
-        document.getElementById('expenseAmount').value = '';
+        // Reset campi
+        nameInput.value = '';
+        amountInput.value = '';
         
+        // Controllo soglia
         this.checkThreshold(date);
     }
 
     resetDay() {
-        const date = document.getElementById('expenseDate').value;
+        const dateInput = document.getElementById('expenseDate');
+        if (!dateInput) return;
+        
+        const date = dateInput.value;
         if (this.data.variableExpenses[date]) {
             delete this.data.variableExpenses[date];
             this.saveData();
@@ -407,8 +516,13 @@ class BudgetWise {
     }
 
     applySavings() {
-        const percent = parseFloat(document.getElementById('savePercent').value) || 0;
-        const goal = parseFloat(document.getElementById('saveGoal').value) || 0;
+        const savePercent = document.getElementById('savePercent');
+        const saveGoal = document.getElementById('saveGoal');
+        
+        if (!savePercent || !saveGoal) return;
+        
+        const percent = parseFloat(savePercent.value) || 0;
+        const goal = parseFloat(saveGoal.value) || 0;
         
         this.data.savingsPercent = percent;
         this.data.savingsGoal = goal;
@@ -421,9 +535,9 @@ class BudgetWise {
 
     calculateTotalVariableExpenses() {
         let total = 0;
-        Object.values(this.data.variableExpenses).forEach(day => {
-            day.forEach(expense => {
-                total += expense.amount;
+        Object.values(this.data.variableExpenses || {}).forEach(day => {
+            (day || []).forEach(expense => {
+                total += expense.amount || 0;
             });
         });
         return total;
@@ -434,14 +548,14 @@ class BudgetWise {
         const currentMonth = today.getMonth();
         const currentYear = today.getFullYear();
         
-        return this.data.fixedExpenses.reduce((sum, exp) => {
+        return (this.data.fixedExpenses || []).reduce((sum, exp) => {
             const endDate = new Date(exp.endDate);
             if (endDate < today) return sum;
             
             const paymentDate = new Date(currentYear, currentMonth, exp.day);
             if (paymentDate > today) return sum;
             
-            return sum + exp.amount;
+            return sum + (exp.amount || 0);
         }, 0);
     }
 
@@ -489,151 +603,363 @@ class BudgetWise {
     // ========== UI UPDATES ==========
 
     updateUI() {
-        // Aggiorna titoli principali
-        document.getElementById('appTitle').innerHTML = `${this.t('appTitle')} <span class="version">${this.t('version')}</span>`;
-        document.getElementById('appSubtitle').textContent = this.t('appSubtitle');
-        
-        // Aggiorna valori
-        document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
-        document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
-        document.getElementById('daysLeft').textContent = this.getDaysLeft();
-        
-        // Aggiorna info periodo
-        document.getElementById('periodInfo').textContent = this.t('periodInfo', { 
-            start: this.data.periodStart, 
-            end: this.data.periodEnd 
-        });
-
-        // Aggiorna etichette del riepilogo
-        document.getElementById('labelDailyBudget').textContent = this.t('dailyBudget');
-        document.getElementById('labelRemaining').textContent = this.t('remaining');
-        document.getElementById('labelDaysLeft').textContent = this.t('daysLeft');
-
-        // Aggiorna sezioni
-        document.getElementById('sectionIncome').textContent = this.t('incomeSection');
-        document.getElementById('sectionFixedExpenses').textContent = this.t('fixedExpensesSection');
-        document.getElementById('sectionVariableExpenses').textContent = this.t('variableExpensesSection');
-        document.getElementById('sectionChart').textContent = this.t('chartSection');
-        document.getElementById('sectionAssistant').textContent = this.t('assistantSection');
-        document.getElementById('sectionSavings').textContent = this.t('savingsSection');
-        document.getElementById('sectionSettings').textContent = this.t('settingsSection');
-
-        // Aggiorna etichette dei form
-        document.getElementById('labelTotalIncome').textContent = this.t('labelTotalIncome');
-        document.getElementById('labelDayOfMonth').textContent = this.t('labelDayOfMonth');
-        document.getElementById('labelEndDate').textContent = this.t('labelEndDate');
-        document.getElementById('labelSelectDate').textContent = this.t('labelSelectDate');
-        document.getElementById('labelThreshold').textContent = this.t('labelThreshold');
-        document.getElementById('labelLanguage').textContent = this.t('labelLanguage');
-        document.getElementById('labelBackup').textContent = this.t('labelBackup');
-        document.getElementById('labelSavingsPercent').textContent = this.t('labelSavingsPercent');
-        document.getElementById('labelSavingsGoal').textContent = this.t('labelSavingsGoal');
-
-        // Aggiorna placeholder
-        document.getElementById('incomeInput').placeholder = this.t('placeholderAmount');
-        document.getElementById('fixedName').placeholder = this.t('placeholderName');
-        document.getElementById('fixedAmount').placeholder = this.t('placeholderAmount');
-        document.getElementById('fixedDay').placeholder = this.t('placeholderDay');
-        document.getElementById('expenseName').placeholder = this.t('placeholderWhatBought');
-        document.getElementById('expenseAmount').placeholder = this.t('placeholderAmount');
-        document.getElementById('chatInput').placeholder = this.t('placeholderAskAssistant');
-        
-        // Aggiorna help text
-        document.getElementById('fixedHelpText').textContent = this.t('fixedHelpText');
-        
-        // Aggiorna opzioni del select delle categorie
-        const categorySelect = document.getElementById('expenseCategory');
-        if (categorySelect) {
-            const options = categorySelect.options;
-            if (options.length >= 6) {
-                options[0].text = this.t('categoryGrocery');
-                options[1].text = this.t('categoryTransport');
-                options[2].text = this.t('categoryEntertainment');
-                options[3].text = this.t('categoryHealth');
-                options[4].text = this.t('categoryClothing');
-                options[5].text = this.t('categoryOther');
+        try {
+            // Aggiorna titoli principali
+            const appTitle = document.getElementById('appTitle');
+            if (appTitle) {
+                appTitle.innerHTML = `${this.t('appTitle')} <span class="version">${this.t('version')}</span>`;
             }
+            
+            const appSubtitle = document.getElementById('appSubtitle');
+            if (appSubtitle) {
+                appSubtitle.textContent = this.t('appSubtitle');
+            }
+            
+            const badgeNew = document.querySelector('.badge');
+            if (badgeNew) {
+                badgeNew.textContent = this.t('badgeNew');
+            }
+            
+            // Aggiorna valori
+            const dailyBudget = document.getElementById('dailyBudget');
+            if (dailyBudget) {
+                dailyBudget.textContent = this.formatCurrency(this.calculateDailyBudget());
+            }
+            
+            const remaining = document.getElementById('remaining');
+            if (remaining) {
+                remaining.textContent = this.formatCurrency(this.calculateRemaining());
+            }
+            
+            const daysLeft = document.getElementById('daysLeft');
+            if (daysLeft) {
+                daysLeft.textContent = this.getDaysLeft();
+            }
+            
+            // Aggiorna info periodo
+            const periodInfo = document.getElementById('periodInfo');
+            if (periodInfo) {
+                periodInfo.textContent = this.t('periodInfo', { 
+                    start: this.data.periodStart, 
+                    end: this.data.periodEnd 
+                });
+            }
+
+            // Aggiorna etichette del riepilogo
+            const labelDailyBudget = document.getElementById('labelDailyBudget');
+            if (labelDailyBudget) {
+                labelDailyBudget.textContent = this.t('dailyBudget');
+            }
+            
+            const labelRemaining = document.getElementById('labelRemaining');
+            if (labelRemaining) {
+                labelRemaining.textContent = this.t('remaining');
+            }
+            
+            const labelDaysLeft = document.getElementById('labelDaysLeft');
+            if (labelDaysLeft) {
+                labelDaysLeft.textContent = this.t('daysLeft');
+            }
+
+            // Aggiorna sezioni
+            const sectionIncome = document.getElementById('sectionIncome');
+            if (sectionIncome) {
+                sectionIncome.textContent = this.t('incomeSection');
+            }
+            
+            const sectionFixedExpenses = document.getElementById('sectionFixedExpenses');
+            if (sectionFixedExpenses) {
+                sectionFixedExpenses.textContent = this.t('fixedExpensesSection');
+            }
+            
+            const sectionVariableExpenses = document.getElementById('sectionVariableExpenses');
+            if (sectionVariableExpenses) {
+                sectionVariableExpenses.textContent = this.t('variableExpensesSection');
+            }
+            
+            const sectionChart = document.getElementById('sectionChart');
+            if (sectionChart) {
+                sectionChart.textContent = this.t('chartSection');
+            }
+            
+            const sectionAssistant = document.getElementById('sectionAssistant');
+            if (sectionAssistant) {
+                sectionAssistant.textContent = this.t('assistantSection');
+            }
+            
+            const sectionSavings = document.getElementById('sectionSavings');
+            if (sectionSavings) {
+                sectionSavings.textContent = this.t('savingsSection');
+            }
+            
+            const sectionSettings = document.getElementById('sectionSettings');
+            if (sectionSettings) {
+                sectionSettings.textContent = this.t('settingsSection');
+            }
+
+            // Aggiorna etichette dei form
+            const labelTotalIncome = document.getElementById('labelTotalIncome');
+            if (labelTotalIncome) {
+                labelTotalIncome.textContent = this.t('labelTotalIncome');
+            }
+            
+            const labelDayOfMonth = document.getElementById('labelDayOfMonth');
+            if (labelDayOfMonth) {
+                labelDayOfMonth.textContent = this.t('labelDayOfMonth');
+            }
+            
+            const labelEndDate = document.getElementById('labelEndDate');
+            if (labelEndDate) {
+                labelEndDate.textContent = this.t('labelEndDate');
+            }
+            
+            const labelSelectDate = document.getElementById('labelSelectDate');
+            if (labelSelectDate) {
+                labelSelectDate.textContent = this.t('labelSelectDate');
+            }
+            
+            const labelThreshold = document.getElementById('labelThreshold');
+            if (labelThreshold) {
+                labelThreshold.textContent = this.t('labelThreshold');
+            }
+            
+            const labelLanguage = document.getElementById('labelLanguage');
+            if (labelLanguage) {
+                labelLanguage.textContent = this.t('labelLanguage');
+            }
+            
+            const labelBackup = document.getElementById('labelBackup');
+            if (labelBackup) {
+                labelBackup.textContent = this.t('labelBackup');
+            }
+            
+            const labelSavingsPercent = document.getElementById('labelSavingsPercent');
+            if (labelSavingsPercent) {
+                labelSavingsPercent.textContent = this.t('labelSavingsPercent');
+            }
+            
+            const labelSavingsGoal = document.getElementById('labelSavingsGoal');
+            if (labelSavingsGoal) {
+                labelSavingsGoal.textContent = this.t('labelSavingsGoal');
+            }
+
+            // Aggiorna placeholder
+            const incomeInput = document.getElementById('incomeInput');
+            if (incomeInput) {
+                incomeInput.placeholder = this.t('placeholderAmount');
+            }
+            
+            const fixedName = document.getElementById('fixedName');
+            if (fixedName) {
+                fixedName.placeholder = this.t('placeholderName');
+            }
+            
+            const fixedAmount = document.getElementById('fixedAmount');
+            if (fixedAmount) {
+                fixedAmount.placeholder = this.t('placeholderAmount');
+            }
+            
+            const fixedDay = document.getElementById('fixedDay');
+            if (fixedDay) {
+                fixedDay.placeholder = this.t('placeholderDay');
+            }
+            
+            const expenseName = document.getElementById('expenseName');
+            if (expenseName) {
+                expenseName.placeholder = this.t('placeholderWhatBought');
+            }
+            
+            const expenseAmount = document.getElementById('expenseAmount');
+            if (expenseAmount) {
+                expenseAmount.placeholder = this.t('placeholderAmount');
+            }
+            
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.placeholder = this.t('placeholderAskAssistant');
+            }
+            
+            // Aggiorna help text
+            const fixedHelpText = document.getElementById('fixedHelpText');
+            if (fixedHelpText) {
+                fixedHelpText.textContent = this.t('fixedHelpText');
+            }
+            
+            // Aggiorna opzioni del select delle categorie
+            const categorySelect = document.getElementById('expenseCategory');
+            if (categorySelect && categorySelect.options) {
+                const options = categorySelect.options;
+                if (options.length >= 6) {
+                    options[0].text = this.t('categoryGrocery');
+                    options[1].text = this.t('categoryTransport');
+                    options[2].text = this.t('categoryEntertainment');
+                    options[3].text = this.t('categoryHealth');
+                    options[4].text = this.t('categoryClothing');
+                    options[5].text = this.t('categoryOther');
+                }
+            }
+            
+            // Aggiorna bottoni
+            const saveIncomeBtn = document.getElementById('saveIncomeBtn');
+            if (saveIncomeBtn) {
+                saveIncomeBtn.textContent = this.t('btnSaveIncome');
+            }
+            
+            const addFixedBtn = document.getElementById('addFixedBtn');
+            if (addFixedBtn) {
+                addFixedBtn.textContent = this.t('btnAddFixedExpense');
+            }
+            
+            const addExpenseBtn = document.getElementById('addExpenseBtn');
+            if (addExpenseBtn) {
+                addExpenseBtn.textContent = this.t('btnAddExpense');
+            }
+            
+            const resetDayBtn = document.getElementById('resetDayBtn');
+            if (resetDayBtn) {
+                resetDayBtn.textContent = this.t('btnResetDay');
+            }
+            
+            const applySaveBtn = document.getElementById('applySaveBtn');
+            if (applySaveBtn) {
+                applySaveBtn.textContent = this.t('btnApplySavings');
+            }
+            
+            const backupBtn = document.getElementById('backupBtn');
+            if (backupBtn) {
+                backupBtn.textContent = this.t('btnDownloadBackup');
+            }
+            
+            const restoreBtn = document.getElementById('restoreBtn');
+            if (restoreBtn) {
+                restoreBtn.textContent = this.t('btnRestoreBackup');
+            }
+            
+            const resetAllBtn = document.getElementById('resetAllBtn');
+            if (resetAllBtn) {
+                resetAllBtn.textContent = this.t('btnResetAll');
+            }
+            
+            const exportCalendarBtn = document.getElementById('exportCalendarBtn');
+            if (exportCalendarBtn) {
+                exportCalendarBtn.textContent = this.t('btnExportCalendar');
+            }
+            
+            const sendChatBtn = document.getElementById('sendChatBtn');
+            if (sendChatBtn) {
+                sendChatBtn.textContent = this.t('btnSend');
+            }
+            
+            const voiceBtnText = document.getElementById('voiceBtnText');
+            if (voiceBtnText) {
+                voiceBtnText.textContent = this.t('btnVoice');
+            }
+            
+            // Aggiorna footer
+            const footerText = document.getElementById('footerText');
+            if (footerText) {
+                footerText.textContent = this.t('footerText');
+            }
+            
+            const footerFeatures = document.getElementById('footerFeatures');
+            if (footerFeatures) {
+                footerFeatures.textContent = this.t('footerFeatures');
+            }
+            
+            // Aggiorna chip dei suggerimenti
+            this.updateSuggestionChips();
+
+            // Aggiorna messaggio di benvenuto dell'assistente
+            const assistantWelcomeMessage = document.getElementById('assistantWelcomeMessage');
+            if (assistantWelcomeMessage) {
+                assistantWelcomeMessage.textContent = this.t('assistantWelcome');
+            }
+
+            // Aggiorna lista spese fisse
+            this.updateFixedExpensesList();
+            
+            // Aggiorna lista spese variabili
+            this.updateVariableExpensesList();
+            
+            // Aggiorna input con valori correnti
+            const savePercentInput = document.getElementById('savePercent');
+            if (savePercentInput) {
+                savePercentInput.value = this.data.savingsPercent;
+            }
+            
+            const saveGoalInput = document.getElementById('saveGoal');
+            if (saveGoalInput) {
+                saveGoalInput.value = this.data.savingsGoal;
+            }
+            
+            const thresholdInput = document.getElementById('thresholdInput');
+            if (thresholdInput) {
+                thresholdInput.value = this.data.threshold;
+            }
+            
+            const languageSelect = document.getElementById('languageSelect');
+            if (languageSelect) {
+                languageSelect.value = this.data.language;
+            }
+
+            // Aggiorna progress bar
+            const progress = this.calculateSavingsProgress();
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            
+            if (progressContainer && progressBar) {
+                if (progress > 0 && this.data.savingsGoal) {
+                    progressContainer.style.display = 'block';
+                    progressBar.style.width = progress + '%';
+                    progressBar.textContent = Math.round(progress) + '%';
+                } else {
+                    progressContainer.style.display = 'none';
+                }
+            }
+
+            // Aggiorna messaggio guida
+            this.showGuideMessage();
+        } catch (e) {
+            console.error('Errore in updateUI:', e);
         }
-        
-        // Aggiorna bottoni
-        document.getElementById('saveIncomeBtn').textContent = this.t('btnSaveIncome');
-        document.getElementById('addFixedBtn').textContent = this.t('btnAddFixedExpense');
-        document.getElementById('addExpenseBtn').textContent = this.t('btnAddExpense');
-        document.getElementById('resetDayBtn').textContent = this.t('btnResetDay');
-        document.getElementById('applySaveBtn').textContent = this.t('btnApplySavings');
-        document.getElementById('backupBtn').textContent = this.t('btnDownloadBackup');
-        document.getElementById('restoreBtn').textContent = this.t('btnRestoreBackup');
-        document.getElementById('resetAllBtn').textContent = this.t('btnResetAll');
-        document.getElementById('exportCalendarBtn').textContent = this.t('btnExportCalendar');
-        document.getElementById('sendChatBtn').textContent = this.t('btnSend');
-        document.getElementById('voiceBtnText').textContent = this.t('btnVoice');
-        
-        // Aggiorna footer
-        document.getElementById('footerText').textContent = this.t('footerText');
-        document.getElementById('footerFeatures').textContent = this.t('footerFeatures');
-        
-        // Aggiorna chip dei suggerimenti
-        this.updateSuggestionChips();
-
-        // Aggiorna messaggio di benvenuto dell'assistente
-        document.getElementById('assistantWelcomeMessage').textContent = this.t('assistantWelcome');
-
-        // Aggiorna lista spese fisse
-        this.updateFixedExpensesList();
-        
-        // Aggiorna lista spese variabili
-        this.updateVariableExpensesList();
-        
-        // Aggiorna input con valori correnti
-        document.getElementById('savePercent').value = this.data.savingsPercent;
-        document.getElementById('saveGoal').value = this.data.savingsGoal;
-        document.getElementById('thresholdInput').value = this.data.threshold;
-        document.getElementById('languageSelect').value = this.data.language;
-
-        // Aggiorna progress bar
-        const progress = this.calculateSavingsProgress();
-        if (progress > 0 && this.data.savingsGoal) {
-            document.getElementById('progressContainer').style.display = 'block';
-            document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressBar').textContent = Math.round(progress) + '%';
-        } else {
-            document.getElementById('progressContainer').style.display = 'none';
-        }
-
-        // Aggiorna messaggio guida
-        this.showGuideMessage();
     }
     
     updateSuggestionChips() {
-        const suggestion1 = document.getElementById('suggestion1');
-        const suggestion2 = document.getElementById('suggestion2');
-        const suggestion3 = document.getElementById('suggestion3');
-        const suggestion4 = document.getElementById('suggestion4');
-        
-        if (suggestion1) {
-            suggestion1.textContent = this.t('suggestionSave100');
-            suggestion1.setAttribute('data-question', this.data.language === 'it' ? 'Come posso risparmiare 100€ questo mese?' : 'How can I save 100€ this month?');
-        }
-        
-        if (suggestion2) {
-            suggestion2.textContent = this.t('suggestionSimulate');
-            suggestion2.setAttribute('data-question', this.data.language === 'it' ? 'Cosa succede se aumento le spese del 20%?' : 'What happens if I increase expenses by 20%?');
-        }
-        
-        if (suggestion3) {
-            suggestion3.textContent = this.t('suggestionGoal');
-            suggestion3.setAttribute('data-question', this.data.language === 'it' ? 'Quando raggiungerò il mio obiettivo?' : 'When will I reach my goal?');
-        }
-        
-        if (suggestion4) {
-            suggestion4.textContent = this.t('suggestionTopCategory');
-            suggestion4.setAttribute('data-question', this.data.language === 'it' ? 'Qual è la categoria dove spendo di più?' : 'What is the category where I spend the most?');
+        try {
+            const suggestion1 = document.getElementById('suggestion1');
+            const suggestion2 = document.getElementById('suggestion2');
+            const suggestion3 = document.getElementById('suggestion3');
+            const suggestion4 = document.getElementById('suggestion4');
+            
+            if (suggestion1) {
+                suggestion1.textContent = this.t('suggestionSave100');
+                suggestion1.setAttribute('data-question', this.data.language === 'it' ? 'Come posso risparmiare 100€ questo mese?' : 'How can I save 100€ this month?');
+            }
+            
+            if (suggestion2) {
+                suggestion2.textContent = this.t('suggestionSimulate');
+                suggestion2.setAttribute('data-question', this.data.language === 'it' ? 'Cosa succede se aumento le spese del 20%?' : 'What happens if I increase expenses by 20%?');
+            }
+            
+            if (suggestion3) {
+                suggestion3.textContent = this.t('suggestionGoal');
+                suggestion3.setAttribute('data-question', this.data.language === 'it' ? 'Quando raggiungerò il mio obiettivo?' : 'When will I reach my goal?');
+            }
+            
+            if (suggestion4) {
+                suggestion4.textContent = this.t('suggestionTopCategory');
+                suggestion4.setAttribute('data-question', this.data.language === 'it' ? 'Qual è la categoria dove spendo di più?' : 'What is the category where I spend the most?');
+            }
+        } catch (e) {
+            console.error('Errore in updateSuggestionChips:', e);
         }
     }
 
     updateFixedExpensesList() {
         const container = document.getElementById('fixedExpensesList');
-        if (this.data.fixedExpenses.length === 0) {
+        if (!container) return;
+        
+        if (!this.data.fixedExpenses || this.data.fixedExpenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noFixedExpenses')}</p>`;
             return;
         }
@@ -647,12 +973,12 @@ class BudgetWise {
             return `
                 <div class="expense-item">
                     <div class="expense-info">
-                        <span class="expense-name">${exp.name}</span>
+                        <span class="expense-name">${exp.name || ''}</span>
                         <span class="fixed-expense-detail">
-                            ${this.t('fixedExpenseDetail', { day: exp.day, endDate: exp.endDate, status: status })}
+                            ${this.t('fixedExpenseDetail', { day: exp.day || '', endDate: exp.endDate || '', status: status })}
                         </span>
                     </div>
-                    <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                    <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
                         <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
                     </div>
@@ -662,9 +988,14 @@ class BudgetWise {
     }
 
     updateVariableExpensesList() {
-        const date = document.getElementById('expenseDate').value;
+        const dateInput = document.getElementById('expenseDate');
+        if (!dateInput) return;
+        
+        const date = dateInput.value;
         const container = document.getElementById('variableExpensesList');
-        const expenses = this.data.variableExpenses[date] || [];
+        if (!container) return;
+        
+        const expenses = (this.data.variableExpenses && this.data.variableExpenses[date]) || [];
 
         if (expenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noVariableExpenses')}</p>`;
@@ -686,10 +1017,10 @@ class BudgetWise {
             return `
             <div class="expense-item">
                 <div class="expense-info">
-                    <span class="expense-name">${exp.name}</span>
+                    <span class="expense-name">${exp.name || ''}</span>
                     <span class="expense-category">${translatedCategory}</span>
                 </div>
-                <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                 <div class="expense-actions">
                     <button onclick="app.deleteVariableExpense('${date}', ${exp.id})">🗑️</button>
                 </div>
@@ -698,67 +1029,87 @@ class BudgetWise {
     }
 
     updateChart() {
-        const categories = {};
-        
-        Object.values(this.data.variableExpenses).forEach(day => {
-            day.forEach(expense => {
-                categories[expense.category] = (categories[expense.category] || 0) + expense.amount;
+        try {
+            const categories = {};
+            
+            Object.values(this.data.variableExpenses || {}).forEach(day => {
+                (day || []).forEach(expense => {
+                    const cat = expense.category || 'Altro';
+                    categories[cat] = (categories[cat] || 0) + (expense.amount || 0);
+                });
             });
-        });
 
-        if (Object.keys(categories).length === 0) {
-            document.getElementById('chartNote').style.display = 'block';
-            document.getElementById('chartNote').textContent = this.t('noChartData');
-            if (this.chart) this.chart.destroy();
-            return;
-        }
-
-        document.getElementById('chartNote').style.display = 'none';
-
-        if (this.chart) this.chart.destroy();
-
-        const translatedLabels = Object.keys(categories).map(cat => {
-            switch(cat) {
-                case 'Alimentari': return this.t('categoryGrocery');
-                case 'Trasporti': return this.t('categoryTransport');
-                case 'Svago': return this.t('categoryEntertainment');
-                case 'Salute': return this.t('categoryHealth');
-                case 'Abbigliamento': return this.t('categoryClothing');
-                default: return this.t('categoryOther');
+            const chartNote = document.getElementById('chartNote');
+            
+            if (Object.keys(categories).length === 0) {
+                if (chartNote) {
+                    chartNote.style.display = 'block';
+                    chartNote.textContent = this.t('noChartData');
+                }
+                if (this.chart) {
+                    this.chart.destroy();
+                    this.chart = null;
+                }
+                return;
             }
-        });
 
-        const ctx = document.getElementById('expenseChart').getContext('2d');
-        this.chart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: translatedLabels,
-                datasets: [{
-                    data: Object.values(categories),
-                    backgroundColor: [
-                        '#4361ee', '#4895ef', '#2dc653', '#ff9e00', '#ef233c', '#7209b7'
-                    ]
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom'
+            if (chartNote) {
+                chartNote.style.display = 'none';
+            }
+
+            if (this.chart) {
+                this.chart.destroy();
+            }
+
+            const translatedLabels = Object.keys(categories).map(cat => {
+                switch(cat) {
+                    case 'Alimentari': return this.t('categoryGrocery');
+                    case 'Trasporti': return this.t('categoryTransport');
+                    case 'Svago': return this.t('categoryEntertainment');
+                    case 'Salute': return this.t('categoryHealth');
+                    case 'Abbigliamento': return this.t('categoryClothing');
+                    default: return this.t('categoryOther');
+                }
+            });
+
+            const ctx = document.getElementById('expenseChart')?.getContext('2d');
+            if (!ctx) return;
+            
+            this.chart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: translatedLabels,
+                    datasets: [{
+                        data: Object.values(categories),
+                        backgroundColor: [
+                            '#4361ee', '#4895ef', '#2dc653', '#ff9e00', '#ef233c', '#7209b7'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
                     }
                 }
-            }
-        });
+            });
+        } catch (e) {
+            console.error('Errore in updateChart:', e);
+        }
     }
 
     // ========== UTILITY ==========
 
     formatCurrency(amount) {
-        return amount.toFixed(2).replace('.', ',') + ' €';
+        return (amount || 0).toFixed(2).replace('.', ',') + ' €';
     }
 
     showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
+        if (!toast) return;
+        
         toast.textContent = message;
         toast.style.background = type === 'success' ? '#2dc653' : '#ef233c';
         toast.classList.add('show');
@@ -770,6 +1121,8 @@ class BudgetWise {
 
     showGuideMessage() {
         const guideMsg = document.getElementById('guideMessage');
+        if (!guideMsg) return;
+        
         if (this.data.income === 0) {
             guideMsg.style.display = 'block';
             guideMsg.textContent = this.t('guideMessage');
@@ -790,21 +1143,25 @@ class BudgetWise {
 
     toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
+        const themeToggle = document.getElementById('themeToggle');
+        
         if (currentTheme === 'dark') {
             document.documentElement.removeAttribute('data-theme');
-            document.getElementById('themeToggle').textContent = '🌙';
+            if (themeToggle) themeToggle.textContent = '🌙';
         } else {
             document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeToggle').textContent = '☀️';
+            if (themeToggle) themeToggle.textContent = '☀️';
         }
         this.saveTheme();
     }
 
     applyTheme() {
         const savedTheme = localStorage.getItem('budgetwise-theme');
+        const themeToggle = document.getElementById('themeToggle');
+        
         if (savedTheme === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeToggle').textContent = '☀️';
+            if (themeToggle) themeToggle.textContent = '☀️';
         }
     }
 
@@ -816,13 +1173,21 @@ class BudgetWise {
     // ========== DATA PERSISTENCE ==========
 
     saveData() {
-        localStorage.setItem('budgetwise-data', JSON.stringify(this.data));
+        try {
+            localStorage.setItem('budgetwise-data', JSON.stringify(this.data));
+        } catch (e) {
+            console.error('Errore salvataggio dati:', e);
+        }
     }
 
     loadData() {
-        const saved = localStorage.getItem('budgetwise-data');
-        if (saved) {
-            this.data = JSON.parse(saved);
+        try {
+            const saved = localStorage.getItem('budgetwise-data');
+            if (saved) {
+                this.data = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error('Errore caricamento dati:', e);
         }
     }
 
@@ -882,14 +1247,14 @@ class BudgetWise {
     // ========== DELETE FUNCTIONS ==========
 
     deleteFixedExpense(id) {
-        this.data.fixedExpenses = this.data.fixedExpenses.filter(exp => exp.id !== id);
+        this.data.fixedExpenses = (this.data.fixedExpenses || []).filter(exp => exp.id !== id);
         this.saveData();
         this.updateUI();
         this.showToast(this.t('toastExpenseDeleted'));
     }
 
     deleteVariableExpense(date, id) {
-        if (this.data.variableExpenses[date]) {
+        if (this.data.variableExpenses && this.data.variableExpenses[date]) {
             this.data.variableExpenses[date] = this.data.variableExpenses[date].filter(exp => exp.id !== id);
             if (this.data.variableExpenses[date].length === 0) {
                 delete this.data.variableExpenses[date];
@@ -906,26 +1271,26 @@ class BudgetWise {
     exportToCalendar() {
         let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
         
-        this.data.fixedExpenses.forEach(exp => {
+        (this.data.fixedExpenses || []).forEach(exp => {
             const endDate = new Date(exp.endDate);
             if (endDate >= new Date()) {
                 icsContent += "BEGIN:VEVENT\n";
-                icsContent += `SUMMARY:💰 ${exp.name}\n`;
-                icsContent += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa di' : 'Fixed expense of'} ${this.formatCurrency(exp.amount)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day}\n`;
-                const nextDate = this.getNextPaymentDate(exp.day);
+                icsContent += `SUMMARY:💰 ${exp.name || ''}\n`;
+                icsContent += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa di' : 'Fixed expense of'} ${this.formatCurrency(exp.amount || 0)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day || ''}\n`;
+                const nextDate = this.getNextPaymentDate(exp.day || 1);
                 icsContent += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
-                icsContent += `RRULE:FREQ=MONTHLY;UNTIL=${exp.endDate.replace(/-/g, '')}\n`;
+                icsContent += `RRULE:FREQ=MONTHLY;UNTIL=${(exp.endDate || '').replace(/-/g, '')}\n`;
                 icsContent += "END:VEVENT\n";
             }
         });
 
-        Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
-            expenses.forEach(exp => {
+        Object.entries(this.data.variableExpenses || {}).forEach(([date, expenses]) => {
+            (expenses || []).forEach(exp => {
                 icsContent += "BEGIN:VEVENT\n";
-                icsContent += `SUMMARY:🛒 ${exp.name}\n`;
-                icsContent += `DESCRIPTION:${exp.category} - ${this.formatCurrency(exp.amount)}\n`;
-                icsContent += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
-                icsContent += `DTEND;VALUE=DATE:${date.replace(/-/g, '')}\n`;
+                icsContent += `SUMMARY:🛒 ${exp.name || ''}\n`;
+                icsContent += `DESCRIPTION:${exp.category || ''} - ${this.formatCurrency(exp.amount || 0)}\n`;
+                icsContent += `DTSTART;VALUE=DATE:${(date || '').replace(/-/g, '')}\n`;
+                icsContent += `DTEND;VALUE=DATE:${(date || '').replace(/-/g, '')}\n`;
                 icsContent += "END:VEVENT\n";
             });
         });
@@ -936,7 +1301,7 @@ class BudgetWise {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `budgetwise-${this.data.periodStart}.ics`;
+        a.download = `budgetwise-${this.data.periodStart || 'backup'}.ics`;
         a.click();
         
         this.showToast(this.t('toastCalendarExported'));
@@ -955,21 +1320,33 @@ class FinancialAssistant {
     }
 
     init() {
-        document.getElementById('sendChatBtn').addEventListener('click', () => this.handleUserInput());
-        document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.handleUserInput();
-        });
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        if (sendChatBtn) {
+            sendChatBtn.addEventListener('click', () => this.handleUserInput());
+        }
+        
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') this.handleUserInput();
+            });
+        }
         
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
             chip.addEventListener('click', () => {
-                document.getElementById('chatInput').value = chip.dataset.question;
-                this.handleUserInput();
+                const chatInput = document.getElementById('chatInput');
+                if (chatInput) {
+                    chatInput.value = chip.dataset.question;
+                    this.handleUserInput();
+                }
             });
         });
     }
 
     handleUserInput() {
         const input = document.getElementById('chatInput');
+        if (!input) return;
+        
         const question = input.value.trim();
         if (!question) return;
 
@@ -984,6 +1361,8 @@ class FinancialAssistant {
 
     addMessage(text, sender) {
         const container = document.getElementById('chatMessages');
+        if (!container) return;
+        
         const messageDiv = document.createElement('div');
         messageDiv.className = `chat-message ${sender}`;
         const senderName = sender === 'bot' ? (this.app.data.language === 'it' ? '🤖 Assistente' : '🤖 Assistant') : '👤 Tu';
@@ -1001,7 +1380,6 @@ class FinancialAssistant {
         const remaining = this.app.calculateRemaining();
         const dailyBudget = this.app.calculateDailyBudget();
         const totalSpent = this.app.calculateTotalVariableExpenses();
-        const totalFixed = this.app.calculateTotalFixedExpenses();
         const daysLeft = this.app.getDaysLeft();
 
         if (q.includes('risparmi') || q.includes('risparmiare') || q.includes('save') || q.includes('saving')) {
@@ -1103,9 +1481,10 @@ class FinancialAssistant {
 
     getTopCategory() {
         const categories = {};
-        Object.values(this.app.data.variableExpenses).forEach(day => {
-            day.forEach(exp => {
-                categories[exp.category] = (categories[exp.category] || 0) + exp.amount;
+        Object.values(this.app.data.variableExpenses || {}).forEach(day => {
+            (day || []).forEach(exp => {
+                const cat = exp.category || 'Altro';
+                categories[cat] = (categories[cat] || 0) + (exp.amount || 0);
             });
         });
         
@@ -1140,8 +1519,8 @@ class FinancialAssistant {
         for (let cat of categories) {
             if (q.includes(cat)) {
                 let total = 0;
-                Object.values(this.app.data.variableExpenses).forEach(day => {
-                    day.forEach(exp => {
+                Object.values(this.app.data.variableExpenses || {}).forEach(day => {
+                    (day || []).forEach(exp => {
                         let italianCat = '';
                         switch(cat) {
                             case 'alimentari': italianCat = 'Alimentari'; break;
@@ -1151,7 +1530,7 @@ class FinancialAssistant {
                             case 'abbigliamento': italianCat = 'Abbigliamento'; break;
                             default: italianCat = 'Altro';
                         }
-                        if (exp.category === italianCat) total += exp.amount;
+                        if (exp.category === italianCat) total += exp.amount || 0;
                     });
                 });
                 return total > 0 
@@ -1296,6 +1675,7 @@ class VoiceAssistant {
     updateUI(state, message) {
         const voiceBtn = document.getElementById('voiceBtn');
         const voiceStatus = document.getElementById('voiceStatus');
+        const voiceBtnText = document.getElementById('voiceBtnText');
         
         if (!voiceBtn || !voiceStatus) return;
 
@@ -1304,18 +1684,18 @@ class VoiceAssistant {
         switch(state) {
             case 'listening':
                 voiceBtn.classList.add('listening');
-                document.getElementById('voiceBtnText').textContent = this.app.t('stopListening');
+                if (voiceBtnText) voiceBtnText.textContent = this.app.t('stopListening');
                 break;
             case 'success':
                 voiceBtn.classList.add('success');
-                document.getElementById('voiceBtnText').textContent = this.app.t('btnVoice');
+                if (voiceBtnText) voiceBtnText.textContent = this.app.t('btnVoice');
                 break;
             case 'error':
                 voiceBtn.classList.add('error');
-                document.getElementById('voiceBtnText').textContent = this.app.t('btnVoice');
+                if (voiceBtnText) voiceBtnText.textContent = this.app.t('btnVoice');
                 break;
             default:
-                document.getElementById('voiceBtnText').textContent = this.app.t('btnVoice');
+                if (voiceBtnText) voiceBtnText.textContent = this.app.t('btnVoice');
         }
         
         voiceStatus.textContent = message;
@@ -1369,15 +1749,20 @@ class VoiceAssistant {
         
         name = remainingText || (this.app.data.language === 'it' ? 'Spesa vocale' : 'Voice expense');
         
-        document.getElementById('expenseName').value = name;
-        document.getElementById('expenseAmount').value = amount;
-        document.getElementById('expenseCategory').value = category;
+        const expenseName = document.getElementById('expenseName');
+        const expenseAmount = document.getElementById('expenseAmount');
+        const expenseCategory = document.getElementById('expenseCategory');
+        
+        if (expenseName) expenseName.value = name;
+        if (expenseAmount) expenseAmount.value = amount;
+        if (expenseCategory) expenseCategory.value = category;
         
         this.highlightFields();
         
         setTimeout(() => {
             if (confirm(`✅ ${this.app.data.language === 'it' ? 'Aggiungere' : 'Add'} "${name}" ${this.app.data.language === 'it' ? 'da' : 'for'} €${amount} ${this.app.data.language === 'it' ? 'in categoria' : 'in category'} ${category}?`)) {
-                document.getElementById('addExpenseBtn').click();
+                const addExpenseBtn = document.getElementById('addExpenseBtn');
+                if (addExpenseBtn) addExpenseBtn.click();
                 this.updateUI('success', `✓ ${this.app.data.language === 'it' ? 'Aggiunto' : 'Added'}: ${name} ${amount}€`);
             } else {
                 this.updateUI('idle', this.app.t('statusEditBeforeAdd'));
@@ -1389,6 +1774,8 @@ class VoiceAssistant {
         const fields = ['expenseName', 'expenseAmount', 'expenseCategory'];
         fields.forEach(id => {
             const field = document.getElementById(id);
+            if (!field) return;
+            
             field.style.transition = 'all 0.3s';
             field.style.backgroundColor = '#d4edda';
             field.style.borderColor = '#28a745';
@@ -1403,7 +1790,6 @@ class VoiceAssistant {
         const voiceRow = document.querySelector('.voice-row');
         if (!voiceRow) return;
         
-        // Controlla se già esiste per non duplicare
         if (document.querySelector('.voice-suggestions')) return;
         
         const suggestionsDiv = document.createElement('div');
@@ -1423,7 +1809,10 @@ class VoiceAssistant {
         document.querySelectorAll('.voice-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const voiceText = chip.dataset.voice;
-                document.getElementById('voiceStatus').textContent = `🔊 ${this.app.data.language === 'it' ? 'Simulo' : 'Simulating'}: "${voiceText}"`;
+                const voiceStatus = document.getElementById('voiceStatus');
+                if (voiceStatus) {
+                    voiceStatus.textContent = `🔊 ${this.app.data.language === 'it' ? 'Simulo' : 'Simulating'}: "${voiceText}"`;
+                }
                 this.processVoiceCommand(voiceText);
             });
         });
@@ -1434,10 +1823,22 @@ class VoiceAssistant {
 // INIZIALIZZAZIONE
 // ============================================
 
-const app = new BudgetWise();
-const assistant = new FinancialAssistant(app);
-const voiceAssistant = new VoiceAssistant(app);
+// Crea le istanze globali
+let app, assistant, voiceAssistant;
 
-window.app = app;
-window.assistant = assistant;
-window.voiceAssistant = voiceAssistant;
+// Avvia tutto quando il DOM è caricato
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        app = new BudgetWise();
+        assistant = new FinancialAssistant(app);
+        voiceAssistant = new VoiceAssistant(app);
+        
+        window.app = app;
+        window.assistant = assistant;
+        window.voiceAssistant = voiceAssistant;
+        
+        console.log('✅ App inizializzata correttamente');
+    } catch (e) {
+        console.error('❌ Errore inizializzazione app:', e);
+    }
+});
