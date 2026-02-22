@@ -5,7 +5,7 @@
 class BudgetWise {
     constructor() {
         this.data = {
-            incomes: [],                    // Cambiato da income a incomes array
+            incomes: [],
             fixedExpenses: [],
             variableExpenses: {},
             savingsPercent: 0,
@@ -18,7 +18,7 @@ class BudgetWise {
         
         this.chart = null;
         
-        // ========== SISTEMA DI TRADUZIONE ==========
+        // ========== SISTEMA DI TRADUZIONE COMPLETO ==========
         this.translations = {
             it: {
                 // Generali
@@ -53,7 +53,7 @@ class BudgetWise {
                 export: '📅 Esporta in Calendar',
                 send: 'Invia',
                 
-                // Placeholder
+                // Placeholder e testi form
                 incomeDesc: 'Descrizione (es. Stipendio)',
                 incomeAmount: 'Importo €',
                 fixedName: 'Nome (es. Mutuo)',
@@ -74,7 +74,7 @@ class BudgetWise {
                 backupLabel: '📅 Backup dati',
                 
                 // Testi informativi
-                micFixed: '🎤 Tocca e di\' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")',
+                micFixed: '🎤 Tocca e di\' tutto in una frase',
                 micVariable: '🎤 Tocca per parlare',
                 helpFixed: '⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza',
                 chartNote: 'Aggiungi spese per vedere il grafico',
@@ -118,7 +118,18 @@ class BudgetWise {
                 
                 // Risposte chat
                 noGoal: 'Non hai ancora impostato un obiettivo di risparmio. Vai nella sezione 🎯 e impostalo!',
-                noExpenses: 'Non hai ancora spese registrate. Aggiungine qualcuna per avere un\'analisi!'
+                noExpenses: 'Non hai ancora spese registrate. Aggiungine qualcuna per avere un\'analisi!',
+                
+                // Footer
+                footerText: 'BudgetWise 2.0 — Gestione intelligente delle tue finanze',
+                footerFeatures: '✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro',
+                
+                // Placeholder date
+                datePlaceholder: 'gg/mm/aaaa',
+                
+                // Testi aggiuntivi
+                fixedVoiceButton: '🎤 Inserisci spesa fissa con voce',
+                variableVoiceButton: '🎤 Inserisci con voce'
             },
             en: {
                 // General
@@ -153,7 +164,7 @@ class BudgetWise {
                 export: '📅 Export to Calendar',
                 send: 'Send',
                 
-                // Placeholder
+                // Placeholders and form texts
                 incomeDesc: 'Description (e.g. Salary)',
                 incomeAmount: 'Amount €',
                 fixedName: 'Name (e.g. Mortgage)',
@@ -174,7 +185,7 @@ class BudgetWise {
                 backupLabel: '📅 Data backup',
                 
                 // Info texts
-                micFixed: '🎤 Say everything in one phrase (e.g. "Mortgage 500 euro day 27 expiry 31 12 2030")',
+                micFixed: '🎤 Say everything in one phrase',
                 micVariable: '🎤 Tap to speak',
                 helpFixed: '⏰ Automatically counted each month until expiry',
                 chartNote: 'Add expenses to see chart',
@@ -218,7 +229,18 @@ class BudgetWise {
                 
                 // Chat responses
                 noGoal: 'You haven\'t set a savings goal yet. Go to the 🎯 section and set one!',
-                noExpenses: 'You haven\'t recorded any expenses yet. Add some to get an analysis!'
+                noExpenses: 'You haven\'t recorded any expenses yet. Add some to get an analysis!',
+                
+                // Footer
+                footerText: 'BudgetWise 2.0 — Smart financial management',
+                footerFeatures: '✨ AI Assistant • Voice recognition • Dark theme',
+                
+                // Date placeholder
+                datePlaceholder: 'mm/dd/yyyy',
+                
+                // Additional texts
+                fixedVoiceButton: '🎤 Add fixed expense with voice',
+                variableVoiceButton: '🎤 Add with voice'
             }
         };
         
@@ -232,7 +254,7 @@ class BudgetWise {
         this.updateUI();
         this.updateChart();
         this.setupVoice();
-        this.applyLanguage(); // Applica lingua all'avvio
+        this.applyLanguage();
     }
 
     getDefaultPeriodStart() {
@@ -247,71 +269,49 @@ class BudgetWise {
     }
 
     setupEventListeners() {
-        // Tema
         document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
-
-        // Entrate (multiple)
         document.getElementById('addIncomeBtn').addEventListener('click', () => this.addIncome());
-
-        // Spese fisse
         document.getElementById('addFixedBtn').addEventListener('click', () => this.addFixedExpense());
-
-        // Spese variabili
         document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
         document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
         document.getElementById('expenseDate').valueAsDate = new Date();
-
-        // Risparmio
         document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
-
-        // Backup
         document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
         document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
         document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
-
-        // Reset
         document.getElementById('resetAllBtn').addEventListener('click', () => this.resetAll());
-
-        // Esportazione calendario
         document.getElementById('exportCalendarBtn').addEventListener('click', () => this.exportToCalendar());
-
-        // Soglia
-        document.getElementById('thresholdInput').addEventListener('change', (e) => {
-            this.data.threshold = parseFloat(e.target.value) || 50;
-            this.saveData();
-        });
-
-        // Lingua
-        document.getElementById('languageSelect').addEventListener('change', (e) => {
-            this.data.language = e.target.value;
-            this.saveData();
-            this.applyLanguage();
-        });
-
-        // Salvataggio automatico percentuale
-        document.getElementById('savePercent').addEventListener('input', (e) => {
-            this.data.savingsPercent = parseFloat(e.target.value) || 0;
-            this.saveData();
-        });
-
-        // Salvataggio automatico obiettivo
-        document.getElementById('saveGoal').addEventListener('input', (e) => {
-            this.data.savingsGoal = parseFloat(e.target.value) || 0;
-            this.saveData();
-        });
-
-        // Chat
         document.getElementById('sendChatBtn').addEventListener('click', () => this.handleChatInput());
         document.getElementById('chatInput').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') this.handleChatInput();
         });
 
-        // Chip suggerimenti
         document.querySelectorAll('.suggestion-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 document.getElementById('chatInput').value = chip.dataset.question;
                 this.handleChatInput();
             });
+        });
+
+        document.getElementById('thresholdInput').addEventListener('change', (e) => {
+            this.data.threshold = parseFloat(e.target.value) || 50;
+            this.saveData();
+        });
+
+        document.getElementById('savePercent').addEventListener('input', (e) => {
+            this.data.savingsPercent = parseFloat(e.target.value) || 0;
+            this.saveData();
+        });
+
+        document.getElementById('saveGoal').addEventListener('input', (e) => {
+            this.data.savingsGoal = parseFloat(e.target.value) || 0;
+            this.saveData();
+        });
+
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            this.data.language = e.target.value;
+            this.saveData();
+            this.applyLanguage();
         });
     }
 
@@ -323,15 +323,12 @@ class BudgetWise {
     applyLanguage() {
         console.log('🌐 Cambio lingua a:', this.data.language);
         
-        // Imposta select
         document.getElementById('languageSelect').value = this.data.language;
         
-        // Subtitle
         document.querySelector('.subtitle').textContent = this.data.language === 'it' 
             ? 'Stipendio a stipendio — gestione intelligente con AI'
             : 'Paycheck to paycheck — smart management with AI';
         
-        // Summary labels
         const summaryLabels = document.querySelectorAll('.summary-label');
         if (summaryLabels.length >= 3) {
             summaryLabels[0].textContent = this.t('budget');
@@ -339,7 +336,6 @@ class BudgetWise {
             summaryLabels[2].textContent = this.t('days');
         }
         
-        // Titoli sezioni
         const h2s = document.querySelectorAll('h2');
         h2s.forEach(h2 => {
             const text = h2.textContent;
@@ -352,11 +348,9 @@ class BudgetWise {
             else if (text.includes('⚙️')) h2.innerHTML = this.t('settings');
         });
         
-        // Badge
         const badge = document.querySelector('.badge');
         if (badge) badge.textContent = this.t('badge');
         
-        // Pulsanti
         document.getElementById('addIncomeBtn').innerHTML = this.t('addIncome');
         document.getElementById('addFixedBtn').innerHTML = this.t('addFixed');
         document.getElementById('addExpenseBtn').innerHTML = this.t('addExpense');
@@ -368,7 +362,6 @@ class BudgetWise {
         document.getElementById('exportCalendarBtn').textContent = this.t('export');
         document.getElementById('sendChatBtn').textContent = this.t('send');
         
-        // Placeholder
         document.getElementById('incomeDesc').placeholder = this.t('incomeDesc');
         document.getElementById('incomeAmount').placeholder = this.t('incomeAmount');
         document.getElementById('fixedName').placeholder = this.t('fixedName');
@@ -378,7 +371,6 @@ class BudgetWise {
         document.getElementById('expenseAmount').placeholder = this.t('expenseAmount');
         document.getElementById('chatInput').placeholder = this.t('chatPlaceholder');
         
-        // Etichette form
         const dateLabel = document.querySelector('.date-selector label');
         if (dateLabel) dateLabel.textContent = this.t('dateLabel');
         
@@ -396,14 +388,12 @@ class BudgetWise {
         
         document.getElementById('chartNote').textContent = this.t('chartNote');
         
-        // Risparmio
         const percentLabel = document.querySelector('.input-group label[for="savePercent"]');
         if (percentLabel) percentLabel.textContent = this.t('percentLabel');
         
         const goalLabel = document.querySelector('.input-group label[for="saveGoal"]');
         if (goalLabel) goalLabel.textContent = this.t('goalLabel');
         
-        // Impostazioni
         const settingLabels = document.querySelectorAll('.setting-item label');
         if (settingLabels.length >= 3) {
             settingLabels[0].innerHTML = this.t('thresholdLabel');
@@ -411,7 +401,6 @@ class BudgetWise {
             settingLabels[2].innerHTML = this.t('backupLabel');
         }
         
-        // Chat
         const welcomeMessage = document.querySelector('.chat-message.bot .message-text');
         if (welcomeMessage) welcomeMessage.textContent = this.t('welcomeMessage');
         
@@ -423,10 +412,36 @@ class BudgetWise {
             suggestionChips[3].textContent = this.t('suggestion4');
         }
         
-        // Messaggio guida
         document.getElementById('guideMessage').textContent = this.t('startGuide');
         
-        // Periodo
+        // NUOVE TRADUZIONI AGGIUNTE
+        const fixedVoiceBtn = document.getElementById('micFixedBtn');
+        if (fixedVoiceBtn) {
+            const span = fixedVoiceBtn.querySelector('span');
+            if (span) span.textContent = this.t('fixedVoiceButton');
+        }
+        
+        const variableVoiceBtn = document.getElementById('voiceBtn');
+        if (variableVoiceBtn) {
+            const span = variableVoiceBtn.querySelector('span');
+            if (span) span.textContent = this.t('variableVoiceButton');
+        }
+        
+        const assistantNameSpan = document.getElementById('assistantNameLabel');
+        if (assistantNameSpan) {
+            assistantNameSpan.textContent = '🤖 ' + this.t('assistantName') + ':';
+        }
+        
+        const footerText = document.querySelector('.footer p:first-child');
+        if (footerText) {
+            footerText.textContent = this.t('footerText');
+        }
+        
+        const footerFeatures = document.querySelector('.footer p:last-child');
+        if (footerFeatures) {
+            footerFeatures.textContent = this.t('footerFeatures');
+        }
+        
         this.updatePeriodInfo();
     }
 
@@ -892,7 +907,6 @@ class BudgetWise {
             return `🎯 ${this.data.language === 'it' ? 'Raggiungerai l\'obiettivo in' : 'You\'ll reach your goal in'} ${monthsNeeded} ${this.data.language === 'it' ? 'mesi' : 'months'}.`;
         }
 
-        // Risposta generica
         return this.getContextualAdvice();
     }
 
@@ -926,7 +940,7 @@ class BudgetWise {
             document.getElementById('themeToggle').textContent = '☀️';
         }
         this.saveTheme();
-        this.updateChart(); // Aggiorna grafico con nuovi colori
+        this.updateChart();
     }
 
     applyTheme() {
@@ -951,7 +965,6 @@ class BudgetWise {
         const saved = localStorage.getItem('budgetwise-data');
         if (saved) {
             const parsed = JSON.parse(saved);
-            // Migrazione da vecchia struttura a nuova
             if (parsed.income !== undefined && !parsed.incomes) {
                 parsed.incomes = [{
                     desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
@@ -1062,6 +1075,8 @@ class BudgetWise {
 
     // ========== VOCE ==========
     setupVoice() {
+        console.log('Setup voice...');
+        
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.warn('Riconoscimento vocale non supportato');
             const voiceBtn = document.getElementById('voiceBtn');
@@ -1072,6 +1087,8 @@ class BudgetWise {
             return;
         }
 
+        console.log('✅ Riconoscimento vocale supportato');
+        
         const voiceBtn = document.getElementById('voiceBtn');
         if (voiceBtn) {
             voiceBtn.addEventListener('click', () => this.startVoiceInput());
@@ -1081,7 +1098,7 @@ class BudgetWise {
     startVoiceInput() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.lang = 'it-IT';
+        recognition.lang = this.data.language === 'it' ? 'it-IT' : 'en-US';
         recognition.interimResults = true;
 
         const voiceBtn = document.getElementById('voiceBtn');
@@ -1120,8 +1137,8 @@ class BudgetWise {
     processVoiceCommand(transcript) {
         const amountMatch = transcript.match(/(\d+[.,]?\d*)/);
         if (amountMatch) {
-            const amount = parseFloat(amountMatch[1].replace(',', '.'));
-            let description = transcript.replace(amountMatch[1], '').replace(/euro|€/gi, '').trim();
+            const amount = parseFloat(amountMatch[0].replace(',', '.'));
+            let description = transcript.replace(amountMatch[0], '').replace(/euro|€|euros/gi, '').trim();
             
             document.getElementById('expenseName').value = description || (this.data.language === 'it' ? 'Spesa' : 'Expense');
             document.getElementById('expenseAmount').value = amount;
