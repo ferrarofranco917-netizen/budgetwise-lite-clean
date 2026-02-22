@@ -124,12 +124,17 @@ class BudgetWise {
                 footerText: 'BudgetWise 2.0 — Gestione intelligente delle tue finanze',
                 footerFeatures: '✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro',
                 
-                // Placeholder date
-                datePlaceholder: 'gg/mm/aaaa',
-                
                 // Testi aggiuntivi
                 fixedVoiceButton: '🎤 Inserisci spesa fissa con voce',
-                variableVoiceButton: '🎤 Inserisci con voce'
+                variableVoiceButton: '🎤 Inserisci con voce',
+                
+                // Categorie
+                categoryAlimentari: '🍎 Alimentari',
+                categoryTrasporti: '🚗 Trasporti',
+                categorySvago: '🎮 Svago',
+                categorySalute: '💊 Salute',
+                categoryAbbigliamento: '👕 Abbigliamento',
+                categoryAltro: '📦 Altro'
             },
             en: {
                 // General
@@ -235,12 +240,17 @@ class BudgetWise {
                 footerText: 'BudgetWise 2.0 — Smart financial management',
                 footerFeatures: '✨ AI Assistant • Voice recognition • Dark theme',
                 
-                // Date placeholder
-                datePlaceholder: 'mm/dd/yyyy',
-                
                 // Additional texts
                 fixedVoiceButton: '🎤 Add fixed expense with voice',
-                variableVoiceButton: '🎤 Add with voice'
+                variableVoiceButton: '🎤 Add with voice',
+                
+                // Categories
+                categoryAlimentari: '🍎 Groceries',
+                categoryTrasporti: '🚗 Transport',
+                categorySvago: '🎮 Leisure',
+                categorySalute: '💊 Health',
+                categoryAbbigliamento: '👕 Clothing',
+                categoryAltro: '📦 Other'
             }
         };
         
@@ -414,32 +424,46 @@ class BudgetWise {
         
         document.getElementById('guideMessage').textContent = this.t('startGuide');
         
-        // NUOVE TRADUZIONI AGGIUNTE
-        const fixedVoiceBtn = document.getElementById('micFixedBtn');
-        if (fixedVoiceBtn) {
-            const span = fixedVoiceBtn.querySelector('span');
-            if (span) span.textContent = this.t('fixedVoiceButton');
-        }
+        // ===== NUOVE TRADUZIONI AGGIUNTE =====
         
-        const variableVoiceBtn = document.getElementById('voiceBtn');
-        if (variableVoiceBtn) {
-            const span = variableVoiceBtn.querySelector('span');
-            if (span) span.textContent = this.t('variableVoiceButton');
-        }
+        // Traduci i testi dei pulsanti microfono
+        const micFixedSpan = document.getElementById('micFixedText');
+        if (micFixedSpan) micFixedSpan.textContent = this.t('fixedVoiceButton');
+
+        const voiceBtnSpan = document.getElementById('voiceBtnText');
+        if (voiceBtnSpan) voiceBtnSpan.textContent = this.t('variableVoiceButton');
+
+        // Traduci l'etichetta "Totale entrate"
+        const totalIncomeLabel = document.getElementById('totalIncomeLabel');
+        if (totalIncomeLabel) totalIncomeLabel.textContent = this.t('totalIncome');
+
+        // Traduci il footer
+        const footerText = document.getElementById('footerText');
+        if (footerText) footerText.textContent = this.t('footerText');
+
+        const footerFeatures = document.getElementById('footerFeatures');
+        if (footerFeatures) footerFeatures.textContent = this.t('footerFeatures');
+
+        // Traduci le etichette del summary (se non già tradotte)
+        const budgetLabel = document.getElementById('budgetLabel');
+        if (budgetLabel) budgetLabel.textContent = this.t('budget');
         
-        const assistantNameSpan = document.getElementById('assistantNameLabel');
-        if (assistantNameSpan) {
-            assistantNameSpan.textContent = '🤖 ' + this.t('assistantName') + ':';
-        }
+        const remainingLabel = document.getElementById('remainingLabel');
+        if (remainingLabel) remainingLabel.textContent = this.t('remaining');
         
-        const footerText = document.querySelector('.footer p:first-child');
-        if (footerText) {
-            footerText.textContent = this.t('footerText');
-        }
+        const daysLabel = document.getElementById('daysLabel');
+        if (daysLabel) daysLabel.textContent = this.t('days');
         
-        const footerFeatures = document.querySelector('.footer p:last-child');
-        if (footerFeatures) {
-            footerFeatures.textContent = this.t('footerFeatures');
+        // Traduci le categorie nel select
+        const categorySelect = document.getElementById('expenseCategory');
+        if (categorySelect) {
+            const options = categorySelect.options;
+            options[0].text = this.t('categoryAlimentari');
+            options[1].text = this.t('categoryTrasporti');
+            options[2].text = this.t('categorySvago');
+            options[3].text = this.t('categorySalute');
+            options[4].text = this.t('categoryAbbigliamento');
+            options[5].text = this.t('categoryAltro');
         }
         
         this.updatePeriodInfo();
@@ -769,7 +793,7 @@ class BudgetWise {
             <div class="expense-item">
                 <div class="expense-info">
                     <span class="expense-name">${exp.name}</span>
-                    <span class="expense-category">${exp.category}</span>
+                    <span class="expense-category">${this.t('category' + exp.category)}</span>
                 </div>
                 <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
                 <div class="expense-actions">
@@ -784,7 +808,8 @@ class BudgetWise {
         
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(expense => {
-                categories[expense.category] = (categories[expense.category] || 0) + expense.amount;
+                const catName = this.t('category' + expense.category);
+                categories[catName] = (categories[catName] || 0) + expense.amount;
             });
         });
 
@@ -880,7 +905,8 @@ class BudgetWise {
             const categories = {};
             Object.values(this.data.variableExpenses).forEach(day => {
                 day.forEach(exp => {
-                    categories[exp.category] = (categories[exp.category] || 0) + exp.amount;
+                    const catName = this.t('category' + exp.category);
+                    categories[catName] = (categories[catName] || 0) + exp.amount;
                 });
             });
             
