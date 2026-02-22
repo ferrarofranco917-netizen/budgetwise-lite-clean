@@ -192,26 +192,35 @@
             </div>
         </div>
 
-        <!-- IMPOSTAZIONI -->
-        <div class="section-card">
-            <h2>⚙️ Impostazioni</h2>
-            <div class="section-content">
-                <div class="setting-item">
-                    <label>🔔 Soglia avviso (€)</label>
-                    <input type="number" id="thresholdInput" value="50" step="5">
-                </div>
-                <div class="setting-item">
-                    <label>📅 Backup dati</label>
-                    <div class="button-group">
-                        <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
-                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
-                        <button class="btn-secondary" id="restoreBtn">📂 Ripristina</button>
-                    </div>
-                </div>
-                <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
+        <!-- IMPOSTAZIONI CON LINGUA -->
+<div class="section-card">
+    <h2>⚙️ Impostazioni</h2>
+    <div class="section-content">
+        <div class="setting-item">
+            <label>🔔 Soglia avviso (€)</label>
+            <input type="number" id="thresholdInput" value="50" step="5">
+        </div>
+        
+        <!-- SELEZIONE LINGUA (NUOVO) -->
+        <div class="setting-item">
+            <label>🌍 Lingua / Language</label>
+            <select id="languageSelect" class="language-select">
+                <option value="it">🇮🇹 Italiano</option>
+                <option value="en">🇬🇧 English</option>
+            </select>
+        </div>
+        
+        <div class="setting-item">
+            <label>📅 Backup dati</label>
+            <div class="button-group">
+                <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
+                <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                <button class="btn-secondary" id="restoreBtn">📂 Ripristina</button>
             </div>
         </div>
-
+        <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
+    </div>
+</div>
         <!-- FOOTER -->
         <div class="footer">
             <p>BudgetWise 2.0 — Gestione intelligente</p>
@@ -222,3 +231,4 @@
     <script src="app.js"></script>
 </body>
 </html>
+
