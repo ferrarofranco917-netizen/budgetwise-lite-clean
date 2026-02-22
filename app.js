@@ -1,5 +1,5 @@
 // ============================================
-// BUDGETWISE - VERSIONE CON TRADUZIONE IT/EN
+// BUDGETWISE - VERSIONE CON TRADUZIONE FUNZIONANTE
 // ============================================
 
 class BudgetWise {
@@ -29,8 +29,6 @@ class BudgetWise {
                 // Messaggi
                 iniziaEntrate: '👋 Inizia inserendo le tue entrate nella sezione qui sotto!',
                 operazioneOk: '✅ Operazione completata',
-                attenzione: '⚠️ Attenzione',
-                errore: '❌ Errore',
                 
                 // Sezioni
                 entrate: '🏦 Entrate del periodo',
@@ -104,14 +102,11 @@ class BudgetWise {
                 descrizioneInserita: '✅ Descrizione inserita',
                 superataSoglia: '⚠️ Superata soglia di ',
                 erroreMicrofono: '❌ Errore microfono',
-                microfonoNonSupportato: '❌ Microfono non supportato',
-                permessoNegato: '⚠️ Concedi accesso al microfono',
-                ascolto: '🎤 Ascolto...',
-                parlaCalma: '🎤 Parla con calma (15 secondi)...',
-                parlaOra: '🎤 Parla ora (8 secondi)...',
-                faiDomanda: '🎤 Fai la tua domanda...',
+                compilaCampi: '⚠️ Compila tutti i campi',
+                giornoNonValido: '⚠️ Giorno non valido',
+                importoNonTrovato: '❌ Importo non trovato',
                 
-                // Risposte chat
+                // Chat responses
                 totaleEntrate: '💰 Totale entrate: ',
                 totaleSpese: '📉 Totale spese: ',
                 puoiRisparmiare: '💪 Puoi risparmiare ',
@@ -121,10 +116,7 @@ class BudgetWise {
                 disponibili: ' disponibili.',
                 
                 // Conferme
-                cancellareDati: 'Cancellare TUTTI i dati?',
-                compilaCampi: '⚠️ Compila tutti i campi',
-                giornoNonValido: '⚠️ Giorno non valido',
-                importoNonTrovato: '❌ Importo non trovato'
+                cancellareDati: 'Cancellare TUTTI i dati?'
             },
             en: {
                 // General
@@ -137,8 +129,6 @@ class BudgetWise {
                 // Messages
                 iniziaEntrate: '👋 Start by adding your income below!',
                 operazioneOk: '✅ Operation completed',
-                attenzione: '⚠️ Warning',
-                errore: '❌ Error',
                 
                 // Sections
                 entrate: '🏦 Period income',
@@ -212,12 +202,9 @@ class BudgetWise {
                 descrizioneInserita: '✅ Description entered',
                 superataSoglia: '⚠️ Threshold exceeded ',
                 erroreMicrofono: '❌ Microphone error',
-                microfonoNonSupportato: '❌ Microphone not supported',
-                permessoNegato: '⚠️ Grant microphone access',
-                ascolto: '🎤 Listening...',
-                parlaCalma: '🎤 Speak calmly (15 seconds)...',
-                parlaOra: '🎤 Speak now (8 seconds)...',
-                faiDomanda: '🎤 Ask your question...',
+                compilaCampi: '⚠️ Fill all fields',
+                giornoNonValido: '⚠️ Invalid day',
+                importoNonTrovato: '❌ Amount not found',
                 
                 // Chat responses
                 totaleEntrate: '💰 Total income: ',
@@ -229,10 +216,7 @@ class BudgetWise {
                 disponibili: ' available.',
                 
                 // Confirmations
-                cancellareDati: 'Delete ALL data?',
-                compilaCampi: '⚠️ Fill all fields',
-                giornoNonValido: '⚠️ Invalid day',
-                importoNonTrovato: '❌ Amount not found'
+                cancellareDati: 'Delete ALL data?'
             }
         };
         
@@ -243,7 +227,7 @@ class BudgetWise {
         this.loadData();
         this.setupEventListeners();
         this.applyTheme();
-        this.applyLanguage();
+        this.applyLanguage(); // Applica lingua al caricamento
         this.updateUI();
         this.updateChart();
         this.setupVoice();
@@ -300,81 +284,155 @@ class BudgetWise {
             this.saveData();
         });
 
-        // NUOVO: Event listener per cambio lingua
-        document.getElementById('languageSelect').addEventListener('change', (e) => {
-            this.data.language = e.target.value;
-            this.saveData();
-            this.applyLanguage();
-        });
+        // Event listener per cambio lingua (FIXATO)
+        const languageSelect = document.getElementById('languageSelect');
+        if (languageSelect) {
+            languageSelect.addEventListener('change', (e) => {
+                console.log('Lingua cambiata a:', e.target.value);
+                this.data.language = e.target.value;
+                this.saveData();
+                this.applyLanguage();
+            });
+        }
     }
 
-    // ========== TRADUZIONE ==========
+    // ========== TRADUZIONE (FIXATA) ==========
     t(key) {
         return this.translations[this.data.language][key] || key;
     }
 
     applyLanguage() {
-        // Imposta il valore del select
-        document.getElementById('languageSelect').value = this.data.language;
+        console.log('Applico lingua:', this.data.language);
         
-        // Testi statici
+        // Imposta il valore del select
+        const languageSelect = document.getElementById('languageSelect');
+        if (languageSelect) languageSelect.value = this.data.language;
+        
+        // Testi fissi
         document.querySelector('.subtitle').textContent = this.data.language === 'it' 
             ? 'Stipendio a stipendio — gestione intelligente' 
             : 'Paycheck to paycheck — smart management';
         
-        // Sezioni
-        document.querySelector('.section-card:nth-child(5) h2').innerHTML = this.t('entrate');
-        document.querySelector('.section-card:nth-child(6) h2').innerHTML = this.t('speseFisse');
-        document.querySelector('.section-card:nth-child(7) h2').innerHTML = this.t('speseVariabili');
-        document.querySelector('.section-card:nth-child(8) h2').innerHTML = this.t('grafico');
-        document.querySelector('.section-card:nth-child(9) h2').innerHTML = this.t('assistente');
-        document.querySelector('.section-card:nth-child(10) h2').innerHTML = this.t('risparmio');
-        document.querySelector('.section-card:nth-child(11) h2').innerHTML = this.t('impostazioni');
+        // Sezioni (usando gli ID o classi specifiche)
+        const sectionTitles = document.querySelectorAll('.section-card h2');
+        if (sectionTitles.length >= 7) {
+            sectionTitles[0].innerHTML = this.t('entrate');
+            sectionTitles[1].innerHTML = this.t('speseFisse');
+            sectionTitles[2].innerHTML = this.t('speseVariabili');
+            sectionTitles[3].innerHTML = this.t('grafico');
+            sectionTitles[4].innerHTML = this.t('assistente');
+            sectionTitles[5].innerHTML = this.t('risparmio');
+            sectionTitles[6].innerHTML = this.t('impostazioni');
+        }
         
         // Badge
-        document.querySelector('.badge').textContent = this.data.language === 'it' ? 'multiplo' : 'multiple';
+        const badge = document.querySelector('.badge');
+        if (badge) badge.textContent = this.data.language === 'it' ? 'multiplo' : 'multiple';
         
-        // Placeholder e testi
-        document.getElementById('incomeDesc').placeholder = this.t('descrizione');
-        document.getElementById('incomeAmount').placeholder = this.t('importo');
-        document.getElementById('addIncomeBtn').innerHTML = `➕ ${this.t('aggiungiEntrata')}`;
-        document.querySelector('#incomeList + p .help-text span').textContent = this.t('totEntrate');
+        // Placeholder e testi form
+        const incomeDesc = document.getElementById('incomeDesc');
+        if (incomeDesc) incomeDesc.placeholder = this.t('descrizione');
         
-        document.getElementById('fixedName').placeholder = this.t('nomeSpesa');
-        document.getElementById('fixedAmount').placeholder = this.t('importo');
-        document.getElementById('fixedDay').placeholder = this.t('giorno');
-        document.querySelector('#fixedEndDate + label').textContent = this.t('scadenza');
-        document.getElementById('addFixedBtn').innerHTML = `➕ ${this.t('aggiungiSpesaFissa')}`;
-        document.querySelector('.voice-fixed-container .voice-status').textContent = this.t('microfonoFisso');
-        document.querySelector('.help-text').textContent = this.t('verraConteggiata');
+        const incomeAmount = document.getElementById('incomeAmount');
+        if (incomeAmount) incomeAmount.placeholder = this.t('importo');
         
-        document.querySelector('.date-selector label').textContent = this.t('selezionaData');
-        document.getElementById('expenseName').placeholder = this.t('cosaAcquistato');
-        document.getElementById('expenseAmount').placeholder = '€';
-        document.getElementById('addExpenseBtn').innerHTML = `➕ ${this.t('aggiungiSpesa')}`;
-        document.getElementById('resetDayBtn').innerHTML = `🗑️ ${this.t('cancellaGiorno')}`;
-        document.querySelector('#voiceBtn span').textContent = this.t('aggiungiSpesa');
-        document.getElementById('voiceStatus').textContent = this.t('microfonoVariabile');
+        const addIncomeBtn = document.getElementById('addIncomeBtn');
+        if (addIncomeBtn) addIncomeBtn.innerHTML = `➕ ${this.t('aggiungiEntrata')}`;
         
-        document.getElementById('chartNote').textContent = this.t('aggiungiSpeseGrafico');
+        const totalIncomeDisplay = document.getElementById('totalIncomeDisplay');
+        if (totalIncomeDisplay) {
+            const helpText = document.querySelector('#incomeList + .input-group-row + .btn-secondary + .help-text');
+            if (helpText) {
+                helpText.innerHTML = `📊 ${this.t('totEntrate')}: <span id="totalIncomeDisplay">${this.formatCurrency(this.calculateTotalIncome())}</span>`;
+            }
+        }
         
-        document.querySelector('.chat-message.bot .message-text').textContent = this.t('chiedimi');
-        document.getElementById('chatInput').placeholder = this.t('placeholderChat');
-        document.getElementById('sendChatBtn').textContent = this.t('invia');
-        document.querySelector('.suggestion-chip[data-question="Come posso risparmiare 100€ questo mese?"]').textContent = this.t('suggerimento1');
-        document.querySelector('.suggestion-chip[data-question="Cosa succede se aumento le spese del 20%?"]').textContent = this.t('suggerimento2');
+        const fixedName = document.getElementById('fixedName');
+        if (fixedName) fixedName.placeholder = this.t('nomeSpesa');
         
-        document.querySelector('.input-group label[for="savePercent"]').textContent = this.t('percentuale');
-        document.querySelector('.input-group label[for="saveGoal"]').textContent = this.t('obiettivo');
-        document.getElementById('applySaveBtn').textContent = this.t('applicaRisparmio');
+        const fixedAmount = document.getElementById('fixedAmount');
+        if (fixedAmount) fixedAmount.placeholder = this.t('importo');
         
-        document.querySelector('.setting-item label[for="thresholdInput"]').innerHTML = this.t('sogliaAvviso');
-        document.querySelector('.setting-item label[for="languageSelect"]').innerHTML = this.t('lingua');
-        document.getElementById('backupBtn').innerHTML = this.t('scaricaBackup');
-        document.getElementById('restoreBtn').innerHTML = this.t('ripristina');
-        document.getElementById('resetAllBtn').innerHTML = this.t('resetCompleto');
+        const fixedDay = document.getElementById('fixedDay');
+        if (fixedDay) fixedDay.placeholder = this.t('giorno');
         
-        document.getElementById('exportCalendarBtn').textContent = this.t('esportaCalendario');
+        const addFixedBtn = document.getElementById('addFixedBtn');
+        if (addFixedBtn) addFixedBtn.innerHTML = `➕ ${this.t('aggiungiSpesaFissa')}`;
+        
+        const fixedVoiceStatus = document.getElementById('fixedVoiceStatus');
+        if (fixedVoiceStatus) fixedVoiceStatus.textContent = this.t('microfonoFisso');
+        
+        const helpText = document.querySelector('.section-card:nth-child(6) .help-text');
+        if (helpText) helpText.textContent = this.t('verraConteggiata');
+        
+        const dateLabel = document.querySelector('.date-selector label');
+        if (dateLabel) dateLabel.textContent = this.t('selezionaData');
+        
+        const expenseName = document.getElementById('expenseName');
+        if (expenseName) expenseName.placeholder = this.t('cosaAcquistato');
+        
+        const addExpenseBtn = document.getElementById('addExpenseBtn');
+        if (addExpenseBtn) addExpenseBtn.innerHTML = `➕ ${this.t('aggiungiSpesa')}`;
+        
+        const resetDayBtn = document.getElementById('resetDayBtn');
+        if (resetDayBtn) resetDayBtn.innerHTML = `🗑️ ${this.t('cancellaGiorno')}`;
+        
+        const voiceBtnSpan = document.querySelector('#voiceBtn span');
+        if (voiceBtnSpan) voiceBtnSpan.textContent = this.t('aggiungiSpesa');
+        
+        const voiceStatus = document.getElementById('voiceStatus');
+        if (voiceStatus) voiceStatus.textContent = this.t('microfonoVariabile');
+        
+        const chartNote = document.getElementById('chartNote');
+        if (chartNote) chartNote.textContent = this.t('aggiungiSpeseGrafico');
+        
+        const firstChatMessage = document.querySelector('.chat-message.bot .message-text');
+        if (firstChatMessage) firstChatMessage.textContent = this.t('chiedimi');
+        
+        const chatInput = document.getElementById('chatInput');
+        if (chatInput) chatInput.placeholder = this.t('placeholderChat');
+        
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        if (sendChatBtn) sendChatBtn.textContent = this.t('invia');
+        
+        const suggestionChips = document.querySelectorAll('.suggestion-chip');
+        if (suggestionChips.length >= 2) {
+            suggestionChips[0].textContent = this.t('suggerimento1');
+            suggestionChips[1].textContent = this.t('suggerimento2');
+        }
+        
+        const savePercentLabel = document.querySelector('.input-group label[for="savePercent"]');
+        if (savePercentLabel) savePercentLabel.textContent = this.t('percentuale');
+        
+        const saveGoalLabel = document.querySelector('.input-group label[for="saveGoal"]');
+        if (saveGoalLabel) saveGoalLabel.textContent = this.t('obiettivo');
+        
+        const applySaveBtn = document.getElementById('applySaveBtn');
+        if (applySaveBtn) applySaveBtn.textContent = this.t('applicaRisparmio');
+        
+        const thresholdLabel = document.querySelector('.setting-item label[for="thresholdInput"]');
+        if (thresholdLabel) thresholdLabel.innerHTML = this.t('sogliaAvviso');
+        
+        const languageLabel = document.querySelector('.setting-item label[for="languageSelect"]');
+        if (languageLabel) languageLabel.innerHTML = this.t('lingua');
+        
+        const backupBtn = document.getElementById('backupBtn');
+        if (backupBtn) backupBtn.innerHTML = this.t('scaricaBackup');
+        
+        const restoreBtn = document.getElementById('restoreBtn');
+        if (restoreBtn) restoreBtn.innerHTML = this.t('ripristina');
+        
+        const resetAllBtn = document.getElementById('resetAllBtn');
+        if (resetAllBtn) resetAllBtn.innerHTML = this.t('resetCompleto');
+        
+        const exportCalendarBtn = document.getElementById('exportCalendarBtn');
+        if (exportCalendarBtn) exportCalendarBtn.textContent = this.t('esportaCalendario');
+        
+        const guideMessage = document.getElementById('guideMessage');
+        if (guideMessage) guideMessage.textContent = this.t('iniziaEntrate');
+        
+        // Aggiorna i placeholder delle opzioni del select categoria (non traducibili direttamente)
+        // ma lasciamo le icone
     }
 
     // ========== ENTRATE ==========
@@ -602,6 +660,7 @@ class BudgetWise {
         }
 
         document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
+        document.getElementById('guideMessage').textContent = this.t('iniziaEntrate');
     }
 
     updateIncomeList() {
@@ -788,7 +847,7 @@ class BudgetWise {
                 this.applyLanguage();
                 this.showToast(this.t('datiRipristinati'));
             } catch {
-                this.showToast(this.t('errore'), 'error');
+                this.showToast(this.t('erroreMicrofono'), 'error');
             }
         };
         reader.readAsText(file);
@@ -826,7 +885,7 @@ class BudgetWise {
 
         setTimeout(() => {
             const answer = this.generateAnswer(question);
-            this.addChatMessage('🤖 ' + this.t('assistente'), answer);
+            this.addChatMessage('🤖 ' + (this.data.language === 'it' ? 'Assistente' : 'Assistant'), answer);
         }, 500);
     }
 
@@ -965,9 +1024,6 @@ class BudgetWise {
         } else if (buttonId === 'chatVoiceBtn') {
             timeoutSeconds = 10;
             message = this.t('faiDomanda');
-        } else if (buttonId === 'micIncomeDescBtn' || buttonId === 'micIncomeAmountBtn') {
-            timeoutSeconds = 5;
-            message = this.t('ascolto');
         }
         
         this.showToast(message, 'success');
@@ -1076,7 +1132,7 @@ class BudgetWise {
         document.getElementById('expenseName').value = description || (this.data.language === 'it' ? 'Spesa' : 'Expense');
         document.getElementById('expenseAmount').value = amount;
         
-        this.showToast(this.t('spesaInserita'));
+        this.showToast(this.t('spesaAggiunta'));
     }
 }
 
