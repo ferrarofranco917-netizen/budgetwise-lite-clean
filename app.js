@@ -454,6 +454,10 @@ class BudgetWise {
         const daysLabel = document.getElementById('daysLabel');
         if (daysLabel) daysLabel.textContent = this.t('days');
         
+        // Traduci il nome dell'assistente nella chat
+const assistantNameText = document.getElementById('assistantNameText');
+if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
+        
         // Traduci le categorie nel select
         const categorySelect = document.getElementById('expenseCategory');
         if (categorySelect) {
@@ -1182,3 +1186,4 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
