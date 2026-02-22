@@ -55,7 +55,7 @@
         <!-- TOAST -->
         <div id="toast" class="toast">✅ Operazione completata</div>
 
-        <!-- RIEPILOGO -->
+                <!-- RIEPILOGO -->
         <div class="summary-card">
             <div class="summary-grid">
                 <div class="summary-item">
@@ -64,7 +64,11 @@
                 </div>
                 <div class="summary-item">
                     <span class="summary-label" id="remainingLabel">Rimanenza</span>
-                    <span class="summary-value" id="remaining">0,00 €</span>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <span class="summary-value" id="remaining">0,00 €</span>
+                        <span id="remainingStatus" class="status-icon" title="Saldo positivo">✅</span>
+                    </div>
+                    <small class="trend-indicator" id="remainingTrend"></small>
                 </div>
                 <div class="summary-item">
                     <span class="summary-label" id="daysLabel">Giorni rimasti</span>
@@ -75,7 +79,6 @@
                 📅 Periodo: 2026-02-22 → 2026-03-22
             </div>
         </div>
-
         <!-- GUIDA -->
         <div class="guide-message" id="guideMessage">
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
@@ -312,5 +315,6 @@
     <script src="app.js"></script>
 </body>
 </html>
+
 
 
