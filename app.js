@@ -527,31 +527,50 @@ class BudgetWise {
 
     // ========== SPESE FISSE ==========
     addFixedExpense() {
-        const name = document.getElementById('fixedName').value.trim();
-        const amount = parseFloat(document.getElementById('fixedAmount').value);
-        const day = parseInt(document.getElementById('fixedDay').value);
-        const endDate = document.getElementById('fixedEndDate').value;
+    const name = document.getElementById('fixedName').value.trim();
+    const amount = parseFloat(document.getElementById('fixedAmount').value);
+    const day = parseInt(document.getElementById('fixedDay').value);
+    const endDate = document.getElementById('fixedEndDate').value;
 
-        if (!name || !amount || !day || !endDate) {
-            alert(this.t('fillFields'));
-            return;
-        }
+    if (!name || !amount || !day || !endDate) {
+        alert(this.t('fillFields'));
+        return;
+    }
 
-        if (day < 1 || day > 31) {
-            alert(this.t('invalidDay'));
-            return;
-        }
+    if (day < 1 || day > 31) {
+        alert(this.t('invalidDay'));
+        return;
+    }
 
-        this.data.fixedExpenses.push({ 
-            name, 
-            amount, 
-            day,
-            endDate,
-            id: Date.now()
-        });
-        
-        this.saveData();
-        this.updateUI();
+    this.data.fixedExpenses.push({
+        name,
+        amount,
+        day,
+        endDate,
+        id: Date.now()
+    });
+
+    this.saveData();
+    this.updateUI();
+
+    // === FEEDBACK ===
+    const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
+    this.showToast(
+        `💰 ${name} ${this.formatCurrency(amount)} – giorno ${day} (scad. ${endDate}) ${status}`,
+        'success'
+    );
+
+    this.highlightField('fixedName');
+    this.highlightField('fixedAmount');
+    this.highlightField('fixedDay');
+    this.highlightField('fixedEndDate');
+    // ==============
+
+    document.getElementById('fixedName').value = '';
+    document.getElementById('fixedAmount').value = '';
+    document.getElementById('fixedDay').value = '';
+    document.getElementById('fixedEndDate').value = '';
+}
 
         // === FEEDBACK PERSONALIZZATO PER SPESE FISSE ===
         const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
@@ -1368,4 +1387,5 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
 
