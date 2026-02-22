@@ -35,14 +35,17 @@ body {
     min-height: 100vh;
     padding: 16px;
 }
-/* Stili per gli hint delle date */
+
+/* Stili per gli hint delle date - COMPLETO (prima era solo una riga) */
 .date-hint {
     display: block;
     font-size: 0.8rem;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
     margin-top: 4px;
     font-style: italic;
+    opacity: 0.8;
 }
+
 .container {
     max-width: 800px;
     margin: 0 auto;
@@ -512,6 +515,7 @@ input:focus, select:focus {
     margin-top: 12px;
     flex-wrap: wrap;
 }
+
 /* Stile per selettore lingua */
 .language-select {
     width: 100%;
@@ -527,6 +531,7 @@ input:focus, select:focus {
 .language-select:hover {
     border-color: var(--accent);
 }
+
 /* Stili per la chat */
 .chat-container {
     border: 1px solid var(--border);
@@ -719,6 +724,3 @@ input:focus, select:focus {
         font-size: 1.5rem;
     }
 }
-
-
-
