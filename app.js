@@ -681,7 +681,27 @@ class BudgetWise {
         const budget = totalIncome - totalFixed - savingsAmount;
         return budget - this.calculateTotalVariableExpenses();
     }
+// Aggiorna stato salute e trend
+const remainingEl = document.getElementById('remaining');
+const remainingStatus = document.getElementById('remainingStatus');
+const remainingTrend = document.getElementById('remainingTrend');
 
+if (remainingStatus) {
+    if (remaining >= 0) {
+        remainingStatus.textContent = '✅';
+        remainingStatus.title = this.data.language === 'it' ? 'Saldo positivo' : 'Positive balance';
+    } else {
+        remainingStatus.textContent = '⚠️';
+        remainingStatus.title = this.data.language === 'it' ? 'Attenzione: saldo negativo' : 'Warning: negative balance';
+    }
+}
+
+// Trend simulato (potrai collegarlo a dati reali in futuro)
+if (remainingTrend) {
+    remainingTrend.textContent = this.data.language === 'it'
+        ? 'rispetto a ieri: 0%'
+        : 'vs yesterday: 0%';
+}
     calculateDailyBudget() {
         const remaining = this.calculateRemaining();
         const daysLeft = this.getDaysLeft();
@@ -1274,3 +1294,4 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
