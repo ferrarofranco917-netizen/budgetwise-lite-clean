@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budgetwise-v5';
+const CACHE_NAME = 'budgetwise-v6'; // CAMBIA NUMERO
 const urlsToCache = [
     '/',
     '/index.html',
@@ -69,5 +69,6 @@ self.addEventListener('fetch', event => {
             })
     );
 });
+
 
 
