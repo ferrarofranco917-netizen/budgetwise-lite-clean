@@ -1,5 +1,5 @@
 // ============================================
-// BUDGETWISE - VERSIONE CON MICROFONO FUNZIONANTE
+// BUDGETWISE - VERSIONE CON TRADUZIONE IT/EN
 // ============================================
 
 class BudgetWise {
@@ -11,11 +11,231 @@ class BudgetWise {
             savingsPercent: 0,
             savingsGoal: 0,
             threshold: 50,
+            language: 'it', // Lingua predefinita
             periodStart: this.getDefaultPeriodStart(),
             periodEnd: this.getDefaultPeriodEnd()
         };
         
         this.chart = null;
+        this.translations = {
+            it: {
+                // Generali
+                budgetGiornaliero: 'Budget giornaliero',
+                rimanenza: 'Rimanenza',
+                giorniRimasti: 'Giorni rimasti',
+                periodo: 'Periodo',
+                totEntrate: 'Totale entrate',
+                
+                // Messaggi
+                iniziaEntrate: '👋 Inizia inserendo le tue entrate nella sezione qui sotto!',
+                operazioneOk: '✅ Operazione completata',
+                attenzione: '⚠️ Attenzione',
+                errore: '❌ Errore',
+                
+                // Sezioni
+                entrate: '🏦 Entrate del periodo',
+                speseFisse: '📌 Spese fisse mensili',
+                speseVariabili: '🧾 Spese variabili',
+                grafico: '📊 Distribuzione spese',
+                assistente: '🤖 Assistente Finanziario',
+                risparmio: '🎯 Obiettivo risparmio',
+                impostazioni: '⚙️ Impostazioni',
+                
+                // Etichette form
+                descrizione: 'Descrizione (es. Stipendio)',
+                importo: 'Importo €',
+                nomeSpesa: 'Nome (es. Mutuo)',
+                giorno: 'Giorno (es. 27)',
+                scadenza: 'Data scadenza',
+                categoria: 'Categoria',
+                selezionaData: 'Seleziona data',
+                cosaAcquistato: 'Cosa hai comprato?',
+                
+                // Pulsanti
+                aggiungiEntrata: '➕ Aggiungi entrata',
+                aggiungiSpesaFissa: '➕ Aggiungi spesa fissa',
+                aggiungiSpesa: '➕ Aggiungi spesa',
+                cancellaGiorno: '🗑️ Cancella spese del giorno',
+                applicaRisparmio: 'Applica risparmio',
+                scaricaBackup: '💾 Scarica backup',
+                ripristina: '📂 Ripristina',
+                resetCompleto: '⚠️ Reset completo',
+                esportaCalendario: '📅 Esporta in Calendar',
+                
+                // Testi informativi
+                nessunaEntrata: 'Nessuna entrata',
+                nessunaSpesaFissa: 'Nessuna spesa fissa',
+                nessunaSpesaGiorno: 'Nessuna spesa in questo giorno',
+                aggiungiSpeseGrafico: 'Aggiungi spese per vedere il grafico',
+                verraConteggiata: '⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza',
+                microfonoFisso: '🎤 Tocca e di\' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")',
+                microfonoVariabile: '🎤 Tocca per parlare',
+                
+                // Chat
+                chiedimi: 'Ciao! Chiedimi qualsiasi cosa sul tuo budget!',
+                invia: 'Invia',
+                placeholderChat: 'Es. Quanto posso risparmiare?',
+                suggerimento1: '💶 Risparmia 100€',
+                suggerimento2: '🔮 Simula aumento',
+                
+                // Risparmio
+                percentuale: 'Percentuale su entrate (%)',
+                obiettivo: 'Obiettivo (€)',
+                
+                // Soglia
+                sogliaAvviso: '🔔 Soglia avviso (€)',
+                
+                // Lingua
+                lingua: '🌍 Lingua / Language',
+                
+                // Toast
+                entrataAggiunta: '✅ Entrata aggiunta!',
+                entrataEliminata: '🗑️ Entrata eliminata',
+                spesaFissaAggiunta: '✅ Spesa fissa aggiunta!',
+                spesaEliminata: '🗑️ Spesa eliminata',
+                spesaAggiunta: '✅ Spesa aggiunta!',
+                risparmioApplicato: '💰 Risparmio applicato!',
+                backupScaricato: '💾 Backup scaricato!',
+                datiRipristinati: '📂 Dati ripristinati!',
+                resetCompletato: '🔄 Reset completato',
+                calendarioEsportato: '📅 Calendario esportato!',
+                campiCompilati: '✅ Campi compilati',
+                importoTrovato: '✅ Importo inserito',
+                descrizioneInserita: '✅ Descrizione inserita',
+                superataSoglia: '⚠️ Superata soglia di ',
+                erroreMicrofono: '❌ Errore microfono',
+                microfonoNonSupportato: '❌ Microfono non supportato',
+                permessoNegato: '⚠️ Concedi accesso al microfono',
+                ascolto: '🎤 Ascolto...',
+                parlaCalma: '🎤 Parla con calma (15 secondi)...',
+                parlaOra: '🎤 Parla ora (8 secondi)...',
+                faiDomanda: '🎤 Fai la tua domanda...',
+                
+                // Risposte chat
+                totaleEntrate: '💰 Totale entrate: ',
+                totaleSpese: '📉 Totale spese: ',
+                puoiRisparmiare: '💪 Puoi risparmiare ',
+                entroMese: ' entro fine mese.',
+                seiInRosso: '⚠️ Sei in rosso! Rivedi le spese.',
+                haiAncora: '💪 Hai ancora ',
+                disponibili: ' disponibili.',
+                
+                // Conferme
+                cancellareDati: 'Cancellare TUTTI i dati?',
+                compilaCampi: '⚠️ Compila tutti i campi',
+                giornoNonValido: '⚠️ Giorno non valido',
+                importoNonTrovato: '❌ Importo non trovato'
+            },
+            en: {
+                // General
+                budgetGiornaliero: 'Daily budget',
+                rimanenza: 'Remaining',
+                giorniRimasti: 'Days left',
+                periodo: 'Period',
+                totEntrate: 'Total income',
+                
+                // Messages
+                iniziaEntrate: '👋 Start by adding your income below!',
+                operazioneOk: '✅ Operation completed',
+                attenzione: '⚠️ Warning',
+                errore: '❌ Error',
+                
+                // Sections
+                entrate: '🏦 Period income',
+                speseFisse: '📌 Monthly fixed expenses',
+                speseVariabili: '🧾 Variable expenses',
+                grafico: '📊 Expense distribution',
+                assistente: '🤖 Financial Assistant',
+                risparmio: '🎯 Savings goal',
+                impostazioni: '⚙️ Settings',
+                
+                // Form labels
+                descrizione: 'Description (e.g. Salary)',
+                importo: 'Amount €',
+                nomeSpesa: 'Name (e.g. Mortgage)',
+                giorno: 'Day (e.g. 27)',
+                scadenza: 'Expiry date',
+                categoria: 'Category',
+                selezionaData: 'Select date',
+                cosaAcquistato: 'What did you buy?',
+                
+                // Buttons
+                aggiungiEntrata: '➕ Add income',
+                aggiungiSpesaFissa: '➕ Add fixed expense',
+                aggiungiSpesa: '➕ Add expense',
+                cancellaGiorno: '🗑️ Clear day expenses',
+                applicaRisparmio: 'Apply savings',
+                scaricaBackup: '💾 Download backup',
+                ripristina: '📂 Restore',
+                resetCompleto: '⚠️ Full reset',
+                esportaCalendario: '📅 Export to Calendar',
+                
+                // Info texts
+                nessunaEntrata: 'No income',
+                nessunaSpesaFissa: 'No fixed expenses',
+                nessunaSpesaGiorno: 'No expenses on this day',
+                aggiungiSpeseGrafico: 'Add expenses to see chart',
+                verraConteggiata: '⏰ Automatically counted each month until expiry',
+                microfonoFisso: '🎤 Say everything in one phrase (e.g. "Mortgage 500 euro day 27 expiry 31 12 2030")',
+                microfonoVariabile: '🎤 Tap to speak',
+                
+                // Chat
+                chiedimi: 'Hi! Ask me anything about your budget!',
+                invia: 'Send',
+                placeholderChat: 'E.g. How much can I save?',
+                suggerimento1: '💶 Save 100€',
+                suggerimento2: '🔮 Simulate increase',
+                
+                // Savings
+                percentuale: 'Percentage of income (%)',
+                obiettivo: 'Goal (€)',
+                
+                // Threshold
+                sogliaAvviso: '🔔 Alert threshold (€)',
+                
+                // Language
+                lingua: '🌍 Language',
+                
+                // Toast
+                entrataAggiunta: '✅ Income added!',
+                entrataEliminata: '🗑️ Income deleted',
+                spesaFissaAggiunta: '✅ Fixed expense added!',
+                spesaEliminata: '🗑️ Expense deleted',
+                spesaAggiunta: '✅ Expense added!',
+                risparmioApplicato: '💰 Savings applied!',
+                backupScaricato: '💾 Backup downloaded!',
+                datiRipristinati: '📂 Data restored!',
+                resetCompletato: '🔄 Reset completed',
+                calendarioEsportato: '📅 Calendar exported!',
+                campiCompilati: '✅ Fields filled',
+                importoTrovato: '✅ Amount entered',
+                descrizioneInserita: '✅ Description entered',
+                superataSoglia: '⚠️ Threshold exceeded ',
+                erroreMicrofono: '❌ Microphone error',
+                microfonoNonSupportato: '❌ Microphone not supported',
+                permessoNegato: '⚠️ Grant microphone access',
+                ascolto: '🎤 Listening...',
+                parlaCalma: '🎤 Speak calmly (15 seconds)...',
+                parlaOra: '🎤 Speak now (8 seconds)...',
+                faiDomanda: '🎤 Ask your question...',
+                
+                // Chat responses
+                totaleEntrate: '💰 Total income: ',
+                totaleSpese: '📉 Total expenses: ',
+                puoiRisparmiare: '💪 You can save ',
+                entroMese: ' by end of month.',
+                seiInRosso: '⚠️ You are in the red! Review your expenses.',
+                haiAncora: '💪 You still have ',
+                disponibili: ' available.',
+                
+                // Confirmations
+                cancellareDati: 'Delete ALL data?',
+                compilaCampi: '⚠️ Fill all fields',
+                giornoNonValido: '⚠️ Invalid day',
+                importoNonTrovato: '❌ Amount not found'
+            }
+        };
+        
         this.init();
     }
 
@@ -23,6 +243,7 @@ class BudgetWise {
         this.loadData();
         this.setupEventListeners();
         this.applyTheme();
+        this.applyLanguage();
         this.updateUI();
         this.updateChart();
         this.setupVoice();
@@ -78,6 +299,82 @@ class BudgetWise {
             this.data.savingsGoal = parseFloat(e.target.value) || 0;
             this.saveData();
         });
+
+        // NUOVO: Event listener per cambio lingua
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            this.data.language = e.target.value;
+            this.saveData();
+            this.applyLanguage();
+        });
+    }
+
+    // ========== TRADUZIONE ==========
+    t(key) {
+        return this.translations[this.data.language][key] || key;
+    }
+
+    applyLanguage() {
+        // Imposta il valore del select
+        document.getElementById('languageSelect').value = this.data.language;
+        
+        // Testi statici
+        document.querySelector('.subtitle').textContent = this.data.language === 'it' 
+            ? 'Stipendio a stipendio — gestione intelligente' 
+            : 'Paycheck to paycheck — smart management';
+        
+        // Sezioni
+        document.querySelector('.section-card:nth-child(5) h2').innerHTML = this.t('entrate');
+        document.querySelector('.section-card:nth-child(6) h2').innerHTML = this.t('speseFisse');
+        document.querySelector('.section-card:nth-child(7) h2').innerHTML = this.t('speseVariabili');
+        document.querySelector('.section-card:nth-child(8) h2').innerHTML = this.t('grafico');
+        document.querySelector('.section-card:nth-child(9) h2').innerHTML = this.t('assistente');
+        document.querySelector('.section-card:nth-child(10) h2').innerHTML = this.t('risparmio');
+        document.querySelector('.section-card:nth-child(11) h2').innerHTML = this.t('impostazioni');
+        
+        // Badge
+        document.querySelector('.badge').textContent = this.data.language === 'it' ? 'multiplo' : 'multiple';
+        
+        // Placeholder e testi
+        document.getElementById('incomeDesc').placeholder = this.t('descrizione');
+        document.getElementById('incomeAmount').placeholder = this.t('importo');
+        document.getElementById('addIncomeBtn').innerHTML = `➕ ${this.t('aggiungiEntrata')}`;
+        document.querySelector('#incomeList + p .help-text span').textContent = this.t('totEntrate');
+        
+        document.getElementById('fixedName').placeholder = this.t('nomeSpesa');
+        document.getElementById('fixedAmount').placeholder = this.t('importo');
+        document.getElementById('fixedDay').placeholder = this.t('giorno');
+        document.querySelector('#fixedEndDate + label').textContent = this.t('scadenza');
+        document.getElementById('addFixedBtn').innerHTML = `➕ ${this.t('aggiungiSpesaFissa')}`;
+        document.querySelector('.voice-fixed-container .voice-status').textContent = this.t('microfonoFisso');
+        document.querySelector('.help-text').textContent = this.t('verraConteggiata');
+        
+        document.querySelector('.date-selector label').textContent = this.t('selezionaData');
+        document.getElementById('expenseName').placeholder = this.t('cosaAcquistato');
+        document.getElementById('expenseAmount').placeholder = '€';
+        document.getElementById('addExpenseBtn').innerHTML = `➕ ${this.t('aggiungiSpesa')}`;
+        document.getElementById('resetDayBtn').innerHTML = `🗑️ ${this.t('cancellaGiorno')}`;
+        document.querySelector('#voiceBtn span').textContent = this.t('aggiungiSpesa');
+        document.getElementById('voiceStatus').textContent = this.t('microfonoVariabile');
+        
+        document.getElementById('chartNote').textContent = this.t('aggiungiSpeseGrafico');
+        
+        document.querySelector('.chat-message.bot .message-text').textContent = this.t('chiedimi');
+        document.getElementById('chatInput').placeholder = this.t('placeholderChat');
+        document.getElementById('sendChatBtn').textContent = this.t('invia');
+        document.querySelector('.suggestion-chip[data-question="Come posso risparmiare 100€ questo mese?"]').textContent = this.t('suggerimento1');
+        document.querySelector('.suggestion-chip[data-question="Cosa succede se aumento le spese del 20%?"]').textContent = this.t('suggerimento2');
+        
+        document.querySelector('.input-group label[for="savePercent"]').textContent = this.t('percentuale');
+        document.querySelector('.input-group label[for="saveGoal"]').textContent = this.t('obiettivo');
+        document.getElementById('applySaveBtn').textContent = this.t('applicaRisparmio');
+        
+        document.querySelector('.setting-item label[for="thresholdInput"]').innerHTML = this.t('sogliaAvviso');
+        document.querySelector('.setting-item label[for="languageSelect"]').innerHTML = this.t('lingua');
+        document.getElementById('backupBtn').innerHTML = this.t('scaricaBackup');
+        document.getElementById('restoreBtn').innerHTML = this.t('ripristina');
+        document.getElementById('resetAllBtn').innerHTML = this.t('resetCompleto');
+        
+        document.getElementById('exportCalendarBtn').textContent = this.t('esportaCalendario');
     }
 
     // ========== ENTRATE ==========
@@ -90,7 +387,7 @@ class BudgetWise {
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         
         if (!desc || !amount) {
-            this.showToast('⚠️ Inserisci descrizione e importo', 'error');
+            this.showToast(this.t('compilaCampi'), 'error');
             return;
         }
         
@@ -103,7 +400,7 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        this.showToast('✅ Entrata aggiunta!');
+        this.showToast(this.t('entrataAggiunta'));
         
         document.getElementById('incomeDesc').value = '';
         document.getElementById('incomeAmount').value = '';
@@ -113,7 +410,7 @@ class BudgetWise {
         this.data.incomes = this.data.incomes.filter(inc => inc.id !== id);
         this.saveData();
         this.updateUI();
-        this.showToast('🗑️ Entrata eliminata');
+        this.showToast(this.t('entrataEliminata'));
     }
 
     // ========== SPESE FISSE ==========
@@ -124,12 +421,12 @@ class BudgetWise {
         const endDate = document.getElementById('fixedEndDate').value;
 
         if (!name || !amount || !day || !endDate) {
-            this.showToast('⚠️ Compila tutti i campi', 'error');
+            this.showToast(this.t('compilaCampi'), 'error');
             return;
         }
 
         if (day < 1 || day > 31) {
-            this.showToast('⚠️ Giorno non valido', 'error');
+            this.showToast(this.t('giornoNonValido'), 'error');
             return;
         }
 
@@ -143,7 +440,7 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        this.showToast('✅ Spesa fissa aggiunta!');
+        this.showToast(this.t('spesaFissaAggiunta'));
         
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
@@ -155,7 +452,7 @@ class BudgetWise {
         this.data.fixedExpenses = this.data.fixedExpenses.filter(exp => exp.id !== id);
         this.saveData();
         this.updateUI();
-        this.showToast('🗑️ Spesa eliminata');
+        this.showToast(this.t('spesaEliminata'));
     }
 
     // ========== SPESE VARIABILI ==========
@@ -166,7 +463,7 @@ class BudgetWise {
         const category = document.getElementById('expenseCategory').value;
 
         if (!name || !amount) {
-            this.showToast('⚠️ Inserisci nome e importo', 'error');
+            this.showToast(this.t('compilaCampi'), 'error');
             return;
         }
 
@@ -184,7 +481,7 @@ class BudgetWise {
         this.saveData();
         this.updateUI();
         this.updateChart();
-        this.showToast('✅ Spesa aggiunta!');
+        this.showToast(this.t('spesaAggiunta'));
         
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
@@ -199,7 +496,7 @@ class BudgetWise {
             this.saveData();
             this.updateUI();
             this.updateChart();
-            this.showToast('🗑️ Spesa eliminata');
+            this.showToast(this.t('spesaEliminata'));
         }
     }
 
@@ -210,7 +507,7 @@ class BudgetWise {
             this.saveData();
             this.updateUI();
             this.updateChart();
-            this.showToast('🗑️ Spese del giorno cancellate');
+            this.showToast(this.t('cancellaGiorno'));
         }
     }
 
@@ -220,7 +517,7 @@ class BudgetWise {
         
         const totalSpent = this.calculateTotalVariableExpenses();
         if (totalSpent > this.data.threshold) {
-            this.showToast(`⚠️ Superata soglia di ${this.formatCurrency(this.data.threshold)}`, 'error');
+            this.showToast(this.t('superataSoglia') + this.formatCurrency(this.data.threshold), 'error');
         }
     }
 
@@ -232,7 +529,7 @@ class BudgetWise {
         this.data.savingsGoal = goal;
         this.saveData();
         this.updateUI();
-        this.showToast('💰 Risparmio applicato!');
+        this.showToast(this.t('risparmioApplicato'));
     }
 
     // ========== CALCOLI ==========
@@ -285,7 +582,7 @@ class BudgetWise {
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
-        document.getElementById('periodInfo').textContent = `📅 Periodo: ${this.data.periodStart} → ${this.data.periodEnd}`;
+        document.getElementById('periodInfo').textContent = `📅 ${this.t('periodo')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
         
         this.updateIncomeList();
         this.updateFixedExpensesList();
@@ -312,7 +609,7 @@ class BudgetWise {
         if (!container) return;
         
         if (this.data.incomes.length === 0) {
-            container.innerHTML = '<p class="chart-note">Nessuna entrata</p>';
+            container.innerHTML = `<p class="chart-note">${this.t('nessunaEntrata')}</p>`;
             return;
         }
         
@@ -335,7 +632,7 @@ class BudgetWise {
     updateFixedExpensesList() {
         const container = document.getElementById('fixedExpensesList');
         if (this.data.fixedExpenses.length === 0) {
-            container.innerHTML = '<p class="chart-note">Nessuna spesa fissa</p>';
+            container.innerHTML = `<p class="chart-note">${this.t('nessunaSpesaFissa')}</p>`;
             return;
         }
 
@@ -346,7 +643,7 @@ class BudgetWise {
                     <div>
                         <span class="expense-name">${exp.name}</span>
                         <div class="expense-date">
-                            Giorno ${exp.day} · Scadenza: ${exp.endDate} ${isActive ? '🟢' : '🔴'}
+                            ${this.t('giorno')} ${exp.day} · ${this.t('scadenza')}: ${exp.endDate} ${isActive ? '🟢' : '🔴'}
                         </div>
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
@@ -364,7 +661,7 @@ class BudgetWise {
         const expenses = this.data.variableExpenses[date] || [];
 
         if (expenses.length === 0) {
-            container.innerHTML = '<p class="chart-note">Nessuna spesa in questo giorno</p>';
+            container.innerHTML = `<p class="chart-note">${this.t('nessunaSpesaGiorno')}</p>`;
             return;
         }
 
@@ -458,7 +755,7 @@ class BudgetWise {
             const parsed = JSON.parse(saved);
             if (parsed.income !== undefined && !parsed.incomes) {
                 parsed.incomes = [{
-                    desc: 'Stipendio',
+                    desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
                     amount: parsed.income,
                     date: new Date().toISOString().split('T')[0],
                     id: Date.now()
@@ -475,319 +772,8 @@ class BudgetWise {
         link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
         link.download = `budgetwise-backup-${new Date().toISOString().split('T')[0]}.json`;
         link.click();
-        this.showToast('💾 Backup scaricato!');
+        this.showToast(this.t('backupScaricato'));
     }
 
     restoreData(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            try {
-                this.data = JSON.parse(e.target.result);
-                this.saveData();
-                this.updateUI();
-                this.updateChart();
-                this.showToast('📂 Dati ripristinati!');
-            } catch {
-                this.showToast('❌ File non valido', 'error');
-            }
-        };
-        reader.readAsText(file);
-    }
-
-    resetAll() {
-        if (confirm('Cancellare TUTTI i dati?')) {
-            localStorage.clear();
-            this.data = {
-                incomes: [],
-                fixedExpenses: [],
-                variableExpenses: {},
-                savingsPercent: 0,
-                savingsGoal: 0,
-                threshold: 50,
-                periodStart: this.getDefaultPeriodStart(),
-                periodEnd: this.getDefaultPeriodEnd()
-            };
-            this.updateUI();
-            this.updateChart();
-            this.showToast('🔄 Reset completato');
-        }
-    }
-
-    // ========== CHAT ==========
-    handleChat() {
-        const input = document.getElementById('chatInput');
-        const question = input.value.trim();
-        if (!question) return;
-
-        this.addChatMessage('👤 Tu', question);
-        input.value = '';
-
-        setTimeout(() => {
-            const answer = this.generateAnswer(question);
-            this.addChatMessage('🤖 Assistente', answer);
-        }, 500);
-    }
-
-    addChatMessage(sender, text) {
-        const container = document.getElementById('chatMessages');
-        const div = document.createElement('div');
-        div.className = `chat-message ${sender === '👤 Tu' ? 'user' : 'bot'}`;
-        div.innerHTML = `<span class="message-sender">${sender}:</span> <span class="message-text">${text}</span>`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-    }
-
-    generateAnswer(question) {
-        const q = question.toLowerCase();
-        const remaining = this.calculateRemaining();
-        const totalIncome = this.formatCurrency(this.calculateTotalIncome());
-        const totalExpenses = this.formatCurrency(this.calculateTotalFixedExpenses() + this.calculateTotalVariableExpenses());
-        
-        if (q.includes('entrate') || q.includes('guadagni')) {
-            return `💰 Totale entrate: ${totalIncome}`;
-        }
-        if (q.includes('spese') || q.includes('speso')) {
-            return `📉 Totale spese: ${totalExpenses}`;
-        }
-        if (q.includes('risparmi') || q.includes('risparmiare')) {
-            return `💪 Puoi risparmiare ${this.formatCurrency(remaining)} entro fine mese.`;
-        }
-        if (remaining < 0) {
-            return "⚠️ Sei in rosso! Rivedi le spese.";
-        }
-        return `💪 Hai ancora ${this.formatCurrency(remaining)} disponibili.`;
-    }
-
-    // ========== ESPORTAZIONE CALENDARIO ==========
-    exportToCalendar() {
-        let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
-        
-        this.data.fixedExpenses.forEach(exp => {
-            if (new Date(exp.endDate) >= new Date()) {
-                ics += "BEGIN:VEVENT\n";
-                ics += `SUMMARY:💰 ${exp.name}\n`;
-                ics += `DESCRIPTION:€${exp.amount} - giorno ${exp.day}\n`;
-                ics += `DTSTART;VALUE=DATE:${exp.endDate.replace(/-/g, '')}\n`;
-                ics += "END:VEVENT\n";
-            }
-        });
-
-        Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
-            expenses.forEach(exp => {
-                ics += "BEGIN:VEVENT\n";
-                ics += `SUMMARY:🛒 ${exp.name}\n`;
-                ics += `DESCRIPTION:${exp.category} - ${this.formatCurrency(exp.amount)}\n`;
-                ics += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
-                ics += "END:VEVENT\n";
-            });
-        });
-
-        ics += "END:VCALENDAR";
-        
-        const blob = new Blob([ics], { type: 'text/calendar' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `budgetwise-${this.data.periodStart}.ics`;
-        a.click();
-        this.showToast('📅 Calendario esportato!');
-    }
-
-    // ========== VOCE ==========
-    setupVoice() {
-        console.log('Setup voice...');
-        
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            console.log('❌ Riconoscimento vocale non supportato');
-            this.disableVoiceButtons();
-            return;
-        }
-        
-        console.log('✅ Riconoscimento vocale supportato');
-        
-        // Microfono entrate - descrizione
-        const micIncomeDesc = document.getElementById('micIncomeDescBtn');
-        if (micIncomeDesc) {
-            micIncomeDesc.addEventListener('click', () => this.startVoice('micIncomeDescBtn'));
-        }
-        
-        // Microfono entrate - importo
-        const micIncomeAmount = document.getElementById('micIncomeAmountBtn');
-        if (micIncomeAmount) {
-            micIncomeAmount.addEventListener('click', () => this.startVoice('micIncomeAmountBtn'));
-        }
-        
-        // Microfono spese fisse
-        const micFixed = document.getElementById('micFixedBtn');
-        if (micFixed) {
-            micFixed.addEventListener('click', () => this.startVoice('micFixedBtn'));
-        }
-        
-        // Microfono spese variabili
-        const voiceBtn = document.getElementById('voiceBtn');
-        if (voiceBtn) {
-            voiceBtn.addEventListener('click', () => this.startVoice('voiceBtn'));
-        }
-        
-        // Microfono chat
-        const chatVoice = document.getElementById('chatVoiceBtn');
-        if (chatVoice) {
-            chatVoice.addEventListener('click', () => this.startVoice('chatVoiceBtn'));
-        }
-    }
-
-    disableVoiceButtons() {
-        document.querySelectorAll('.mic-icon-btn, .voice-btn, .chat-voice-btn, .voice-fixed-btn').forEach(btn => {
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.title = 'Microfono non supportato';
-        });
-    }
-
-    startVoice(buttonId) {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        const recognition = new SpeechRecognition();
-        recognition.lang = 'it-IT';
-        recognition.interimResults = false;
-
-        const button = document.getElementById(buttonId);
-        if (!button) return;
-        
-        button.classList.add('listening');
-        
-        let timeoutSeconds = 5;
-        let message = '🎤 Ascolto...';
-        
-        if (buttonId === 'micFixedBtn') {
-            timeoutSeconds = 15;
-            message = '🎤 Parla con calma (15 secondi)...';
-        } else if (buttonId === 'voiceBtn') {
-            timeoutSeconds = 8;
-            message = '🎤 Parla ora (8 secondi)...';
-        } else if (buttonId === 'chatVoiceBtn') {
-            timeoutSeconds = 10;
-            message = '🎤 Fai la tua domanda...';
-        } else if (buttonId === 'micIncomeDescBtn' || buttonId === 'micIncomeAmountBtn') {
-            timeoutSeconds = 5;
-            message = '🎤 Parla ora...';
-        }
-        
-        this.showToast(message, 'success');
-
-        recognition.onresult = (event) => {
-            const text = event.results[0][0].transcript;
-            console.log('Riconosciuto:', text);
-            
-            switch(buttonId) {
-                case 'micIncomeDescBtn':
-                    document.getElementById('incomeDesc').value = text;
-                    this.showToast('✅ Descrizione inserita');
-                    break;
-                    
-                case 'micIncomeAmountBtn':
-                    const numbers = text.match(/(\d+[.,]?\d*)/);
-                    if (numbers) {
-                        document.getElementById('incomeAmount').value = parseFloat(numbers[0].replace(',', '.'));
-                        this.showToast('✅ Importo inserito');
-                    }
-                    break;
-                    
-                case 'micFixedBtn':
-                    this.parseFixedExpense(text);
-                    break;
-                    
-                case 'voiceBtn':
-                    this.parseVariableExpense(text);
-                    break;
-                    
-                case 'chatVoiceBtn':
-                    document.getElementById('chatInput').value = text;
-                    this.handleChat();
-                    break;
-            }
-            
-            button.classList.remove('listening');
-        };
-
-        recognition.onerror = (event) => {
-            console.error('Errore microfono:', event.error);
-            this.showToast('❌ Errore microfono', 'error');
-            button.classList.remove('listening');
-        };
-
-        recognition.onend = () => {
-            button.classList.remove('listening');
-        };
-
-        recognition.start();
-
-        setTimeout(() => {
-            recognition.stop();
-            button.classList.remove('listening');
-        }, timeoutSeconds * 1000);
-    }
-
-    parseFixedExpense(text) {
-        const words = text.split(' ');
-        let name = words[0] || 'Spesa';
-        if (name.length > 20) name = name.substring(0, 20);
-        
-        const amountMatch = text.match(/(\d+[.,]?\d*)/);
-        const amount = amountMatch ? parseFloat(amountMatch[0].replace(',', '.')) : 0;
-        
-        const dayMatch = text.match(/(\d{1,2})/g);
-        let day = 1;
-        if (dayMatch && dayMatch.length > 0) {
-            for (let d of dayMatch) {
-                const candidate = parseInt(d);
-                if (candidate >= 1 && candidate <= 31 && candidate !== Math.round(amount)) {
-                    day = candidate;
-                    break;
-                }
-            }
-        }
-        
-        const dateMatch = text.match(/(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/);
-        let endDate = '';
-        if (dateMatch) {
-            endDate = `${dateMatch[3]}-${dateMatch[2].padStart(2,'0')}-${dateMatch[1].padStart(2,'0')}`;
-        } else {
-            const d = new Date();
-            d.setFullYear(d.getFullYear() + 10);
-            endDate = d.toISOString().split('T')[0];
-        }
-        
-        document.getElementById('fixedName').value = name;
-        document.getElementById('fixedAmount').value = amount;
-        document.getElementById('fixedDay').value = day;
-        document.getElementById('fixedEndDate').value = endDate;
-        
-        this.showToast('✅ Campi compilati');
-    }
-
-    parseVariableExpense(text) {
-        const amountMatch = text.match(/(\d+[.,]?\d*)/);
-        if (!amountMatch) {
-            this.showToast('❌ Importo non trovato', 'error');
-            return;
-        }
-        
-        const amount = parseFloat(amountMatch[0].replace(',', '.'));
-        let description = text.replace(amountMatch[0], '').replace(/euro|€/gi, '').trim();
-        
-        document.getElementById('expenseName').value = description || 'Spesa';
-        document.getElementById('expenseAmount').value = amount;
-        
-        this.showToast('✅ Spesa inserita');
-    }
-}
-
-// ============================================
-// AVVIO
-// ============================================
-
-const app = new BudgetWise();
-window.app = app;
+        const file = event.target.files[
