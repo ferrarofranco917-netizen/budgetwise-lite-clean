@@ -3,14 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>💰 BudgetWise 2.0</title>
+    <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4361ee">
+    <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <!-- CARICA CHART.JS PRIMA DI APP.JS -->
+    <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
+    
+    <!-- Google Fonts - Inter per una tipografia moderna -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js per i grafici -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Meta tags per social sharing (Open Graph) -->
+    <meta property="og:title" content="BudgetWise 2.0">
+    <meta property="og:description" content="Gestione finanziaria intelligente con assistente AI">
+    <meta property="og:image" content="icon-512.png">
+    <meta property="og:url" content="https://budgetwise.app">
+    <meta property="og:type" content="website">
+    
+    <!-- Meta tags per Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BudgetWise 2.0">
+    <meta name="twitter:description" content="Gestisci le tue finanze con intelligenza artificiale">
+    <meta name="twitter:image" content="icon-512.png">
+    
+    <!-- Favicon per tutti i dispositivi -->
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
+    <link rel="mask-icon" href="icon-512.png" color="#6366f1">
+    
+    <!-- iOS specific meta tags -->
+    <meta name="apple-mobile-web-app-title" content="BudgetWise">
+    <meta name="format-detection" content="telephone=no">
 </head>
 <body>
     <div class="container">
@@ -19,7 +49,7 @@
             <h1>💰 BudgetWise <span class="version">2.0</span></h1>
             <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
         </div>
-        <p class="subtitle">Stipendio a stipendio — gestione intelligente</p>
+        <p class="subtitle">Stipendio a stipendio — gestione intelligente con AI</p>
 
         <!-- TOAST PER NOTIFICHE -->
         <div id="toast" class="toast">✅ Operazione completata</div>
@@ -103,7 +133,7 @@
                     <p class="chart-note">Nessuna spesa in questo giorno</p>
                 </div>
                 
-                <!-- Input con microfono -->
+                <!-- Input con microfono - Design migliorato -->
                 <div class="voice-input-container">
                     <div class="input-group-row">
                         <input type="text" id="expenseName" placeholder="Cosa hai comprato?">
@@ -143,7 +173,7 @@
 
         <!-- ASSISTENTE INTELLIGENTE -->
         <div class="section-card">
-            <h2>🤖 Assistente Finanziario</h2>
+            <h2>🤖 Assistente Finanziario AI</h2>
             <div class="section-content">
                 <div class="chat-container" id="chatContainer">
                     <div class="chat-messages" id="chatMessages">
@@ -161,6 +191,7 @@
                     <button class="suggestion-chip" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
                     <button class="suggestion-chip" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
                     <button class="suggestion-chip" data-question="Quando raggiungerò il mio obiettivo?">🎯 Obiettivo</button>
+                    <button class="suggestion-chip" data-question="Qual è la categoria dove spendo di più?">📊 Top categoria</button>
                 </div>
             </div>
         </div>
@@ -215,8 +246,34 @@
         <div class="footer">
             <p>BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
             <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Google Calendar</button>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
         </div>
     </div>
+
+    <!-- Service Worker per PWA -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('✅ ServiceWorker registrato con successo:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('❌ ServiceWorker registrazione fallita:', error);
+                    });
+            });
+        }
+
+        // Verifica che le icone siano accessibili (utile per debug)
+        window.addEventListener('load', () => {
+            fetch('icon-192.png')
+                .then(r => console.log('✅ Icona 192px caricata'))
+                .catch(e => console.warn('⚠️ Icona 192px non trovata'));
+            fetch('icon-512.png')
+                .then(r => console.log('✅ Icona 512px caricata'))
+                .catch(e => console.warn('⚠️ Icona 512px non trovata'));
+        });
+    </script>
 
     <!-- CARICA APP.JS -->
     <script src="app.js"></script>
