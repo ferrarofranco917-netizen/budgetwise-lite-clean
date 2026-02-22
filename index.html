@@ -11,7 +11,6 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BudgetWise">
     <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
-    <meta name="format-detection" content="telephone=no">
     
     <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +25,7 @@
         <!-- HEADER -->
         <div class="header">
             <h1 id="appTitle">💰 BudgetWise <span class="version" id="appVersion">2.0</span></h1>
-            <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
+            <button id="themeToggle" class="theme-btn">🌙</button>
         </div>
         <p class="subtitle" id="appSubtitle">Stipendio a stipendio — gestione intelligente con AI</p>
 
@@ -49,15 +48,11 @@
                     <span class="summary-value" id="daysLeft">28</span>
                 </div>
             </div>
-            <div class="period-info" id="periodInfo">
-                📅 Periodo: 2026-02-22 → 2026-03-22
-            </div>
+            <div class="period-info" id="periodInfo">📅 Periodo: 2026-02-22 → 2026-03-22</div>
         </div>
 
         <!-- GUIDA -->
-        <div class="guide-message" id="guideMessage">
-            👋 Inizia inserendo le tue entrate nella sezione qui sotto!
-        </div>
+        <div class="guide-message" id="guideMessage">👋 Inizia inserendo le tue entrate nella sezione qui sotto!</div>
 
         <!-- ENTRATE -->
         <div class="section-card">
@@ -79,7 +74,6 @@
             <h2 id="sectionFixedExpenses">📌 Spese fisse mensili</h2>
             <div class="section-content">
                 <div id="fixedExpensesList"></div>
-                
                 <div class="input-group-row">
                     <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)">
                     <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01">
@@ -107,9 +101,7 @@
                     <label for="expenseDate" id="labelSelectDate">Seleziona data:</label>
                     <input type="date" id="expenseDate" class="date-input">
                 </div>
-                <div id="variableExpensesList">
-                    <p class="chart-note">Nessuna spesa in questo giorno</p>
-                </div>
+                <div id="variableExpensesList"><p class="chart-note">Nessuna spesa in questo giorno</p></div>
                 
                 <div class="voice-input-container">
                     <div class="input-group-row">
@@ -124,11 +116,8 @@
                             <option value="Altro">📦 Altro</option>
                         </select>
                     </div>
-                    
                     <div class="voice-row">
-                        <button id="voiceBtn" class="voice-btn">
-                            🎤 <span id="voiceBtnText">Inserisci con voce</span>
-                        </button>
+                        <button id="voiceBtn" class="voice-btn">🎤 <span id="voiceBtnText">Inserisci con voce</span></button>
                         <div id="voiceStatus" class="voice-status">🎤 Tocca per parlare</div>
                     </div>
                 </div>
@@ -151,7 +140,7 @@
         <div class="section-card">
             <h2 id="sectionAssistant">🤖 Assistente Finanziario AI</h2>
             <div class="section-content">
-                <div class="chat-container" id="chatContainer">
+                <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="chat-message bot">
                             <span class="message-sender">🤖 Assistente:</span>
@@ -225,21 +214,6 @@
             <p style="margin-top: 1rem; font-size: 0.8rem;" id="footerFeatures">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
         </div>
     </div>
-
-    <!-- Service Worker -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('✅ ServiceWorker registrato:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('❌ ServiceWorker errore:', error);
-                    });
-            });
-        }
-    </script>
 
     <script src="app.js"></script>
 </body>
