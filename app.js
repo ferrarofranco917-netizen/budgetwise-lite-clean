@@ -1,5 +1,5 @@
 // ============================================
-// BUDGETWISE - VERSIONE CON TRADUZIONE BASE
+// BUDGETWISE - VERSIONE BASE CON TRADUZIONE
 // ============================================
 
 class BudgetWise {
@@ -18,7 +18,7 @@ class BudgetWise {
         
         this.chart = null;
         
-        // SOLO TRADUZIONE TITOLI PRINCIPALI
+        // DIZIONARIO TRADUZIONI
         this.translations = {
             it: {
                 budget: 'Budget giornaliero',
@@ -32,9 +32,39 @@ class BudgetWise {
                 assistant: '🤖 Assistente Finanziario',
                 savings: '🎯 Obiettivo risparmio',
                 settings: '⚙️ Impostazioni',
+                badge: 'multiplo',
                 addIncome: '➕ Aggiungi entrata',
                 addFixed: '➕ Aggiungi spesa fissa',
-                addExpense: '➕ Aggiungi spesa'
+                addExpense: '➕ Aggiungi spesa',
+                resetDay: '🗑️ Cancella spese del giorno',
+                apply: 'Applica risparmio',
+                backup: '💾 Scarica backup',
+                restore: '📂 Ripristina',
+                reset: '⚠️ Reset completo',
+                export: '📅 Esporta in Calendar',
+                send: 'Invia',
+                threshold: '🔔 Soglia avviso (€)',
+                language: '🌍 Lingua / Language',
+                descPlaceholder: 'Descrizione (es. Stipendio)',
+                amountPlaceholder: 'Importo €',
+                namePlaceholder: 'Nome (es. Mutuo)',
+                dayPlaceholder: 'Giorno (es. 27)',
+                expensePlaceholder: 'Cosa hai comprato?',
+                dateLabel: 'Seleziona data:',
+                micFixed: '🎤 Tocca e di\' tutto in una frase',
+                micVariable: '🎤 Tocca per parlare',
+                noIncome: 'Nessuna entrata',
+                noFixed: 'Nessuna spesa fissa',
+                noVariable: 'Nessuna spesa in questo giorno',
+                chartNote: 'Aggiungi spese per vedere il grafico',
+                helpFixed: '⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza',
+                welcome: 'Ciao! Chiedimi qualsiasi cosa sul tuo budget!',
+                chatPlaceholder: 'Es. Quanto posso risparmiare?',
+                suggestion1: '💶 Risparmia 100€',
+                suggestion2: '🔮 Simula aumento',
+                percentLabel: 'Percentuale su entrate (%)',
+                goalLabel: 'Obiettivo (€)',
+                backupLabel: '📅 Backup dati'
             },
             en: {
                 budget: 'Daily budget',
@@ -48,9 +78,39 @@ class BudgetWise {
                 assistant: '🤖 Financial Assistant',
                 savings: '🎯 Savings goal',
                 settings: '⚙️ Settings',
+                badge: 'multiple',
                 addIncome: '➕ Add income',
                 addFixed: '➕ Add fixed expense',
-                addExpense: '➕ Add expense'
+                addExpense: '➕ Add expense',
+                resetDay: '🗑️ Clear day expenses',
+                apply: 'Apply savings',
+                backup: '💾 Download backup',
+                restore: '📂 Restore',
+                reset: '⚠️ Full reset',
+                export: '📅 Export to Calendar',
+                send: 'Send',
+                threshold: '🔔 Alert threshold (€)',
+                language: '🌍 Language',
+                descPlaceholder: 'Description (e.g. Salary)',
+                amountPlaceholder: 'Amount €',
+                namePlaceholder: 'Name (e.g. Mortgage)',
+                dayPlaceholder: 'Day (e.g. 27)',
+                expensePlaceholder: 'What did you buy?',
+                dateLabel: 'Select date:',
+                micFixed: '🎤 Say everything in one phrase',
+                micVariable: '🎤 Tap to speak',
+                noIncome: 'No income',
+                noFixed: 'No fixed expenses',
+                noVariable: 'No expenses on this day',
+                chartNote: 'Add expenses to see chart',
+                helpFixed: '⏰ Automatically counted each month until expiry',
+                welcome: 'Hi! Ask me anything about your budget!',
+                chatPlaceholder: 'E.g. How much can I save?',
+                suggestion1: '💶 Save 100€',
+                suggestion2: '🔮 Simulate increase',
+                percentLabel: 'Percentage of income (%)',
+                goalLabel: 'Goal (€)',
+                backupLabel: '📅 Data backup'
             }
         };
         
@@ -63,8 +123,7 @@ class BudgetWise {
         this.applyTheme();
         this.updateUI();
         this.updateChart();
-        this.setupVoice();
-        this.applyLanguage(); // Applica lingua
+        this.applyLanguage(); // Applica lingua all'avvio
     }
 
     getDefaultPeriodStart() {
@@ -118,16 +177,16 @@ class BudgetWise {
             this.saveData();
         });
 
-        // LINGUA - versione SEMPLICE
+        // EVENTO LINGUA - VERSIONE SEMPLICE
         document.getElementById('languageSelect').addEventListener('change', (e) => {
             this.data.language = e.target.value;
             this.saveData();
-            this.applyLanguage(); // Chiama la funzione
+            this.applyLanguage();
             alert('Lingua cambiata a: ' + e.target.value); // Feedback visivo
         });
     }
 
-    // ========== TRADUZIONE SEMPLICE ==========
+    // ========== TRADUZIONE ==========
     t(key) {
         return this.translations[this.data.language][key] || key;
     }
@@ -135,10 +194,10 @@ class BudgetWise {
     applyLanguage() {
         console.log('Cambio lingua a:', this.data.language);
         
-        // Traduci elementi con ID specifici
+        // Imposta il select
         document.getElementById('languageSelect').value = this.data.language;
         
-        // Traduci etichette summary (usando gli ID o classi)
+        // SUMMARY
         const labels = document.querySelectorAll('.summary-label');
         if (labels.length >= 3) {
             labels[0].textContent = this.t('budget');
@@ -146,33 +205,65 @@ class BudgetWise {
             labels[2].textContent = this.t('days');
         }
         
-        // Traduci titoli sezioni (cerca gli h2)
-        const h2s = document.querySelectorAll('h2');
-        h2s.forEach(h2 => {
-            const text = h2.textContent;
-            if (text.includes('🏦')) h2.innerHTML = this.t('incomes');
-            else if (text.includes('📌')) h2.innerHTML = this.t('fixed');
-            else if (text.includes('🧾')) h2.innerHTML = this.t('variable');
-            else if (text.includes('📊')) h2.innerHTML = this.t('chart');
-            else if (text.includes('🤖')) h2.innerHTML = this.t('assistant');
-            else if (text.includes('🎯')) h2.innerHTML = this.t('savings');
-            else if (text.includes('⚙️')) h2.innerHTML = this.t('settings');
-        });
+        // TITOLI SEZIONI
+        document.getElementById('incomesTitle').innerHTML = this.t('incomes');
+        document.getElementById('fixedTitle').innerHTML = this.t('fixed');
+        document.getElementById('variableTitle').innerHTML = this.t('variable');
+        document.getElementById('chartTitle').innerHTML = this.t('chart');
+        document.getElementById('assistantTitle').innerHTML = this.t('assistant');
+        document.getElementById('savingsTitle').innerHTML = this.t('savings');
+        document.getElementById('settingsTitle').innerHTML = this.t('settings');
         
-        // Traduci pulsanti principali
+        // BADGE
+        document.getElementById('badge').textContent = this.t('badge');
+        
+        // PULSANTI PRINCIPALI
         document.getElementById('addIncomeBtn').innerHTML = this.t('addIncome');
         document.getElementById('addFixedBtn').innerHTML = this.t('addFixed');
         document.getElementById('addExpenseBtn').innerHTML = this.t('addExpense');
+        document.getElementById('resetDayBtn').innerHTML = this.t('resetDay');
+        document.getElementById('applySaveBtn').textContent = this.t('apply');
+        document.getElementById('backupBtn').innerHTML = this.t('backup');
+        document.getElementById('restoreBtn').innerHTML = this.t('restore');
+        document.getElementById('resetAllBtn').innerHTML = this.t('reset');
+        document.getElementById('exportCalendarBtn').textContent = this.t('export');
+        document.getElementById('sendChatBtn').textContent = this.t('send');
         
-        // Aggiorna periodo
+        // LABEL IMPOSTAZIONI
+        document.getElementById('thresholdLabel').innerHTML = this.t('threshold');
+        document.getElementById('languageLabel').innerHTML = this.t('language');
+        document.getElementById('backupLabel').textContent = this.t('backupLabel');
+        
+        // PLACEHOLDER
+        document.getElementById('incomeDesc').placeholder = this.t('descPlaceholder');
+        document.getElementById('incomeAmount').placeholder = this.t('amountPlaceholder');
+        document.getElementById('fixedName').placeholder = this.t('namePlaceholder');
+        document.getElementById('fixedAmount').placeholder = this.t('amountPlaceholder');
+        document.getElementById('fixedDay').placeholder = this.t('dayPlaceholder');
+        document.getElementById('expenseName').placeholder = this.t('expensePlaceholder');
+        
+        // ETICHETTE
+        document.getElementById('dateLabel').textContent = this.t('dateLabel');
+        document.getElementById('fixedVoiceStatus').textContent = this.t('micFixed');
+        document.getElementById('voiceStatus').textContent = this.t('micVariable');
+        document.getElementById('chartNote').textContent = this.t('chartNote');
+        document.getElementById('fixedHelp').textContent = this.t('helpFixed');
+        
+        // CHAT
+        document.getElementById('welcomeMessage').textContent = this.t('welcome');
+        document.getElementById('chatInput').placeholder = this.t('chatPlaceholder');
+        document.getElementById('suggestion1').textContent = this.t('suggestion1');
+        document.getElementById('suggestion2').textContent = this.t('suggestion2');
+        
+        // RISPARMIO
+        document.getElementById('percentLabel').textContent = this.t('percentLabel');
+        document.getElementById('goalLabel').textContent = this.t('goalLabel');
+        
+        // PERIODO
         document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
     }
 
-    // ========== TUTTE LE ALTRE FUNZIONI RESTANO UGUALI ==========
-    // (le funzioni che avevamo prima, che già funzionavano)
-    // ...
-    
-    // ========== FUNZIONI BASE PER FAR FUNZIONARE L'APP ==========
+    // ========== FUNZIONI BASE ==========
     calculateTotalIncome() {
         return this.data.incomes.reduce((sum, inc) => sum + inc.amount, 0);
     }
@@ -450,21 +541,15 @@ class BudgetWise {
         const q = input.value.trim();
         if (!q) return;
         const div = document.getElementById('chatMessages');
-        div.innerHTML += `<div><strong>Tu:</strong> ${q}</div>`;
+        div.innerHTML += `<div class="chat-message user"><span class="message-sender">👤 ${this.t('tu') || 'Tu'}:</span> <span class="message-text">${q}</span></div>`;
         input.value = '';
         setTimeout(() => {
-            div.innerHTML += `<div><strong>Assistente:</strong> Funzione chat base</div>`;
+            div.innerHTML += `<div class="chat-message bot"><span class="message-sender">🤖 ${this.t('assistantNome') || 'Assistente'}:</span> <span class="message-text">Funzione chat base</span></div>`;
         }, 500);
     }
 
     exportToCalendar() {
         alert('Calendario esportato!');
-    }
-
-    setupVoice() {
-        console.log('Voice ready');
-        const btn = document.getElementById('voiceBtn');
-        if (btn) btn.addEventListener('click', () => alert('Microfono attivo!'));
     }
 }
 
