@@ -552,8 +552,20 @@ class BudgetWise {
         
         this.saveData();
         this.updateUI();
-        alert(this.t('fixedAdded'));
-        
+
+        // === FEEDBACK ===
+        const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
+        this.showToast(
+            `💰 ${name} ${this.formatCurrency(amount)} – giorno ${day} (scad. ${endDate}) ${status}`,
+            'success'
+        );
+
+        this.highlightField('fixedName');
+        this.highlightField('fixedAmount');
+        this.highlightField('fixedDay');
+        this.highlightField('fixedEndDate');
+        // ==============
+
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
         document.getElementById('fixedDay').value = '';
@@ -593,8 +605,26 @@ class BudgetWise {
         this.saveData();
         this.updateUI();
         this.updateChart();
-        alert(this.t('expenseAdded'));
-        
+
+        // === FEEDBACK ===
+        const categoryEmoji = {
+            Alimentari: '🍎',
+            Trasporti: '🚗',
+            Svago: '🎮',
+            Salute: '💊',
+            Abbigliamento: '👕',
+            Altro: '📦'
+        }[category] || '💰';
+
+        this.showToast(
+            `${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`,
+            'success'
+        );
+
+        this.highlightField('expenseName');
+        this.highlightField('expenseAmount');
+        // ==============
+
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
         
@@ -889,6 +919,19 @@ class BudgetWise {
 
     formatCurrency(amount) {
         return amount.toFixed(2).replace('.', ',') + ' €';
+    }
+
+    // ========== HIGHLIGHT ==========
+    highlightField(fieldId) {
+        const field = document.getElementById(fieldId);
+        if (!field) return;
+        field.style.transition = 'background-color 0.3s ease';
+        field.style.backgroundColor = '#d4edda';
+        field.style.borderColor = '#28a745';
+        setTimeout(() => {
+            field.style.backgroundColor = '';
+            field.style.borderColor = '';
+        }, 800);
     }
 
     // ========== CHAT ASSISTANT ==========
