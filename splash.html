@@ -79,20 +79,29 @@
             margin-top: 1rem;
         }
 
-        .loading-dots {
-            display: inline-block;
-        }
-
-        .loading-dots::after {
-            content: '';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-
         .tagline {
             color: rgba(255, 255, 255, 0.7);
             font-size: 0.9rem;
             margin-top: 3rem;
             font-style: italic;
+        }
+        
+        .enter-btn {
+            margin-top: 2rem;
+            background: white;
+            color: #4f46e5;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+        
+        .enter-btn:hover {
+            transform: scale(1.05);
         }
 
         @keyframes fadeIn {
@@ -107,13 +116,6 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60% { content: '...'; }
-            80%, 100% { content: ''; }
         }
 
         @media (min-width: 768px) {
@@ -143,19 +145,20 @@
         <div class="loader"></div>
         
         <div class="loading-text">
-            Caricamento<span class="loading-dots"></span>
+            Caricamento...
         </div>
         
         <div class="tagline">
             Gestione finanziaria intelligente
         </div>
+        
+        <!-- Pulsante per entrare manualmente, nel caso il reindirizzamento non funzioni -->
+        <button class="enter-btn" onclick="window.location.href='index.html'">
+            Entra nell'app →
+        </button>
     </div>
 
-    <script>
-        // Reindirizzamento dopo 2 secondi
-        setTimeout(() => {
-            window.location.href = 'index.html';
-        }, 2000);
-    </script>
+    <!-- Il reindirizzamento automatico è stato rimosso per evitare loop -->
+    <!-- Ora l'utente deve cliccare il pulsante per entrare -->
 </body>
 </html>
