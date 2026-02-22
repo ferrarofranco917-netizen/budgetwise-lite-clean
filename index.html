@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <!-- Forza aggiornamento manifest -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
@@ -16,10 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="BudgetWise">
     <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
     <meta name="format-detection" content="telephone=no">
-    <!-- Forza aggiornamento cache -->
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-<meta http-equiv="Pragma" content="no-cache">
-<meta http-equiv="Expires" content="0">
+    
     <!-- Google Fonts - Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,16 +38,10 @@
     <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
     <link rel="mask-icon" href="icon-512.png" color="#6366f1">
     
-    <!-- iOS Splash Screen (opzionale, creare le immagini nella cartella splash) -->
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <!-- Forza aggiornamento cache -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 </head>
 <body>
     <div class="container">
@@ -63,7 +50,7 @@
             <h1>💰 BudgetWise <span class="version">2.0</span></h1>
             <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
         </div>
-        <p class="subtitle">Stipendio a stipendio — gestione intelligente con AI</p>
+        <p class="subtitle" id="subtitle">Stipendio a stipendio — gestione intelligente con AI</p>
 
         <!-- TOAST -->
         <div id="toast" class="toast">✅ Operazione completata</div>
@@ -72,15 +59,15 @@
         <div class="summary-card">
             <div class="summary-grid">
                 <div class="summary-item">
-                    <span class="summary-label">Budget giornaliero</span>
+                    <span class="summary-label" id="budgetLabel">Budget giornaliero</span>
                     <span class="summary-value" id="dailyBudget">0,00 €</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Rimanenza</span>
+                    <span class="summary-label" id="remainingLabel">Rimanenza</span>
                     <span class="summary-value" id="remaining">0,00 €</span>
                 </div>
                 <div class="summary-item">
-                    <span class="summary-label">Giorni rimasti</span>
+                    <span class="summary-label" id="daysLabel">Giorni rimasti</span>
                     <span class="summary-value" id="daysLeft">28</span>
                 </div>
             </div>
@@ -110,7 +97,6 @@
                 <div class="input-group-row">
                     <div class="input-with-mic" style="flex: 2;">
                         <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
-                        <!-- Microfono opzionale -->
                     </div>
                     <div class="input-with-mic" style="flex: 1;">
                         <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
@@ -118,7 +104,7 @@
                 </div>
                 
                 <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
-                <p class="help-text">📊 Totale entrate: <span id="totalIncomeDisplay">0,00 €</span></p>
+                <p class="help-text">📊 <span id="totalIncomeLabel">Totale entrate</span>: <span id="totalIncomeDisplay">0,00 €</span></p>
             </div>
         </div>
 
@@ -150,7 +136,7 @@
                 <!-- Microfono unico -->
                 <div class="voice-fixed-container">
                     <button id="micFixedBtn" class="voice-fixed-btn">
-                        🎤 <span>Inserisci spesa fissa con voce</span>
+                        🎤 <span id="micFixedText">Inserisci spesa fissa con voce</span>
                     </button>
                     <div id="fixedVoiceStatus" class="voice-status">🎤 Tocca e di' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")</div>
                 </div>
@@ -192,7 +178,7 @@
                     <!-- Microfono variabili -->
                     <div class="voice-row">
                         <button id="voiceBtn" class="voice-btn">
-                            🎤 <span>Inserisci con voce</span>
+                            🎤 <span id="voiceBtnText">Inserisci con voce</span>
                         </button>
                         <div id="voiceStatus" class="voice-status">🎤 Tocca per parlare</div>
                     </div>
@@ -265,7 +251,7 @@
                     <input type="number" id="thresholdInput" value="50" step="5">
                 </div>
                 
-                <!-- MENU LINGUA (con ID corretto) -->
+                <!-- MENU LINGUA -->
                 <div class="setting-item">
                     <label for="languageSelect" id="languageLabel">🌍 Lingua / Language</label>
                     <select id="languageSelect" class="language-select">
@@ -288,9 +274,9 @@
 
         <!-- FOOTER -->
         <div class="footer">
-            <p>BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
+            <p id="footerText">BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
             <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Google Calendar</button>
-            <p style="margin-top: 1rem; font-size: 0.8rem;">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
+            <p id="footerFeatures" style="margin-top: 1rem; font-size: 0.8rem;">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
         </div>
     </div>
 
@@ -322,5 +308,3 @@
     <script src="app.js"></script>
 </body>
 </html>
-
-
