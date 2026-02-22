@@ -20,34 +20,6 @@
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    
-    <!-- Meta tags social -->
-    <meta property="og:title" content="BudgetWise 2.0">
-    <meta property="og:description" content="Gestione finanziaria intelligente con assistente AI">
-    <meta property="og:image" content="icon-512.png">
-    <meta property="og:url" content="https://budgetwise.app">
-    <meta property="og:type" content="website">
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="BudgetWise 2.0">
-    <meta name="twitter:description" content="Gestisci le tue finanze con intelligenza artificiale">
-    <meta name="twitter:image" content="icon-512.png">
-    
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
-    <link rel="mask-icon" href="icon-512.png" color="#6366f1">
-    
-    <!-- iOS Splash Screen -->
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
-    <link rel="apple-touch-startup-image" href="splash/apple-splash-1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 </head>
 <body>
     <div class="container">
@@ -91,7 +63,7 @@
         <div class="section-card">
             <div class="section-header">
                 <h2 id="sectionIncome">🏦 Entrate del periodo</h2>
-                <span class="badge">nuovo</span>
+                <span class="badge" id="badgeNew">nuovo</span>
             </div>
             <div class="section-content">
                 <div class="input-group">
@@ -267,15 +239,6 @@
                     });
             });
         }
-
-        window.addEventListener('load', () => {
-            fetch('icon-192.png')
-                .then(() => console.log('✅ Icona 192px OK'))
-                .catch(() => console.warn('⚠️ Icona 192px non trovata'));
-            fetch('icon-512.png')
-                .then(() => console.log('✅ Icona 512px OK'))
-                .catch(() => console.warn('⚠️ Icona 512px non trovata'));
-        });
     </script>
 
     <script src="app.js"></script>
