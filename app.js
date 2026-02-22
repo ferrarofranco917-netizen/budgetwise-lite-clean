@@ -1128,7 +1128,11 @@ class BudgetWise {
             }
             return;
         }
-
+// Microfono spese fisse
+const micFixed = document.getElementById('micFixedBtn');
+if (micFixed) {
+    micFixed.addEventListener('click', () => this.startVoice('micFixedBtn'));
+}
         console.log('✅ Riconoscimento vocale supportato');
         
         const voiceBtn = document.getElementById('voiceBtn');
@@ -1198,3 +1202,4 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
