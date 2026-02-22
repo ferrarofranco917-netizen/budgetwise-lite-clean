@@ -581,31 +581,55 @@ class BudgetWise {
 
     // ========== SPESE VARIABILI ==========
     addVariableExpense() {
-        const date = document.getElementById('expenseDate').value;
-        const name = document.getElementById('expenseName').value.trim();
-        const amount = parseFloat(document.getElementById('expenseAmount').value);
-        const category = document.getElementById('expenseCategory').value;
+    const date = document.getElementById('expenseDate').value;
+    const name = document.getElementById('expenseName').value.trim();
+    const amount = parseFloat(document.getElementById('expenseAmount').value);
+    const category = document.getElementById('expenseCategory').value;
 
-        if (!name || !amount) {
-            alert(this.t('fillFields'));
-            return;
-        }
+    if (!name || !amount) {
+        alert(this.t('fillFields'));
+        return;
+    }
 
-        if (!this.data.variableExpenses[date]) {
-            this.data.variableExpenses[date] = [];
-        }
+    if (!this.data.variableExpenses[date]) {
+        this.data.variableExpenses[date] = [];
+    }
 
-        this.data.variableExpenses[date].push({
-            name,
-            amount,
-            category,
-            id: Date.now()
-        });
+    this.data.variableExpenses[date].push({
+        name,
+        amount,
+        category,
+        id: Date.now()
+    });
 
-        this.saveData();
-        this.updateUI();
-        this.updateChart();
+    this.saveData();
+    this.updateUI();
+    this.updateChart();
 
+    // === FEEDBACK ===
+    const categoryEmoji = {
+        Alimentari: '🍎',
+        Trasporti: '🚗',
+        Svago: '🎮',
+        Salute: '💊',
+        Abbigliamento: '👕',
+        Altro: '📦'
+    }[category] || '💰';
+
+    this.showToast(
+        `${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`,
+        'success'
+    );
+
+    this.highlightField('expenseName');
+    this.highlightField('expenseAmount');
+    // ==============
+
+    document.getElementById('expenseName').value = '';
+    document.getElementById('expenseAmount').value = '';
+
+    this.checkThreshold(date);
+}
         // === FEEDBACK PERSONALIZZATO ===
         const categoryEmoji = {
             Alimentari: '🍎',
@@ -1344,3 +1368,4 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
