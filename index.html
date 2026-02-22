@@ -1,21 +1,245 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-    <title>Test Traduzioni</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BudgetWise">
+    <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <h1 id="titolo">💰 BudgetWise ITALIANO</h1>
-    
-    <label for="lingua">Lingua:</label>
-    <select id="lingua">
-        <option value="it">Italiano</option>
-        <option value="en">English</option>
-    </select>
-    
-    <p id="testo">Questo è un testo di prova in italiano</p>
-    
-    <button id="pulsante">Cliccami IT</button>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1 id="appTitle">💰 BudgetWise <span class="version" id="appVersion">2.0</span></h1>
+            <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
+        </div>
+        <p class="subtitle" id="appSubtitle">Stipendio a stipendio — gestione intelligente con AI</p>
 
-    <script src="test.js"></script>
+        <!-- TOAST -->
+        <div id="toast" class="toast">✅ Operazione completata</div>
+
+        <!-- RIEPILOGO -->
+        <div class="summary-card">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label" id="labelDailyBudget">Budget giornaliero</span>
+                    <span class="summary-value" id="dailyBudget">0,00 €</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" id="labelRemaining">Rimanenza</span>
+                    <span class="summary-value" id="remaining">0,00 €</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" id="labelDaysLeft">Giorni rimasti</span>
+                    <span class="summary-value" id="daysLeft">28</span>
+                </div>
+            </div>
+            <div class="period-info" id="periodInfo">
+                📅 Periodo: 2026-02-22 → 2026-03-22
+            </div>
+        </div>
+
+        <!-- GUIDA -->
+        <div class="guide-message" id="guideMessage">
+            👋 Inizia inserendo le tue entrate nella sezione qui sotto!
+        </div>
+
+        <!-- ENTRATE -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 id="sectionIncome">🏦 Entrate del periodo</h2>
+                <span class="badge" id="badgeNew">nuovo</span>
+            </div>
+            <div class="section-content">
+                <div class="input-group">
+                    <label for="incomeInput" id="labelTotalIncome">Totale entrate (€)</label>
+                    <input type="number" id="incomeInput" placeholder="0,00" step="0.01" min="0">
+                </div>
+                <button class="btn-primary" id="saveIncomeBtn">Salva entrate</button>
+            </div>
+        </div>
+
+        <!-- SPESE FISSE -->
+        <div class="section-card">
+            <h2 id="sectionFixedExpenses">📌 Spese fisse mensili</h2>
+            <div class="section-content">
+                <div id="fixedExpensesList"></div>
+                
+                <div class="input-group-row">
+                    <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)">
+                    <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01">
+                </div>
+                <div class="input-group-row">
+                    <div class="input-group half">
+                        <label for="fixedDay" id="labelDayOfMonth">Giorno del mese</label>
+                        <input type="number" id="fixedDay" placeholder="es. 27" min="1" max="31">
+                    </div>
+                    <div class="input-group half">
+                        <label for="fixedEndDate" id="labelEndDate">Data scadenza (fine)</label>
+                        <input type="date" id="fixedEndDate">
+                    </div>
+                </div>
+                <button class="btn-secondary" id="addFixedBtn">➕ Aggiungi spesa fissa ricorrente</button>
+                <p class="help-text" id="fixedHelpText">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
+            </div>
+        </div>
+
+        <!-- SPESE VARIABILI -->
+        <div class="section-card">
+            <h2 id="sectionVariableExpenses">🧾 Spese variabili</h2>
+            <div class="section-content">
+                <div class="date-selector">
+                    <label for="expenseDate" id="labelSelectDate">Seleziona data:</label>
+                    <input type="date" id="expenseDate" class="date-input">
+                </div>
+                <div id="variableExpensesList">
+                    <p class="chart-note">Nessuna spesa in questo giorno</p>
+                </div>
+                
+                <div class="voice-input-container">
+                    <div class="input-group-row">
+                        <input type="text" id="expenseName" placeholder="Cosa hai comprato?">
+                        <input type="number" id="expenseAmount" placeholder="€" step="0.01">
+                        <select id="expenseCategory">
+                            <option value="Alimentari">🍎 Alimentari</option>
+                            <option value="Trasporti">🚗 Trasporti</option>
+                            <option value="Svago">🎮 Svago</option>
+                            <option value="Salute">💊 Salute</option>
+                            <option value="Abbigliamento">👕 Abbigliamento</option>
+                            <option value="Altro">📦 Altro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="voice-row">
+                        <button id="voiceBtn" class="voice-btn">
+                            🎤 <span id="voiceBtnText">Inserisci con voce</span>
+                        </button>
+                        <div id="voiceStatus" class="voice-status">🎤 Tocca per parlare</div>
+                    </div>
+                </div>
+                
+                <button class="btn-secondary" id="addExpenseBtn">➕ Aggiungi spesa</button>
+                <button class="btn-danger" id="resetDayBtn">🗑️ Cancella spese del giorno</button>
+            </div>
+        </div>
+
+        <!-- GRAFICO -->
+        <div class="section-card">
+            <h2 id="sectionChart">📊 Distribuzione spese</h2>
+            <div class="section-content">
+                <canvas id="expenseChart" width="400" height="300"></canvas>
+                <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
+            </div>
+        </div>
+
+        <!-- ASSISTENTE -->
+        <div class="section-card">
+            <h2 id="sectionAssistant">🤖 Assistente Finanziario AI</h2>
+            <div class="section-content">
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message bot">
+                            <span class="message-sender">🤖 Assistente:</span>
+                            <span class="message-text" id="assistantWelcomeMessage">Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget o chiedimi di simulare scenari futuri!</span>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="Es. Quanto posso risparmiare questo mese?" class="chat-input">
+                        <button id="sendChatBtn" class="chat-send-btn">Invia</button>
+                    </div>
+                </div>
+                <div class="chat-suggestions">
+                    <button class="suggestion-chip" id="suggestion1" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
+                    <button class="suggestion-chip" id="suggestion2" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
+                    <button class="suggestion-chip" id="suggestion3" data-question="Quando raggiungerò il mio obiettivo?">🎯 Obiettivo</button>
+                    <button class="suggestion-chip" id="suggestion4" data-question="Qual è la categoria dove spendo di più?">📊 Top categoria</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RISPARMIO -->
+        <div class="section-card">
+            <h2 id="sectionSavings">🎯 Obiettivo risparmio</h2>
+            <div class="section-content">
+                <div class="input-group">
+                    <label for="savePercent" id="labelSavingsPercent">Percentuale su entrate (%)</label>
+                    <input type="number" id="savePercent" placeholder="10" min="0" max="100" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="saveGoal" id="labelSavingsGoal">Obiettivo (€)</label>
+                    <input type="number" id="saveGoal" placeholder="1000" step="100">
+                </div>
+                <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMPOSTAZIONI -->
+        <div class="section-card">
+            <h2 id="sectionSettings">⚙️ Impostazioni</h2>
+            <div class="section-content">
+                <div class="setting-item">
+                    <label for="thresholdInput" id="labelThreshold">🔔 Soglia avviso (€)</label>
+                    <input type="number" id="thresholdInput" value="50" step="5">
+                </div>
+                <div class="setting-item">
+                    <label for="languageSelect" id="labelLanguage">🌍 Lingua</label>
+                    <select id="languageSelect">
+                        <option value="it">Italiano</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label id="labelBackup">📅 Backup dati</label>
+                    <div class="button-group">
+                        <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                        <button class="btn-secondary" id="restoreBtn">📂 Ripristina</button>
+                    </div>
+                </div>
+                <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p id="footerText">BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
+            <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Google Calendar</button>
+            <p style="margin-top: 1rem; font-size: 0.8rem;" id="footerFeatures">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
+        </div>
+    </div>
+
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('✅ ServiceWorker registrato:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('❌ ServiceWorker errore:', error);
+                    });
+            });
+        }
+    </script>
+
+    <script src="app.js"></script>
 </body>
 </html>
