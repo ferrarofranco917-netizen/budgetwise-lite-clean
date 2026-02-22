@@ -58,7 +58,7 @@
                 }
             ]
         }
-    ]
+    ],
+    "lang": "it",
+    "dir": "ltr"
 }
-
-Aggiornati file per correggere icone e service worker v3
