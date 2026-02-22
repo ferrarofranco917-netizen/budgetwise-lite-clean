@@ -1157,10 +1157,12 @@ class BudgetWise {
         recognition.interimResults = true;
 
         let button, statusElement;
+        let timeoutDuration = 8000; // default 8 secondi
 
         if (type === 'fixed') {
             button = document.getElementById('micFixedBtn');
             statusElement = document.getElementById('fixedVoiceStatus');
+            timeoutDuration = 15000; // 15 secondi per le spese fisse
         } else {
             button = document.getElementById('voiceBtn');
             statusElement = document.getElementById('voiceStatus');
@@ -1200,6 +1202,13 @@ class BudgetWise {
         };
 
         recognition.start();
+
+        // Timeout personalizzato in base al tipo
+        setTimeout(() => {
+            recognition.stop();
+            button.classList.remove('listening');
+            statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+        }, timeoutDuration);
     }
 
     processVoiceCommand(transcript) {
