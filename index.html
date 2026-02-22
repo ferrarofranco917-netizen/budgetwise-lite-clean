@@ -204,7 +204,14 @@
                 <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
             </div>
         </div>
-
+<!-- Dettaglio categoria (inizialmente nascosto) -->
+<div id="categoryDetail" class="category-detail" style="display: none;">
+    <h3 id="detailCategoryTitle"></h3>
+    <p id="detailTotal"></p>
+    <p id="detailComparison"></p>
+    <div id="detailExpensesList" class="detail-expenses-list"></div>
+    <button id="closeDetailBtn" class="btn-secondary">Chiudi</button>
+</div>
         <!-- ==================== ASSISTENTE ==================== -->
         <div class="section-card">
             <h2 id="assistantTitle">🤖 Assistente Finanziario AI</h2>
@@ -315,6 +322,7 @@
     <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
