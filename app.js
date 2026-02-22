@@ -859,4 +859,318 @@ class BudgetWise {
     backupData() {
         const dataStr = JSON.stringify(this.data, null, 2);
         const link = document.createElement('a');
-        link.href = 'data:application/json;charset=utf-
+        link.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        link.download = `budgetwise-backup-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        this.showToast(this.t('backupScaricato'));
+    }
+
+    restoreData(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                this.data = JSON.parse(e.target.result);
+                this.saveData();
+                this.updateUI();
+                this.updateChart();
+                this.applyLanguage();
+                this.showToast(this.t('datiRipristinati'));
+            } catch {
+                this.showToast(this.t('fileNonValido'), 'error');
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    resetAll() {
+        if (confirm(this.t('cancellareDati'))) {
+            localStorage.clear();
+            this.data = {
+                incomes: [],
+                fixedExpenses: [],
+                variableExpenses: {},
+                savingsPercent: 0,
+                savingsGoal: 0,
+                threshold: 50,
+                language: this.data.language,
+                periodStart: this.getDefaultPeriodStart(),
+                periodEnd: this.getDefaultPeriodEnd()
+            };
+            this.updateUI();
+            this.updateChart();
+            this.applyLanguage();
+            this.showToast(this.t('resetCompletato'));
+        }
+    }
+
+    // ========== CHAT ==========
+    handleChat() {
+        const input = document.getElementById('chatInput');
+        const question = input.value.trim();
+        if (!question) return;
+
+        this.addChatMessage('👤 ' + this.t('tu'), question);
+        input.value = '';
+
+        setTimeout(() => {
+            const answer = this.generateAnswer(question);
+            this.addChatMessage('🤖 ' + this.t('assistenteNome'), answer);
+        }, 500);
+    }
+
+    addChatMessage(sender, text) {
+        const container = document.getElementById('chatMessages');
+        const div = document.createElement('div');
+        div.className = `chat-message ${sender.includes(this.t('tu')) ? 'user' : 'bot'}`;
+        div.innerHTML = `<span class="message-sender">${sender}:</span> <span class="message-text">${text}</span>`;
+        container.appendChild(div);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    generateAnswer(question) {
+        const q = question.toLowerCase();
+        const remaining = this.calculateRemaining();
+        const totalIncome = this.formatCurrency(this.calculateTotalIncome());
+        const totalExpenses = this.formatCurrency(this.calculateTotalFixedExpenses() + this.calculateTotalVariableExpenses());
+        
+        if (q.includes('income') || q.includes('earn') || q.includes('entrate') || q.includes('guadagni')) {
+            return this.t('totaleEntrate') + totalIncome;
+        }
+        if (q.includes('spese') || q.includes('expenses') || q.includes('speso') || q.includes('spent')) {
+            return this.t('totaleSpese') + totalExpenses;
+        }
+        if (q.includes('save') || q.includes('risparmi')) {
+            return this.t('puoiRisparmiare') + this.formatCurrency(remaining) + this.t('entroMese');
+        }
+        if (remaining < 0) {
+            return this.t('seiInRosso');
+        }
+        return this.t('haiAncora') + this.formatCurrency(remaining) + this.t('disponibili');
+    }
+
+    // ========== ESPORTAZIONE CALENDARIO ==========
+    exportToCalendar() {
+        let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
+        
+        this.data.fixedExpenses.forEach(exp => {
+            if (new Date(exp.endDate) >= new Date()) {
+                ics += "BEGIN:VEVENT\n";
+                ics += `SUMMARY:💰 ${exp.name}\n`;
+                ics += `DESCRIPTION:€${exp.amount} - ${this.t('giorno')} ${exp.day}\n`;
+                ics += `DTSTART;VALUE=DATE:${exp.endDate.replace(/-/g, '')}\n`;
+                ics += "END:VEVENT\n";
+            }
+        });
+
+        Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
+            expenses.forEach(exp => {
+                const catName = this.t(`categorie.${exp.category}`);
+                ics += "BEGIN:VEVENT\n";
+                ics += `SUMMARY:🛒 ${exp.name}\n`;
+                ics += `DESCRIPTION:${catName} - ${this.formatCurrency(exp.amount)}\n`;
+                ics += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
+                ics += "END:VEVENT\n";
+            });
+        });
+
+        ics += "END:VCALENDAR";
+        
+        const blob = new Blob([ics], { type: 'text/calendar' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `budgetwise-${this.data.periodStart}.ics`;
+        a.click();
+        this.showToast(this.t('calendarioEsportato'));
+    }
+
+    // ========== VOCE ==========
+    setupVoice() {
+        console.log('Setup voice...');
+        
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            console.log('❌ Riconoscimento vocale non supportato');
+            this.disableVoiceButtons();
+            return;
+        }
+        
+        console.log('✅ Riconoscimento vocale supportato');
+        
+        const micIncomeDesc = document.getElementById('micIncomeDescBtn');
+        if (micIncomeDesc) {
+            micIncomeDesc.addEventListener('click', () => this.startVoice('micIncomeDescBtn'));
+        }
+        
+        const micIncomeAmount = document.getElementById('micIncomeAmountBtn');
+        if (micIncomeAmount) {
+            micIncomeAmount.addEventListener('click', () => this.startVoice('micIncomeAmountBtn'));
+        }
+        
+        const micFixed = document.getElementById('micFixedBtn');
+        if (micFixed) {
+            micFixed.addEventListener('click', () => this.startVoice('micFixedBtn'));
+        }
+        
+        const voiceBtn = document.getElementById('voiceBtn');
+        if (voiceBtn) {
+            voiceBtn.addEventListener('click', () => this.startVoice('voiceBtn'));
+        }
+        
+        const chatVoice = document.getElementById('chatVoiceBtn');
+        if (chatVoice) {
+            chatVoice.addEventListener('click', () => this.startVoice('chatVoiceBtn'));
+        }
+    }
+
+    disableVoiceButtons() {
+        document.querySelectorAll('.mic-icon-btn, .voice-btn, .chat-voice-btn, .voice-fixed-btn').forEach(btn => {
+            btn.disabled = true;
+            btn.style.opacity = '0.5';
+            btn.title = this.t('erroreMicrofono');
+        });
+    }
+
+    startVoice(buttonId) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.lang = this.data.language === 'it' ? 'it-IT' : 'en-US';
+        recognition.interimResults = false;
+
+        const button = document.getElementById(buttonId);
+        if (!button) return;
+        
+        button.classList.add('listening');
+        
+        let timeoutSeconds = 5;
+        let message = this.t('ascolto');
+        
+        if (buttonId === 'micFixedBtn') {
+            timeoutSeconds = 15;
+            message = this.t('parlaCalma');
+        } else if (buttonId === 'voiceBtn') {
+            timeoutSeconds = 8;
+            message = this.t('parlaOra');
+        } else if (buttonId === 'chatVoiceBtn') {
+            timeoutSeconds = 10;
+            message = this.t('faiDomanda');
+        }
+        
+        this.showToast(message, 'success');
+
+        recognition.onresult = (event) => {
+            const text = event.results[0][0].transcript;
+            console.log('Riconosciuto:', text);
+            
+            switch(buttonId) {
+                case 'micIncomeDescBtn':
+                    document.getElementById('incomeDesc').value = text;
+                    this.showToast(this.t('descrizioneInserita'));
+                    break;
+                    
+                case 'micIncomeAmountBtn':
+                    const numbers = text.match(/(\d+[.,]?\d*)/);
+                    if (numbers) {
+                        document.getElementById('incomeAmount').value = parseFloat(numbers[0].replace(',', '.'));
+                        this.showToast(this.t('importoTrovato'));
+                    }
+                    break;
+                    
+                case 'micFixedBtn':
+                    this.parseFixedExpense(text);
+                    break;
+                    
+                case 'voiceBtn':
+                    this.parseVariableExpense(text);
+                    break;
+                    
+                case 'chatVoiceBtn':
+                    document.getElementById('chatInput').value = text;
+                    this.handleChat();
+                    break;
+            }
+            
+            button.classList.remove('listening');
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Errore microfono:', event.error);
+            this.showToast(this.t('erroreMicrofono'), 'error');
+            button.classList.remove('listening');
+        };
+
+        recognition.onend = () => {
+            button.classList.remove('listening');
+        };
+
+        recognition.start();
+
+        setTimeout(() => {
+            recognition.stop();
+            button.classList.remove('listening');
+        }, timeoutSeconds * 1000);
+    }
+
+    parseFixedExpense(text) {
+        const words = text.split(' ');
+        let name = words[0] || (this.data.language === 'it' ? 'Spesa' : 'Expense');
+        if (name.length > 20) name = name.substring(0, 20);
+        
+        const amountMatch = text.match(/(\d+[.,]?\d*)/);
+        const amount = amountMatch ? parseFloat(amountMatch[0].replace(',', '.')) : 0;
+        
+        const dayMatch = text.match(/(\d{1,2})/g);
+        let day = 1;
+        if (dayMatch && dayMatch.length > 0) {
+            for (let d of dayMatch) {
+                const candidate = parseInt(d);
+                if (candidate >= 1 && candidate <= 31 && candidate !== Math.round(amount)) {
+                    day = candidate;
+                    break;
+                }
+            }
+        }
+        
+        const dateMatch = text.match(/(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/);
+        let endDate = '';
+        if (dateMatch) {
+            endDate = `${dateMatch[3]}-${dateMatch[2].padStart(2,'0')}-${dateMatch[1].padStart(2,'0')}`;
+        } else {
+            const d = new Date();
+            d.setFullYear(d.getFullYear() + 10);
+            endDate = d.toISOString().split('T')[0];
+        }
+        
+        document.getElementById('fixedName').value = name;
+        document.getElementById('fixedAmount').value = amount;
+        document.getElementById('fixedDay').value = day;
+        document.getElementById('fixedEndDate').value = endDate;
+        
+        this.showToast(this.t('campiCompilati'));
+    }
+
+    parseVariableExpense(text) {
+        const amountMatch = text.match(/(\d+[.,]?\d*)/);
+        if (!amountMatch) {
+            this.showToast(this.t('importoNonTrovato'), 'error');
+            return;
+        }
+        
+        const amount = parseFloat(amountMatch[0].replace(',', '.'));
+        let description = text.replace(amountMatch[0], '').replace(/euro|€|euros/gi, '').trim();
+        
+        document.getElementById('expenseName').value = description || (this.data.language === 'it' ? 'Spesa' : 'Expense');
+        document.getElementById('expenseAmount').value = amount;
+        
+        this.showToast(this.t('spesaAggiunta'));
+    }
+}
+
+// ============================================
+// AVVIO
+// ============================================
+
+const app = new BudgetWise();
+window.app = app;
