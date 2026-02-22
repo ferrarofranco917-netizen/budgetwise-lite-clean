@@ -717,7 +717,29 @@ class BudgetWise {
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
-        
+
+        // === NUOVO: stato salute e trend ===
+        const remainingStatus = document.getElementById('remainingStatus');
+        const remainingTrend = document.getElementById('remainingTrend');
+        const remaining = this.calculateRemaining();
+
+        if (remainingStatus) {
+            if (remaining >= 0) {
+                remainingStatus.textContent = '✅';
+                remainingStatus.title = this.data.language === 'it' ? 'Saldo positivo' : 'Positive balance';
+            } else {
+                remainingStatus.textContent = '⚠️';
+                remainingStatus.title = this.data.language === 'it' ? 'Attenzione: saldo negativo' : 'Warning: negative balance';
+            }
+        }
+
+        if (remainingTrend) {
+            remainingTrend.textContent = this.data.language === 'it'
+                ? 'rispetto a ieri: 0%'
+                : 'vs yesterday: 0%';
+        }
+        // =================================
+
         this.updatePeriodInfo();
 
         this.updateIncomeList();
