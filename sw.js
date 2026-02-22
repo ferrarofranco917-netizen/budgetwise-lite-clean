@@ -1,4 +1,4 @@
-const CACHE_NAME = 'budgetwise-v4';
+const CACHE_NAME = 'budgetwise-v5';
 const urlsToCache = [
     '/',
     '/index.html',
@@ -121,5 +121,6 @@ self.addEventListener('notificationclick', event => {
         );
     }
 });
+
 
 
