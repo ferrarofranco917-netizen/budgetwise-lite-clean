@@ -425,6 +425,9 @@ class BudgetWise {
         document.getElementById('guideMessage').textContent = this.t('startGuide');
         
         // ===== NUOVE TRADUZIONI AGGIUNTE =====
+        // Traduci il nome dell'assistente nella chat
+const assistantNameText = document.getElementById('assistantNameText');
+if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
         
         // Traduci i testi dei pulsanti microfono
         const micFixedSpan = document.getElementById('micFixedText');
@@ -1182,3 +1185,4 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
