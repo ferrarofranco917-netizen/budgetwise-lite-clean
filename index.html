@@ -3,13 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>💰 BudgetWise 2.0</title>
+    <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#4361ee">
+    <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="BudgetWise">
+    <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
+    <meta name="format-detection" content="telephone=no">
+    
+    <!-- Google Fonts - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Meta tags social -->
+    <meta property="og:title" content="BudgetWise 2.0">
+    <meta property="og:description" content="Gestione finanziaria intelligente con assistente AI">
+    <meta property="og:image" content="icon-512.png">
+    <meta property="og:url" content="https://budgetwise.app">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="BudgetWise 2.0">
+    <meta name="twitter:description" content="Gestisci le tue finanze con intelligenza artificiale">
+    <meta name="twitter:image" content="icon-512.png">
+    
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
+    <link rel="mask-icon" href="icon-512.png" color="#6366f1">
+    
+    <!-- iOS Splash Screen (opzionale, creare le immagini nella cartella splash) -->
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-2048.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1668.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1536.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1242.png" media="(device-width: 414px) and (device-height: 736px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1125.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)">
+    <link rel="apple-touch-startup-image" href="splash/apple-splash-1792.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)">
 </head>
 <body>
     <div class="container">
@@ -18,7 +56,7 @@
             <h1>💰 BudgetWise <span class="version">2.0</span></h1>
             <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
         </div>
-        <p class="subtitle">Stipendio a stipendio — gestione intelligente</p>
+        <p class="subtitle">Stipendio a stipendio — gestione intelligente con AI</p>
 
         <!-- TOAST -->
         <div id="toast" class="toast">✅ Operazione completata</div>
@@ -44,28 +82,31 @@
             </div>
         </div>
 
-        <!-- MESSAGGIO GUIDA -->
+        <!-- GUIDA -->
         <div class="guide-message" id="guideMessage">
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-        <!-- ENTRATE -->
+        <!-- ==================== ENTRATE MULTIPLE ==================== -->
         <div class="section-card">
             <div class="section-header">
                 <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
                 <span class="badge" id="badge">multiplo</span>
             </div>
             <div class="section-content">
-                <div id="incomeList" class="expenses-list"></div>
+                <!-- Lista entrate -->
+                <div id="incomeList" class="expenses-list">
+                    <p class="chart-note">Nessuna entrata</p>
+                </div>
                 
+                <!-- Form inserimento -->
                 <div class="input-group-row">
                     <div class="input-with-mic" style="flex: 2;">
                         <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
-                        <button class="mic-icon-btn" id="micIncomeDescBtn" title="Inserisci descrizione">🎤</button>
+                        <!-- Microfono opzionale -->
                     </div>
                     <div class="input-with-mic" style="flex: 1;">
                         <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
-                        <button class="mic-icon-btn" id="micIncomeAmountBtn" title="Inserisci importo">🎤</button>
                     </div>
                 </div>
                 
@@ -74,21 +115,32 @@
             </div>
         </div>
 
-        <!-- SPESE FISSE -->
+        <!-- ==================== SPESE FISSE ==================== -->
         <div class="section-card">
             <h2 id="fixedTitle">📌 Spese fisse mensili</h2>
             <div class="section-content">
-                <div id="fixedExpensesList"></div>
+                <!-- Lista spese fisse -->
+                <div id="fixedExpensesList" class="expenses-list">
+                    <p class="chart-note">Nessuna spesa fissa</p>
+                </div>
                 
+                <!-- Form -->
                 <div class="input-group-row">
                     <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)" style="flex: 2;">
                     <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01" style="flex: 1;">
                 </div>
                 <div class="input-group-row">
-                    <input type="number" id="fixedDay" placeholder="Giorno (es. 27)" min="1" max="31" style="flex: 1;">
-                    <input type="date" id="fixedEndDate" style="flex: 2;">
+                    <div class="input-group half">
+                        <label id="dayLabel">Giorno del mese</label>
+                        <input type="number" id="fixedDay" placeholder="es. 27" min="1" max="31">
+                    </div>
+                    <div class="input-group half">
+                        <label id="endDateLabel">Data scadenza (fine)</label>
+                        <input type="date" id="fixedEndDate">
+                    </div>
                 </div>
                 
+                <!-- Microfono unico -->
                 <div class="voice-fixed-container">
                     <button id="micFixedBtn" class="voice-fixed-btn">
                         🎤 <span>Inserisci spesa fissa con voce</span>
@@ -101,7 +153,7 @@
             </div>
         </div>
 
-        <!-- SPESE VARIABILI -->
+        <!-- ==================== SPESE VARIABILI ==================== -->
         <div class="section-card">
             <h2 id="variableTitle">🧾 Spese variabili</h2>
             <div class="section-content">
@@ -109,10 +161,13 @@
                     <label id="dateLabel">Seleziona data:</label>
                     <input type="date" id="expenseDate" class="date-input">
                 </div>
-                <div id="variableExpensesList">
+                
+                <!-- Lista spese variabili -->
+                <div id="variableExpensesList" class="expenses-list">
                     <p class="chart-note">Nessuna spesa in questo giorno</p>
                 </div>
                 
+                <!-- Input variabili -->
                 <div class="voice-input-container">
                     <div class="input-group-row">
                         <input type="text" id="expenseName" placeholder="Cosa hai comprato?">
@@ -127,6 +182,7 @@
                         </select>
                     </div>
                     
+                    <!-- Microfono variabili -->
                     <div class="voice-row">
                         <button id="voiceBtn" class="voice-btn">
                             🎤 <span>Inserisci con voce</span>
@@ -140,7 +196,7 @@
             </div>
         </div>
 
-        <!-- GRAFICO -->
+        <!-- ==================== GRAFICO ==================== -->
         <div class="section-card">
             <h2 id="chartTitle">📊 Distribuzione spese</h2>
             <div class="section-content">
@@ -149,31 +205,32 @@
             </div>
         </div>
 
-        <!-- ASSISTENTE -->
+        <!-- ==================== ASSISTENTE ==================== -->
         <div class="section-card">
-            <h2 id="assistantTitle">🤖 Assistente Finanziario</h2>
+            <h2 id="assistantTitle">🤖 Assistente Finanziario AI</h2>
             <div class="section-content">
                 <div class="chat-container">
                     <div class="chat-messages" id="chatMessages">
                         <div class="chat-message bot">
-                            <span class="message-sender" id="assistantName">🤖 Assistente:</span>
-                            <span class="message-text" id="welcomeMessage">Ciao! Chiedimi qualsiasi cosa sul tuo budget!</span>
+                            <span class="message-sender" id="assistantNameLabel">🤖 Assistente:</span>
+                            <span class="message-text" id="welcomeMessage">Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget!</span>
                         </div>
                     </div>
                     <div class="chat-input-area">
-                        <input type="text" id="chatInput" placeholder="Es. Quanto posso risparmiare?" class="chat-input">
-                        <button class="chat-voice-btn" id="chatVoiceBtn" title="Parla">🎤</button>
+                        <input type="text" id="chatInput" placeholder="Es. Quanto posso risparmiare questo mese?" class="chat-input">
                         <button id="sendChatBtn" class="chat-send-btn">Invia</button>
                     </div>
                 </div>
                 <div class="chat-suggestions">
                     <button class="suggestion-chip" id="suggestion1" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
                     <button class="suggestion-chip" id="suggestion2" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
+                    <button class="suggestion-chip" id="suggestion3" data-question="Quando raggiungerò il mio obiettivo?">🎯 Obiettivo</button>
+                    <button class="suggestion-chip" id="suggestion4" data-question="Qual è la categoria dove spendo di più?">📊 Top categoria</button>
                 </div>
             </div>
         </div>
 
-        <!-- RISPARMIO -->
+        <!-- ==================== RISPARMIO ==================== -->
         <div class="section-card">
             <h2 id="savingsTitle">🎯 Obiettivo risparmio</h2>
             <div class="section-content">
@@ -187,12 +244,12 @@
                 </div>
                 <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
                 <div class="progress-container" id="progressContainer" style="display: none;">
-                    <div class="progress-bar" id="progressBar">0%</div>
+                    <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
                 </div>
             </div>
         </div>
 
-        <!-- IMPOSTAZIONI CON LINGUA -->
+        <!-- ==================== IMPOSTAZIONI ==================== -->
         <div class="section-card">
             <h2 id="settingsTitle">⚙️ Impostazioni</h2>
             <div class="section-content">
@@ -201,7 +258,7 @@
                     <input type="number" id="thresholdInput" value="50" step="5">
                 </div>
                 
-                <!-- MENU LINGUA (FUNZIONANTE) -->
+                <!-- MENU LINGUA (con ID corretto) -->
                 <div class="setting-item">
                     <label for="languageSelect" id="languageLabel">🌍 Lingua / Language</label>
                     <select id="languageSelect" class="language-select">
@@ -224,10 +281,36 @@
 
         <!-- FOOTER -->
         <div class="footer">
-            <p>BudgetWise 2.0 — Gestione intelligente</p>
-            <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Calendar</button>
+            <p>BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
+            <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Google Calendar</button>
+            <p style="margin-top: 1rem; font-size: 0.8rem;">✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro</p>
         </div>
     </div>
+
+    <!-- Service Worker -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(registration => {
+                        console.log('✅ ServiceWorker registrato:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('❌ ServiceWorker errore:', error);
+                    });
+            });
+        }
+
+        // Verifica icone
+        window.addEventListener('load', () => {
+            fetch('icon-192.png')
+                .then(() => console.log('✅ Icona 192px OK'))
+                .catch(() => console.warn('⚠️ Icona 192px non trovata'));
+            fetch('icon-512.png')
+                .then(() => console.log('✅ Icona 512px OK'))
+                .catch(() => console.warn('⚠️ Icona 512px non trovata'));
+        });
+    </script>
 
     <script src="app.js"></script>
 </body>
