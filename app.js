@@ -435,7 +435,16 @@ if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
 
         const voiceBtnSpan = document.getElementById('voiceBtnText');
         if (voiceBtnSpan) voiceBtnSpan.textContent = this.t('variableVoiceButton');
-
+// Traduci il placeholder della data
+const dateInput = document.getElementById('fixedEndDate');
+if (dateInput) {
+    // Per input type="date", il placeholder non è direttamente modificabile,
+    // ma possiamo aggiungere un piccolo testo informativo
+    const dateHelpText = document.querySelector('.input-group.half .help-text');
+    if (dateHelpText) {
+        dateHelpText.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+    }
+}
         // Traduci l'etichetta "Totale entrate"
         const totalIncomeLabel = document.getElementById('totalIncomeLabel');
         if (totalIncomeLabel) totalIncomeLabel.textContent = this.t('totalIncome');
@@ -1185,4 +1194,5 @@ if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
 
 const app = new BudgetWise();
 window.app = app;
+
 
