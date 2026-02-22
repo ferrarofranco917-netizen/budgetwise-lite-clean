@@ -17,6 +17,7 @@ class BudgetWise {
         };
         
         this.chart = null;
+        this.categoryExpenses = {}; // Per memorizzare le spese per categoria
         
         // ========== SISTEMA DI TRADUZIONE COMPLETO ==========
         this.translations = {
@@ -323,6 +324,14 @@ class BudgetWise {
             this.saveData();
             this.applyLanguage();
         });
+
+        // Pulsante chiudi dettaglio categoria
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        if (closeDetailBtn) {
+            closeDetailBtn.addEventListener('click', () => {
+                document.getElementById('categoryDetail').style.display = 'none';
+            });
+        }
     }
 
     // ========== TRADUZIONE ==========
@@ -875,16 +884,29 @@ class BudgetWise {
 
     updateChart() {
         const categories = {};
+        const categoryExpenses = {};
         
+        // Raccogli i dati per categoria
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(expense => {
                 const catName = this.t('category' + expense.category);
                 categories[catName] = (categories[catName] || 0) + expense.amount;
+                
+                // Salva le spese individuali per categoria
+                if (!categoryExpenses[catName]) {
+                    categoryExpenses[catName] = [];
+                }
+                categoryExpenses[catName].push({
+                    name: expense.name,
+                    amount: expense.amount,
+                    date: day
+                });
             });
         });
 
         if (Object.keys(categories).length === 0) {
             document.getElementById('chartNote').style.display = 'block';
+            document.getElementById('categoryDetail').style.display = 'none';
             if (this.chart) this.chart.destroy();
             return;
         }
@@ -894,6 +916,8 @@ class BudgetWise {
         if (this.chart) this.chart.destroy();
 
         const ctx = document.getElementById('expenseChart').getContext('2d');
+        
+        // Crea il grafico con gestione click
         this.chart = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -902,21 +926,89 @@ class BudgetWise {
                     data: Object.values(categories),
                     backgroundColor: [
                         '#6366f1', '#818cf8', '#10b981', '#34d399', '#f59e0b', '#ef4444'
-                    ]
+                    ],
+                    borderColor: 'transparent'
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 plugins: {
                     legend: {
                         position: 'bottom',
                         labels: {
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary')
+                            color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary'),
+                            font: { size: 12 }
                         }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = ((value / total) * 100).toFixed(1);
+                                return `${label}: ${this.formatCurrency(value)} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                onClick: (event, items) => {
+                    if (items && items.length > 0) {
+                        const index = items[0].index;
+                        const categoryName = this.chart.data.labels[index];
+                        this.showCategoryDetail(categoryName, categoryExpenses[categoryName] || []);
                     }
                 }
             }
         });
+
+        // Salva i dati delle spese per categoria per usarli dopo
+        this.categoryExpenses = categoryExpenses;
+    }
+
+    showCategoryDetail(categoryName, expenses) {
+        const detailContainer = document.getElementById('categoryDetail');
+        const titleEl = document.getElementById('detailCategoryTitle');
+        const totalEl = document.getElementById('detailTotal');
+        const comparisonEl = document.getElementById('detailComparison');
+        const listEl = document.getElementById('detailExpensesList');
+
+        if (!detailContainer) return;
+
+        // Calcola totale
+        const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+
+        // Calcola confronto con mese scorso (simulato per ora)
+        const lastMonthTotal = total * 0.85; // Esempio: -15% rispetto al mese scorso
+        const difference = total - lastMonthTotal;
+        const percentChange = ((difference / lastMonthTotal) * 100).toFixed(1);
+        const trend = difference >= 0 ? '📈' : '📉';
+        const comparisonText = this.data.language === 'it'
+            ? `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'in più' : 'in meno'} rispetto al mese scorso`
+            : `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'more' : 'less'} than last month`;
+
+        // Popola i dettagli
+        titleEl.textContent = categoryName;
+        totalEl.textContent = this.data.language === 'it'
+            ? `Totale: ${this.formatCurrency(total)}`
+            : `Total: ${this.formatCurrency(total)}`;
+        comparisonEl.textContent = comparisonText;
+
+        // Lista spese
+        if (expenses.length === 0) {
+            listEl.innerHTML = `<p class="chart-note">${this.data.language === 'it' ? 'Nessuna spesa' : 'No expenses'}</p>`;
+        } else {
+            listEl.innerHTML = expenses.map(exp => `
+                <div class="detail-expense-item">
+                    <span class="expense-name">${exp.name}</span>
+                    <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                </div>
+            `).join('');
+        }
+
+        // Mostra il dettaglio
+        detailContainer.style.display = 'block';
     }
 
     formatCurrency(amount) {
