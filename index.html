@@ -1,1870 +1,224 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#111827" />
-  <title>BudgetWise</title>
-
-  <link rel="manifest" href="manifest.json" />
-
-  <!-- icona tab (opzionale ma consigliato) -->
-  <link rel="icon" href="icon-192.png" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
-
-  <style>
-    :root{
-      --bg:#0b1220; --card:#111827; --muted:#9ca3af; --text:#e5e7eb;
-      --border:#1f2937;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background: radial-gradient(1000px 600px at 20% 0%, #172554 0%, var(--bg) 55%);
-      color:var(--text);
-    }
-    .wrap{max-width:1200px; margin:0 auto; padding:18px}
-    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:14px}
-    .brand{display:flex; align-items:center; gap:10px}
-    .logo{
-      width:40px; height:40px; border-radius:14px;
-      background: linear-gradient(135deg, #22c55e, #3b82f6);
-      display:grid; place-items:center; font-weight:900; color:#071018;
-      box-shadow:0 10px 30px rgba(34,197,94,.2);
-    }
-    h1{font-size:18px; margin:0}
-    .sub{color:var(--muted); font-size:13px}
-
-    .grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:14px}
-    @media (max-width: 980px){ .grid{grid-template-columns:1fr} }
-
-    .card{
-      background: rgba(17,24,39,.92);
-      border:1px solid var(--border);
-      border-radius:18px;
-      padding:14px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .row{display:flex; gap:10px; flex-wrap:wrap}
-    .row > *{flex:1}
-
-    label{display:block; font-size:12px; color:var(--muted); margin:8px 0 6px}
-    input, select, button{
-      width:100%;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background:#0b1220;
-      color:var(--text);
-      outline:none;
-    }
-    input[type="date"], input[type="month"]{padding:10px 12px}
-    input[type="checkbox"]{width:auto; transform: scale(1.1);}
-    button{
-      cursor:pointer; border:none;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color:#06110a; font-weight:900;
-    }
-    button.secondary{background:#0b1220; border:1px solid var(--border); color:var(--text); font-weight:800}
-    button.danger{background: linear-gradient(135deg, #ef4444, #b91c1c); color:#150707}
-
-    .pill{display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border-radius:999px; border:1px solid var(--border); background:#0b1220; color:var(--muted); font-size:12px}
-    .divider{height:1px; background:var(--border); margin:12px 0}
-    .muted{color:var(--muted)}
-    .note{font-size:13px; line-height:1.45}
-
-    .kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:10px}
-    @media (max-width:520px){ .kpis{grid-template-columns:1fr} }
-    .kpi{padding:12px; border-radius:16px; border:1px solid var(--border); background:#0b1220}
-    .kpi .t{color:var(--muted); font-size:12px}
-    .kpi .v{font-size:18px; font-weight:1000; margin-top:4px}
-
-    .bar{height:10px; background:#0b1220; border:1px solid var(--border); border-radius:999px; overflow:hidden; margin-top:10px}
-    .bar>div{height:100%; width:0%}
-
-    .list{margin-top:10px}
-    .item{
-      display:grid; grid-template-columns: 1fr auto; gap:10px;
-      padding:12px; border-radius:16px; border:1px solid var(--border); background:#0b1220;
-      margin-top:10px;
-    }
-    .item .meta{color:var(--muted); font-size:12px; margin-top:4px}
-    .item .amt{font-weight:1000}
-    .item .actions{display:flex; gap:8px; align-items:start}
-    .mini{padding:8px 10px; border-radius:12px; font-size:12px}
-
-    canvas{width:100%; height:220px; background:#0b1220; border:1px solid var(--border); border-radius:16px;}
-
-    .toast{
-      display:none; position:fixed; left:50%; transform:translateX(-50%);
-      bottom:16px; max-width:92vw;
-      background:#0b1220; border:1px solid var(--border);
-      padding:10px 12px; border-radius:999px; color:var(--text);
-      box-shadow:0 12px 35px rgba(0,0,0,.35);
-    }
-    .toast.show{display:block}
-    .inline{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>💰 BudgetWise 2.0</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4361ee">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <!-- CARICA CHART.JS PRIMA DI APP.JS -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
-
 <body>
-<div class="wrap">
-  <div class="top">
-    <div class="brand">
-      <div class="logo">€</div>
-      <div>
-        <h1 data-i18n="app_title">BudgetWise — Stipendio a Stipendio</h1>
-        <div class="sub" data-i18n="app_sub">Grafico · storico · soglia X · vacanza · obiettivo risparmio · prudente · backup</div>
-      </div>
+    <div class="container">
+        <!-- HEADER CON TITOLO E TEMA -->
+        <div class="header">
+            <h1>💰 BudgetWise <span class="version">2.0</span></h1>
+            <button id="themeToggle" class="theme-btn" aria-label="Cambia tema">🌙</button>
+        </div>
+        <p class="subtitle">Stipendio a stipendio — gestione intelligente</p>
+
+        <!-- TOAST PER NOTIFICHE -->
+        <div id="toast" class="toast">✅ Operazione completata</div>
+
+        <!-- RIEPILOGO PRINCIPALE -->
+        <div class="summary-card">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label">Budget giornaliero</span>
+                    <span class="summary-value" id="dailyBudget">0,00 €</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Rimanenza</span>
+                    <span class="summary-value" id="remaining">0,00 €</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">Giorni rimasti</span>
+                    <span class="summary-value" id="daysLeft">28</span>
+                </div>
+            </div>
+            <div class="period-info" id="periodInfo">
+                📅 Periodo: 2026-02-22 → 2026-03-22
+            </div>
+        </div>
+
+        <!-- MESSAGGIO GUIDA -->
+        <div class="guide-message" id="guideMessage">
+            👋 Inizia inserendo le tue entrate nella sezione qui sotto!
+        </div>
+
+        <!-- ENTRATE -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2>🏦 Entrate del periodo</h2>
+                <span class="badge">nuovo</span>
+            </div>
+            <div class="section-content">
+                <div class="input-group">
+                    <label>Totale entrate (€)</label>
+                    <input type="number" id="incomeInput" placeholder="0,00" step="0.01" min="0">
+                </div>
+                <button class="btn-primary" id="saveIncomeBtn">Salva entrate</button>
+            </div>
+        </div>
+
+        <!-- SPESE FISSE CON DATA SCADENZA -->
+        <div class="section-card">
+            <h2>📌 Spese fisse mensili</h2>
+            <div class="section-content">
+                <div id="fixedExpensesList"></div>
+                
+                <!-- FORM CON GIORNO E DATA SCADENZA -->
+                <div class="input-group-row">
+                    <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)">
+                    <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01">
+                </div>
+                <div class="input-group-row">
+                    <div class="input-group half">
+                        <label>Giorno del mese</label>
+                        <input type="number" id="fixedDay" placeholder="es. 27" min="1" max="31">
+                    </div>
+                    <div class="input-group half">
+                        <label>Data scadenza (fine)</label>
+                        <input type="date" id="fixedEndDate">
+                    </div>
+                </div>
+                <button class="btn-secondary" id="addFixedBtn">➕ Aggiungi spesa fissa ricorrente</button>
+                <p class="help-text">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
+            </div>
+        </div>
+
+        <!-- SPESE VARIABILI CON MICROFONO -->
+        <div class="section-card">
+            <h2>🧾 Spese variabili</h2>
+            <div class="section-content">
+                <div class="date-selector">
+                    <label>Seleziona data:</label>
+                    <input type="date" id="expenseDate" class="date-input">
+                </div>
+                <div id="variableExpensesList">
+                    <p class="chart-note">Nessuna spesa in questo giorno</p>
+                </div>
+                
+                <!-- Input con microfono -->
+                <div class="voice-input-container">
+                    <div class="input-group-row">
+                        <input type="text" id="expenseName" placeholder="Cosa hai comprato?">
+                        <input type="number" id="expenseAmount" placeholder="€" step="0.01">
+                        <select id="expenseCategory">
+                            <option value="Alimentari">🍎 Alimentari</option>
+                            <option value="Trasporti">🚗 Trasporti</option>
+                            <option value="Svago">🎮 Svago</option>
+                            <option value="Salute">💊 Salute</option>
+                            <option value="Abbigliamento">👕 Abbigliamento</option>
+                            <option value="Altro">📦 Altro</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Pulsante microfono e area stato -->
+                    <div class="voice-row">
+                        <button id="voiceBtn" class="voice-btn">
+                            🎤 <span>Inserisci con voce</span>
+                        </button>
+                        <div id="voiceStatus" class="voice-status">🎤 Tocca per parlare</div>
+                    </div>
+                </div>
+                
+                <button class="btn-secondary" id="addExpenseBtn">➕ Aggiungi spesa</button>
+                <button class="btn-danger" id="resetDayBtn">🗑️ Cancella spese del giorno</button>
+            </div>
+        </div>
+
+        <!-- GRAFICO -->
+        <div class="section-card">
+            <h2>📊 Distribuzione spese</h2>
+            <div class="section-content">
+                <canvas id="expenseChart" width="400" height="300"></canvas>
+                <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
+            </div>
+        </div>
+
+        <!-- ASSISTENTE INTELLIGENTE -->
+        <div class="section-card">
+            <h2>🤖 Assistente Finanziario</h2>
+            <div class="section-content">
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="chat-message bot">
+                            <span class="message-sender">🤖 Assistente:</span>
+                            <span class="message-text">Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget o chiedimi di simulare scenari futuri!</span>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chatInput" placeholder="Es. Quanto posso risparmiare questo mese?" class="chat-input">
+                        <button id="sendChatBtn" class="chat-send-btn">Invia</button>
+                    </div>
+                </div>
+                <div class="chat-suggestions">
+                    <button class="suggestion-chip" data-question="Come posso risparmiare 100€ questo mese?">💶 Risparmia 100€</button>
+                    <button class="suggestion-chip" data-question="Cosa succede se aumento le spese del 20%?">🔮 Simula aumento</button>
+                    <button class="suggestion-chip" data-question="Quando raggiungerò il mio obiettivo?">🎯 Obiettivo</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RISPARMIO -->
+        <div class="section-card">
+            <h2>🎯 Obiettivo risparmio</h2>
+            <div class="section-content">
+                <div class="input-group">
+                    <label>Percentuale su entrate (%)</label>
+                    <input type="number" id="savePercent" placeholder="10" min="0" max="100" step="1">
+                </div>
+                <div class="input-group">
+                    <label>Obiettivo (€)</label>
+                    <input type="number" id="saveGoal" placeholder="1000" step="100">
+                </div>
+                <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
+                <div class="progress-container" id="progressContainer" style="display: none;">
+                    <div class="progress-bar" id="progressBar" style="width: 0%;">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMPOSTAZIONI -->
+        <div class="section-card">
+            <h2>⚙️ Impostazioni</h2>
+            <div class="section-content">
+                <div class="setting-item">
+                    <label>🔔 Soglia avviso (€)</label>
+                    <input type="number" id="thresholdInput" value="50" step="5">
+                </div>
+                <div class="setting-item">
+                    <label>🌍 Lingua</label>
+                    <select id="languageSelect">
+                        <option value="it">Italiano</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label>📅 Backup dati</label>
+                    <div class="button-group">
+                        <button class="btn-secondary" id="backupBtn">💾 Scarica backup</button>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
+                        <button class="btn-secondary" id="restoreBtn">📂 Ripristina</button>
+                    </div>
+                </div>
+                <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <p>BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
+            <button id="exportCalendarBtn" class="btn-text">📅 Esporta in Google Calendar</button>
+        </div>
     </div>
 
-    <div class="row" style="max-width:640px; width:100%">
-      <div>
-        <label data-i18n="day_label">Giorno (per inserire spese variabili)</label>
-        <input id="day" type="date" />
-      </div>
-      <div>
-        <label data-i18n="payday_label">Data stipendio (inizio periodo)</label>
-        <input id="payday" type="date" />
-      </div>
-      <div style="align-self:end">
-        <button id="setPayday" class="secondary" data-i18n="set_payday">Usa come inizio periodo</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="grid">
-    <!-- SINISTRA -->
-    <div class="card">
-      <div class="pill" data-i18n="period_summary">📅 Riepilogo periodo</div>
-
-      <div class="kpis">
-        <div class="kpi">
-          <div class="t" data-i18n="kpi_daily">Budget giornaliero</div>
-          <div class="v" id="kDaily">0,00 €</div>
-        </div>
-        <div class="kpi">
-          <div class="t" data-i18n="kpi_remain">Rimanenza</div>
-          <div class="v" id="kRemain">0,00 €</div>
-        </div>
-        <div class="kpi">
-          <div class="t" data-i18n="kpi_days">Giorni rimanenti</div>
-          <div class="v" id="kDays">0</div>
-        </div>
-      </div>
-
-      <div class="bar"><div id="barFill"></div></div>
-      <p class="muted note" id="kExplain" style="margin:10px 0 0"></p>
-
-      <!-- SPESE VARIABILI IN ALTO -->
-      <div class="divider"></div>
-      <div class="pill" data-i18n="var_title">🧾 Spese variabili (giorno scelto)</div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="amount_label">Importo</label>
-          <input id="v_amount" type="text" inputmode="decimal" data-i18n-placeholder="amount_ph" placeholder="es. 4,50" />
-        </div>
-        <div>
-          <label data-i18n="category_label">Categoria</label>
-          <select id="v_cat"></select>
-        </div>
-      </div>
-
-      <label data-i18n="note_label">Nota</label>
-      <input id="v_note" type="text" data-i18n-placeholder="note_ph" placeholder="es. cena / pane / manutenzione" />
-
-      <div class="row" style="margin-top:10px">
-        <button id="v_add" data-i18n="add_var">Aggiungi spesa variabile</button>
-        <button id="v_export" class="secondary" data-i18n="export_var">Esporta variabili CSV</button>
-      </div>
-
-      <div class="list" id="v_list"></div>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="chart_title">📊 Grafico spese per categoria</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="chart_note">Spese variabili nel periodo (fino al giorno selezionato).</p>
-      <div style="margin-top:10px">
-        <canvas id="catChart" width="900" height="260"></canvas>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="income_title">🏦 Entrate del periodo</div>
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="name_label">Nome</label>
-          <input id="i_name" type="text" data-i18n-placeholder="income_name_ph" placeholder="es. Stipendio" />
-        </div>
-        <div>
-          <label data-i18n="amount_label">Importo</label>
-          <input id="i_amount" type="text" inputmode="decimal" data-i18n-placeholder="income_amount_ph" placeholder="es. 3000 oppure 3000,50" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <button id="i_add" data-i18n="add_income">Aggiungi entrata</button>
-        <button id="i_export" class="secondary" data-i18n="export_income">Esporta entrate CSV</button>
-      </div>
-
-      <div class="list" id="i_list"></div>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="savings_title">💼 Risparmio (fuori budget)</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="savings_note">Soldi “da parte” fissi: NON entrano nel budget.</p>
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="savings_label">Risparmio fuori budget</label>
-          <input id="savings" type="text" inputmode="decimal" data-i18n-placeholder="savings_ph" placeholder="es. 2000" />
-        </div>
-        <div style="align-self:end">
-          <button id="saveSavings" class="secondary" data-i18n="save">Salva</button>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="goal_title">🎯 Risparmio automatico obiettivo</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="goal_note">
-        Imposti percentuale e obiettivo. Premi “Applica” per mettere da parte (fuori budget) una quota delle entrate di questo periodo.
-      </p>
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="goal_pct">Percentuale su entrate (%)</label>
-          <input id="autoSavePct" type="text" inputmode="decimal" data-i18n-placeholder="goal_pct_ph" placeholder="es. 10" />
-        </div>
-        <div>
-          <label data-i18n="goal_saved">Totale già risparmiato</label>
-          <input id="goalSaved" type="text" inputmode="decimal" data-i18n-placeholder="goal_saved_ph" placeholder="es. 500" />
-        </div>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="goal_target">Obiettivo finale</label>
-          <input id="goalTarget" type="text" inputmode="decimal" data-i18n-placeholder="goal_target_ph" placeholder="es. 5000" />
-        </div>
-        <div style="align-self:end">
-          <button id="applyAutoSave" class="secondary" data-i18n="apply_to_period">Applica al periodo</button>
-        </div>
-      </div>
-      <p class="muted note" id="goalExplain" style="margin:10px 0 0"></p>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="fixed_title">📌 Spese fisse mensili (con scadenza)</div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="name_label">Nome</label>
-          <input id="f_name" type="text" data-i18n-placeholder="fixed_name_ph" placeholder="es. Netflix" />
-        </div>
-        <div>
-          <label data-i18n="category_label">Categoria</label>
-          <select id="f_cat"></select>
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label data-i18n="amount_label">Importo</label>
-          <input id="f_amount" type="text" inputmode="decimal" data-i18n-placeholder="fixed_amount_ph" placeholder="es. 12,99" />
-        </div>
-        <div>
-          <label data-i18n="debit_day">Giorno addebito (1-31)</label>
-          <input id="f_debitDay" type="number" min="1" max="31" data-i18n-placeholder="debit_day_ph" placeholder="es. 10" />
-        </div>
-      </div>
-
-      <div class="row">
-        <div>
-          <label data-i18n="start_month">Mese inizio</label>
-          <input id="f_startMonth" type="month" />
-        </div>
-        <div>
-          <label data-i18n="end_month">Mese scadenza (opzionale)</label>
-          <input id="f_endMonth" type="month" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <button id="f_add" data-i18n="add_fixed">Aggiungi spesa fissa</button>
-        <button id="f_export" class="secondary" data-i18n="export_fixed">Esporta fisse CSV</button>
-      </div>
-
-      <div class="list" id="f_list"></div>
-    </div>
-
-    <!-- DESTRA -->
-    <div class="card">
-      <div class="pill" data-i18n="settings_title">⚙️ Impostazioni</div>
-
-      <div class="divider"></div>
-      <div class="pill" data-i18n="lang_title">🌍 Lingua</div>
-      <label data-i18n="lang_label">Seleziona lingua</label>
-      <select id="langSelect">
-        <option value="it">Italiano</option>
-        <option value="en">English</option>
-      </select>
-
-      <div class="divider"></div>
-
-      <label data-i18n="budget_mode">Modalità budget</label>
-      <select id="budgetMode">
-        <option value="simple" data-i18n="mode_simple">Semplice</option>
-        <option value="prudent" data-i18n="mode_prudent">Prudente (toglie già le fisse future)</option>
-      </select>
-
-      <label style="margin-top:10px" data-i18n="alerts">Avvisi</label>
-      <select id="alertMode">
-        <option value="on" data-i18n="alert_on">Mostra avviso se budget giornaliero &lt; 0</option>
-        <option value="off" data-i18n="alert_off">Nessun avviso</option>
-      </select>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="alertx_title">🔔 Avviso soglia X</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="alertx_note">Avvisa quando le spese variabili del periodo (fino a oggi) superano X.</p>
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="threshold">Soglia X</label>
-          <input id="alertX" type="text" inputmode="decimal" data-i18n-placeholder="threshold_ph" placeholder="es. 1200" />
-        </div>
-        <div style="align-self:end">
-          <button id="saveAlertX" class="secondary" data-i18n="save_threshold">Salva soglia</button>
-        </div>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="vac_title">🏖 Modalità vacanza</div>
-      <div class="inline" style="margin-top:10px">
-        <input id="vacEnabled" type="checkbox" />
-        <span class="muted" data-i18n="vac_enabled">Attiva vacanza (date + budget separato)</span>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="vac_start">Inizio vacanza</label>
-          <input id="vacStart" type="date" />
-        </div>
-        <div>
-          <label data-i18n="vac_end">Fine vacanza</label>
-          <input id="vacEnd" type="date" />
-        </div>
-      </div>
-
-      <div class="row" style="margin-top:10px">
-        <div>
-          <label data-i18n="vac_budget">Budget totale vacanza</label>
-          <input id="vacBudget" type="text" inputmode="decimal" data-i18n-placeholder="vac_budget_ph" placeholder="es. 600" />
-        </div>
-        <div style="align-self:end">
-          <button id="saveVac" class="secondary" data-i18n="save_vac">Salva vacanza</button>
-        </div>
-      </div>
-
-      <p class="muted note" id="vacExplain" style="margin:10px 0 0"></p>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="history_title">🕘 Storico periodi</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="history_note">Seleziona un periodo (data stipendio) e aprilo.</p>
-      <label data-i18n="history_select">Seleziona periodo (data stipendio)</label>
-      <select id="periodSelect"></select>
-      <div class="row" style="margin-top:10px">
-        <button id="goPeriod" class="secondary" data-i18n="open_period">Apri periodo</button>
-        <button id="newPeriod" class="secondary" data-i18n="new_period_today">Nuovo periodo = oggi</button>
-      </div>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="reset_title">🧹 Reset</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="reset_note">Cancella solo le spese variabili del giorno selezionato.</p>
-      <button id="resetDay" class="danger" style="margin-top:10px" data-i18n="reset_day">Azzera spese variabili del giorno</button>
-
-      <div class="divider"></div>
-
-      <div class="pill" data-i18n="backup_title">💾 Backup dati</div>
-      <button id="exportBackup" class="secondary" style="margin-top:10px" data-i18n="export_backup">📤 Esporta backup</button>
-      <input id="importFile" type="file" accept=".json" style="display:none" />
-      <button id="importBackup" class="secondary" style="margin-top:10px" data-i18n="import_backup">📥 Importa backup</button>
-
-      <div class="divider"></div>
-      <div class="pill" data-i18n="gc_title">📅 Google Calendar</div>
-      <p class="muted note" style="margin:10px 0 0" data-i18n="gc_note">Crea un file .ics con spese variabili + fisse del periodo. Poi lo importi in Google Calendar.</p>
-      <button id="exportICS" class="secondary" style="margin-top:10px" data-i18n="gc_export">📤 Esporta Calendario (.ics)</button>
-    </div>
-  </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-(() => {
-  const $ = (id) => document.getElementById(id);
-
-  // ✅ KEY dedicata: repo "clean 2" isolata dai tuoi dati
-  const KEY = "bw_clean2_i18n_v1";
-
-  const state = load();
-  state.settings = state.settings || {};
-  state.settings.alertMode = state.settings.alertMode ?? "on";
-  state.settings.budgetMode = state.settings.budgetMode || "simple";
-  state.settings.alertX = state.settings.alertX ?? 0;
-  state.settings.lang = state.settings.lang || "it";
-
-  state.vac = state.vac || { enabled:false, start:null, end:null, budget:0 };
-  state.goal = state.goal || { pct: 0, saved: 0, target: 0, perPeriod: {} };
-
-  // =======================
-  // i18n (UI + categorie)
-  // =======================
-  const I18N = {
-    it: {
-      app_title: "BudgetWise — Stipendio a Stipendio",
-      app_sub: "Grafico · storico · soglia X · vacanza · obiettivo risparmio · prudente · backup",
-
-      period_summary: "📅 Riepilogo periodo",
-      kpi_daily: "Budget giornaliero",
-      kpi_remain: "Rimanenza",
-      kpi_days: "Giorni rimanenti",
-
-      day_label: "Giorno (per inserire spese variabili)",
-      payday_label: "Data stipendio (inizio periodo)",
-      set_payday: "Usa come inizio periodo",
-
-      var_title: "🧾 Spese variabili (giorno scelto)",
-      amount_label: "Importo",
-      category_label: "Categoria",
-      note_label: "Nota",
-      add_var: "Aggiungi spesa variabile",
-      export_var: "Esporta variabili CSV",
-
-      chart_title: "📊 Grafico spese per categoria",
-      chart_note: "Spese variabili nel periodo (fino al giorno selezionato).",
-
-      income_title: "🏦 Entrate del periodo",
-      name_label: "Nome",
-      add_income: "Aggiungi entrata",
-      export_income: "Esporta entrate CSV",
-
-      savings_title: "💼 Risparmio (fuori budget)",
-      savings_note: "Soldi “da parte” fissi: NON entrano nel budget.",
-      savings_label: "Risparmio fuori budget",
-      save: "Salva",
-
-      goal_title: "🎯 Risparmio automatico obiettivo",
-      goal_note: "Imposti percentuale e obiettivo. Premi “Applica” per mettere da parte (fuori budget) una quota delle entrate di questo periodo.",
-      goal_pct: "Percentuale su entrate (%)",
-      goal_saved: "Totale già risparmiato",
-      goal_target: "Obiettivo finale",
-      apply_to_period: "Applica al periodo",
-
-      fixed_title: "📌 Spese fisse mensili (con scadenza)",
-      debit_day: "Giorno addebito (1-31)",
-      start_month: "Mese inizio",
-      end_month: "Mese scadenza (opzionale)",
-      add_fixed: "Aggiungi spesa fissa",
-      export_fixed: "Esporta fisse CSV",
-
-      settings_title: "⚙️ Impostazioni",
-      lang_title: "🌍 Lingua",
-      lang_label: "Seleziona lingua",
-      budget_mode: "Modalità budget",
-      mode_simple: "Semplice",
-      mode_prudent: "Prudente (toglie già le fisse future)",
-      alerts: "Avvisi",
-      alert_on: "Mostra avviso se budget giornaliero < 0",
-      alert_off: "Nessun avviso",
-
-      alertx_title: "🔔 Avviso soglia X",
-      alertx_note: "Avvisa quando le spese variabili del periodo (fino a oggi) superano X.",
-      threshold: "Soglia X",
-      save_threshold: "Salva soglia",
-
-      vac_title: "🏖 Modalità vacanza",
-      vac_enabled: "Attiva vacanza (date + budget separato)",
-      vac_start: "Inizio vacanza",
-      vac_end: "Fine vacanza",
-      vac_budget: "Budget totale vacanza",
-      save_vac: "Salva vacanza",
-
-      history_title: "🕘 Storico periodi",
-      history_note: "Seleziona un periodo (data stipendio) e aprilo.",
-      history_select: "Seleziona periodo (data stipendio)",
-      open_period: "Apri periodo",
-      new_period_today: "Nuovo periodo = oggi",
-
-      reset_title: "🧹 Reset",
-      reset_note: "Cancella solo le spese variabili del giorno selezionato.",
-      reset_day: "Azzera spese variabili del giorno",
-
-      backup_title: "💾 Backup dati",
-      export_backup: "📤 Esporta backup",
-      import_backup: "📥 Importa backup",
-
-      gc_title: "📅 Google Calendar",
-      gc_note: "Crea un file .ics con spese variabili + fisse del periodo. Poi lo importi in Google Calendar.",
-      gc_export: "📤 Esporta Calendario (.ics)",
-
-      // Placeholders
-      amount_ph: "es. 4,50",
-      note_ph: "es. cena / pane / manutenzione",
-      income_name_ph: "es. Stipendio",
-      income_amount_ph: "es. 3000 oppure 3000,50",
-      savings_ph: "es. 2000",
-      goal_pct_ph: "es. 10",
-      goal_saved_ph: "es. 500",
-      goal_target_ph: "es. 5000",
-      fixed_name_ph: "es. Netflix",
-      fixed_amount_ph: "es. 12,99",
-      debit_day_ph: "es. 10",
-      threshold_ph: "es. 1200",
-      vac_budget_ph: "es. 600",
-
-      // Toast / messaggi
-      pick_payday: "Scegli una data stipendio.",
-      period_updated: "Periodo aggiornato ✅",
-      threshold_invalid: "Soglia non valida (>=0).",
-      threshold_saved: "Soglia salvata ✅",
-      savings_invalid: "Risparmio non valido (>=0).",
-      savings_saved: "Risparmio salvato ✅",
-      vac_need_dates: "Metti inizio e fine vacanza.",
-      vac_end_before: "Fine vacanza non può essere prima dell'inizio.",
-      vac_saved: "Vacanza salvata ✅",
-      pct_invalid: "Percentuale non valida (0-100).",
-      target_invalid: "Obiettivo non valido (>=0).",
-      saved_invalid: "Totale risparmiato non valido (>=0).",
-      autosave_applied: "Risparmio applicato:",
-      opened_period: "Periodo aperto ✅",
-      new_period_ok: "Nuovo periodo (oggi) ✅",
-      income_invalid: "Importo entrata non valido (>0).",
-      fixed_invalid: "Importo fisso non valido (>0).",
-      debit_invalid: "Giorno addebito deve essere 1-31.",
-      start_month_need: "Scegli un mese di inizio.",
-      end_before_start: "La scadenza non può essere prima dell'inizio.",
-      expense_invalid: "Importo spesa non valido (>0).",
-      nothing_to_delete: "Niente da cancellare.",
-      day_reset: "Giorno azzerato 🧹",
-      csv_exported: "CSV esportato 📄",
-      no_data_backup: "Nessun dato da esportare.",
-      backup_exported: "Backup esportato 📤",
-      backup_imported: "Backup importato ✅",
-      bad_file: "File non valido ❌",
-      no_expenses_period: "Nessuna spesa nel periodo da esportare.",
-      ics_done: "File .ics creato ✅ Ora importalo in Google Calendar",
-      warn_daily: "⚠️ Budget giornaliero sotto zero!",
-      warn_vac: "⚠️ Budget vacanza sotto zero!",
-      threshold_passed: "🔔 Superata soglia:",
-      no_income_period: "Nessuna entrata in questo periodo.",
-      no_fixed_saved: "Nessuna spesa fissa salvata.",
-      no_var_day: "Nessuna spesa variabile in questo giorno.",
-      fixed_counted: "✅ conteggiata nel periodo",
-      fixed_not_counted: "— non conteggiata nel periodo",
-      fixed_active: "Attiva:",
-      fixed_debit: "Addebito giorno",
-      fixed_debit_day: "Giorno addebito:",
-      fixed_cat: "Categoria:",
-      income_period: "Entrata del periodo",
-      income_deleted: "Entrata eliminata.",
-      fixed_deleted: "Spesa fissa eliminata.",
-      expense_deleted: "Spesa eliminata.",
-      vac_off: "Vacanza disattivata.",
-      vac_label: "Vacanza:",
-      budget_simple: "Semplice",
-      budget_prudent: "Prudente",
-      summary_period: "Periodo",
-      summary_income: "Entrate",
-      summary_savings: "Risparmio",
-      summary_autosave: "Auto-risparmio",
-      summary_fixed: "Fisse",
-      summary_budget: "Budget",
-      summary_var_until: "Variabili (fino a",
-      summary_future_fixed: "Fisse future",
-      summary_remaining: "Rimanenza",
-      summary_daily: "Budget giornaliero",
-      vac_note: "🏖 Vacanza: residuo",
-    },
-    en: {
-      app_title: "BudgetWise — Paycheck to Paycheck",
-      app_sub: "Chart · history · threshold X · vacation · savings goal · prudent · backup",
-
-      period_summary: "📅 Period summary",
-      kpi_daily: "Daily budget",
-      kpi_remain: "Remaining",
-      kpi_days: "Days left",
-
-      day_label: "Day (to add variable expenses)",
-      payday_label: "Payday (period start)",
-      set_payday: "Use as period start",
-
-      var_title: "🧾 Variable expenses (selected day)",
-      amount_label: "Amount",
-      category_label: "Category",
-      note_label: "Note",
-      add_var: "Add variable expense",
-      export_var: "Export variable CSV",
-
-      chart_title: "📊 Expenses by category chart",
-      chart_note: "Variable expenses in the period (up to selected day).",
-
-      income_title: "🏦 Period income",
-      name_label: "Name",
-      add_income: "Add income",
-      export_income: "Export income CSV",
-
-      savings_title: "💼 Savings (outside budget)",
-      savings_note: "Fixed “set aside” money: NOT included in budget.",
-      savings_label: "Savings outside budget",
-      save: "Save",
-
-      goal_title: "🎯 Automatic savings goal",
-      goal_note: "Set percentage and goal. Press “Apply” to set aside (outside budget) a share of this period income.",
-      goal_pct: "Percent of income (%)",
-      goal_saved: "Already saved total",
-      goal_target: "Final target",
-      apply_to_period: "Apply to period",
-
-      fixed_title: "📌 Monthly fixed expenses (with end date)",
-      debit_day: "Debit day (1-31)",
-      start_month: "Start month",
-      end_month: "End month (optional)",
-      add_fixed: "Add fixed expense",
-      export_fixed: "Export fixed CSV",
-
-      settings_title: "⚙️ Settings",
-      lang_title: "🌍 Language",
-      lang_label: "Select language",
-      budget_mode: "Budget mode",
-      mode_simple: "Simple",
-      mode_prudent: "Prudent (subtract future fixed costs)",
-      alerts: "Alerts",
-      alert_on: "Show alert if daily budget < 0",
-      alert_off: "No alerts",
-
-      alertx_title: "🔔 Threshold X alert",
-      alertx_note: "Alert when variable expenses (up to today) exceed X.",
-      threshold: "Threshold X",
-      save_threshold: "Save threshold",
-
-      vac_title: "🏖 Vacation mode",
-      vac_enabled: "Enable vacation (dates + separate budget)",
-      vac_start: "Vacation start",
-      vac_end: "Vacation end",
-      vac_budget: "Total vacation budget",
-      save_vac: "Save vacation",
-
-      history_title: "🕘 Period history",
-      history_note: "Pick a period (payday) and open it.",
-      history_select: "Select period (payday)",
-      open_period: "Open period",
-      new_period_today: "New period = today",
-
-      reset_title: "🧹 Reset",
-      reset_note: "Deletes only variable expenses of the selected day.",
-      reset_day: "Clear selected day variable expenses",
-
-      backup_title: "💾 Data backup",
-      export_backup: "📤 Export backup",
-      import_backup: "📥 Import backup",
-
-      gc_title: "📅 Google Calendar",
-      gc_note: "Create a .ics file with variable + fixed expenses of the period. Then import into Google Calendar.",
-      gc_export: "📤 Export Calendar (.ics)",
-
-      // Placeholders
-      amount_ph: "e.g. 4.50",
-      note_ph: "e.g. dinner / groceries / maintenance",
-      income_name_ph: "e.g. Salary",
-      income_amount_ph: "e.g. 3000 or 3000.50",
-      savings_ph: "e.g. 2000",
-      goal_pct_ph: "e.g. 10",
-      goal_saved_ph: "e.g. 500",
-      goal_target_ph: "e.g. 5000",
-      fixed_name_ph: "e.g. Netflix",
-      fixed_amount_ph: "e.g. 12.99",
-      debit_day_ph: "e.g. 10",
-      threshold_ph: "e.g. 1200",
-      vac_budget_ph: "e.g. 600",
-
-      // Toast / messaggi
-      pick_payday: "Pick a payday date.",
-      period_updated: "Period updated ✅",
-      threshold_invalid: "Invalid threshold (>=0).",
-      threshold_saved: "Threshold saved ✅",
-      savings_invalid: "Invalid savings (>=0).",
-      savings_saved: "Savings saved ✅",
-      vac_need_dates: "Set vacation start and end.",
-      vac_end_before: "Vacation end can’t be before start.",
-      vac_saved: "Vacation saved ✅",
-      pct_invalid: "Invalid percentage (0-100).",
-      target_invalid: "Invalid target (>=0).",
-      saved_invalid: "Invalid saved total (>=0).",
-      autosave_applied: "Savings applied:",
-      opened_period: "Period opened ✅",
-      new_period_ok: "New period (today) ✅",
-      income_invalid: "Invalid income amount (>0).",
-      fixed_invalid: "Invalid fixed amount (>0).",
-      debit_invalid: "Debit day must be 1-31.",
-      start_month_need: "Choose a start month.",
-      end_before_start: "End month can’t be before start.",
-      expense_invalid: "Invalid expense amount (>0).",
-      nothing_to_delete: "Nothing to delete.",
-      day_reset: "Day cleared 🧹",
-      csv_exported: "CSV exported 📄",
-      no_data_backup: "No data to export.",
-      backup_exported: "Backup exported 📤",
-      backup_imported: "Backup imported ✅",
-      bad_file: "Invalid file ❌",
-      no_expenses_period: "No expenses to export for this period.",
-      ics_done: ".ics created ✅ Now import it into Google Calendar",
-      warn_daily: "⚠️ Daily budget below zero!",
-      warn_vac: "⚠️ Vacation daily budget below zero!",
-      threshold_passed: "🔔 Threshold exceeded:",
-      no_income_period: "No income in this period.",
-      no_fixed_saved: "No fixed expenses saved.",
-      no_var_day: "No variable expenses on this day.",
-      fixed_counted: "✅ counted in period",
-      fixed_not_counted: "— not counted in period",
-      fixed_active: "Active:",
-      fixed_debit: "Debit day",
-      fixed_debit_day: "Debit day:",
-      fixed_cat: "Category:",
-      income_period: "Income of the period",
-      income_deleted: "Income deleted.",
-      fixed_deleted: "Fixed expense deleted.",
-      expense_deleted: "Expense deleted.",
-      vac_off: "Vacation disabled.",
-      vac_label: "Vacation:",
-      budget_simple: "Simple",
-      budget_prudent: "Prudent",
-      summary_period: "Period",
-      summary_income: "Income",
-      summary_savings: "Savings",
-      summary_autosave: "Auto-savings",
-      summary_fixed: "Fixed",
-      summary_budget: "Budget",
-      summary_var_until: "Variable (up to",
-      summary_future_fixed: "Future fixed",
-      summary_remaining: "Remaining",
-      summary_daily: "Daily budget",
-      vac_note: "🏖 Vacation remaining",
-    }
-  };
-
-  // Categorie (chiavi stabili)
-  const CAT_KEYS_VARIABLE = [
-    "cat_restaurant",
-    "cat_groceries",
-    "cat_home",
-    "cat_motorbike",
-    "cat_car",
-    "cat_fuel",
-    "cat_gas",
-    "cat_electricity",
-    "cat_water",
-    "cat_streaming",
-    "cat_phone_internet",
-    "cat_pharmacy",
-    "cat_leisure",
-    "cat_other"
-  ];
-
-  const CAT_KEYS_FIXED = [
-    "cat_home",
-    "cat_gas",
-    "cat_electricity",
-    "cat_water",
-    "cat_streaming",
-    "cat_phone_internet",
-    "cat_motorbike",
-    "cat_car",
-    "cat_insurance",
-    "cat_other"
-  ];
-
-  const CAT_LABELS = {
-    cat_restaurant: { it: "Ristorante", en: "Restaurant" },
-    cat_groceries: { it: "Spesa (supermercato)", en: "Groceries" },
-    cat_home: { it: "Casa", en: "Home" },
-    cat_motorbike: { it: "Moto", en: "Motorbike" },
-    cat_car: { it: "Macchina", en: "Car" },
-    cat_fuel: { it: "Benzina", en: "Fuel" },
-    cat_gas: { it: "Gas", en: "Gas" },
-    cat_electricity: { it: "Luce", en: "Electricity" },
-    cat_water: { it: "Acqua", en: "Water" },
-    cat_streaming: { it: "TV / Streaming", en: "TV / Streaming" },
-    cat_phone_internet: { it: "Telefono / Internet", en: "Phone / Internet" },
-    cat_pharmacy: { it: "Farmacia", en: "Pharmacy" },
-    cat_leisure: { it: "Svago", en: "Leisure" },
-    cat_insurance: { it: "Assicurazione", en: "Insurance" },
-    cat_other: { it: "Altro", en: "Other" }
-  };
-
-  function lang(){ return state.settings.lang || "it"; }
-  function t(key){
-    const L = lang();
-    return (I18N[L] && I18N[L][key]) || (I18N.it[key] || key);
-  }
-  function catLabel(key){
-    const L = lang();
-    const x = CAT_LABELS[key];
-    return x ? (x[L] || x.it || key) : key;
-  }
-
-  function applyLanguage(){
-    document.documentElement.lang = lang();
-    document.querySelectorAll("[data-i18n]").forEach(el=>{
-      const key = el.getAttribute("data-i18n");
-      el.textContent = t(key);
-    });
-    document.querySelectorAll("[data-i18n-placeholder]").forEach(el=>{
-      const key = el.getAttribute("data-i18n-placeholder");
-      el.setAttribute("placeholder", t(key));
-    });
-    const sel = $("langSelect");
-    if (sel) sel.value = lang();
-
-    // ripopola menu categorie nella lingua corrente
-    renderCategorySelects();
-  }
-
-  function renderCategorySelects(){
-    // variabili
-    const v = $("v_cat");
-    v.innerHTML = "";
-    CAT_KEYS_VARIABLE.forEach(k=>{
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = catLabel(k);
-      v.appendChild(opt);
-    });
-
-    // fisse
-    const f = $("f_cat");
-    f.innerHTML = "";
-    CAT_KEYS_FIXED.forEach(k=>{
-      const opt = document.createElement("option");
-      opt.value = k;
-      opt.textContent = catLabel(k);
-      f.appendChild(opt);
-    });
-  }
-
-  // =======================
-  // Init UI values
-  // =======================
-  const today = new Date();
-
-  // [DAY-AUTO] gestione "Giorno": auto oggi all'apertura, poi non sovrascrive se cambi a mano
-  let dayPinnedByUser = false;
-  let lastAutoDayISO = null;
-  let suppressPin = false;
-
-  setDayAuto(toISODate(today));
-
-  state.activePayday = state.activePayday || toISODate(today);
-  $("payday").value = state.activePayday;
-  $("f_startMonth").value = monthKey(parseISO(state.activePayday));
-
-  $("alertMode").value = state.settings.alertMode;
-  $("budgetMode").value = state.settings.budgetMode;
-  $("alertX").value = state.settings.alertX ? String(state.settings.alertX).replace(".", ",") : "";
-
-  $("savings").value = (state.savings ?? 0) ? String(state.savings).replace(".", ",") : "";
-
-  $("vacEnabled").checked = !!state.vac.enabled;
-  $("vacStart").value = state.vac.start || "";
-  $("vacEnd").value = state.vac.end || "";
-  $("vacBudget").value = state.vac.budget ? String(state.vac.budget).replace(".", ",") : "";
-
-  $("autoSavePct").value = state.goal.pct ? String(state.goal.pct).replace(".", ",") : "";
-  $("goalSaved").value = state.goal.saved ? String(state.goal.saved).replace(".", ",") : "";
-  $("goalTarget").value = state.goal.target ? String(state.goal.target).replace(".", ",") : "";
-
-  // lingua
-  $("langSelect").value = lang();
-  $("langSelect").addEventListener("change", () => {
-    state.settings.lang = $("langSelect").value;
-    save(state);
-    applyLanguage();
-    render();
-  });
-
-  // events
-  $("day").addEventListener("change", () => {
-    if (!suppressPin) dayPinnedByUser = true;
-    render();
-  });
-
-  window.addEventListener("focus", autoUpdateDayIfAllowed);
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") autoUpdateDayIfAllowed();
-  });
-
-  $("setPayday").addEventListener("click", () => {
-    const p = $("payday").value;
-    if (!p) return toast(t("pick_payday"));
-    state.activePayday = p;
-    $("f_startMonth").value = monthKey(parseISO(p));
-    save(state);
-    toast(t("period_updated"));
-    render();
-  });
-
-  $("alertMode").addEventListener("change", () => {
-    state.settings.alertMode = $("alertMode").value;
-    save(state);
-  });
-
-  $("budgetMode").addEventListener("change", () => {
-    state.settings.budgetMode = $("budgetMode").value;
-    save(state);
-    render();
-  });
-
-  $("saveAlertX").addEventListener("click", () => {
-    const v = num($("alertX").value);
-    if (!isFinite(v) || v < 0) return toast(t("threshold_invalid"));
-    state.settings.alertX = round2(v);
-    save(state);
-    toast(t("threshold_saved"));
-    render();
-  });
-
-  $("saveSavings").addEventListener("click", () => {
-    const v = num($("savings").value);
-    if (!isFinite(v) || v < 0) return toast(t("savings_invalid"));
-    state.savings = round2(v);
-    save(state);
-    toast(t("savings_saved"));
-    render();
-  });
-
-  $("saveVac").addEventListener("click", () => {
-    state.vac.enabled = $("vacEnabled").checked;
-    state.vac.start = $("vacStart").value || null;
-    state.vac.end = $("vacEnd").value || null;
-    const b = num($("vacBudget").value);
-    state.vac.budget = (isFinite(b) && b >= 0) ? round2(b) : 0;
-
-    if (state.vac.enabled) {
-      if (!state.vac.start || !state.vac.end) return toast(t("vac_need_dates"));
-      if (state.vac.end < state.vac.start) return toast(t("vac_end_before"));
-    }
-    save(state);
-    toast(t("vac_saved"));
-    render();
-  });
-
-  $("applyAutoSave").addEventListener("click", () => {
-    const pct = num($("autoSavePct").value);
-    const target = num($("goalTarget").value);
-    const savedV = num($("goalSaved").value);
-
-    if (!isFinite(pct) || pct < 0 || pct > 100) return toast(t("pct_invalid"));
-    if (!isFinite(target) || target < 0) return toast(t("target_invalid"));
-    if (!isFinite(savedV) || savedV < 0) return toast(t("saved_invalid"));
-
-    state.goal.pct = round2(pct);
-    state.goal.target = round2(target);
-    state.goal.saved = round2(savedV);
-
-    const period = periodKey(state.activePayday);
-    const inc = round2(incomesForPeriod(period).reduce((s,i)=>s+i.amount,0));
-    const auto = round2(inc * (state.goal.pct / 100));
-
-    state.goal.perPeriod = state.goal.perPeriod || {};
-    state.goal.perPeriod[period] = auto;
-    state.goal.saved = round2(state.goal.saved + auto);
-
-    save(state);
-    toast(`${t("autosave_applied")} ${eur(auto)}`);
-    render();
-  });
-
-  $("goPeriod").addEventListener("click", () => {
-    const p = $("periodSelect").value;
-    if (!p) return;
-    state.activePayday = p;
-    $("payday").value = p;
-    $("f_startMonth").value = monthKey(parseISO(p));
-    save(state);
-    toast(t("opened_period"));
-    render();
-  });
-
-  $("newPeriod").addEventListener("click", () => {
-    const p = toISODate(new Date());
-    state.activePayday = p;
-    $("payday").value = p;
-    $("f_startMonth").value = monthKey(parseISO(p));
-    save(state);
-    toast(t("new_period_ok"));
-    render();
-  });
-
-  $("i_add").addEventListener("click", () => {
-    const period = periodKey(state.activePayday);
-    const name = ($("i_name").value.trim() || (lang()==="en" ? "Income" : "Entrata"));
-    const amount = num($("i_amount").value);
-    if (!isFinite(amount) || amount <= 0) return toast(t("income_invalid"));
-
-    state.incomes.push({ id: idgen(), period, name, amount: round2(amount) });
-    save(state);
-
-    $("i_name").value = "";
-    $("i_amount").value = "";
-    render();
-  });
-
-  $("f_add").addEventListener("click", () => {
-    const name = ($("f_name").value.trim() || (lang()==="en" ? "Fixed expense" : "Spesa fissa"));
-    const catKey = $("f_cat").value; // ✅ chiave categoria
-    const amount = num($("f_amount").value);
-    const debitDay = parseInt($("f_debitDay").value, 10);
-    const startMonth = $("f_startMonth").value;
-    const endMonth = $("f_endMonth").value;
-
-    if (!isFinite(amount) || amount <= 0) return toast(t("fixed_invalid"));
-    if (!isFinite(debitDay) || debitDay < 1 || debitDay > 31) return toast(t("debit_invalid"));
-    if (!startMonth) return toast(t("start_month_need"));
-    if (endMonth && endMonth < startMonth) return toast(t("end_before_start"));
-
-    state.fixedMonthly.push({
-      id: idgen(),
-      name,
-      catKey, // ✅
-      amount: round2(amount),
-      debitDay,
-      startMonth,
-      endMonth: endMonth || null
-    });
-    save(state);
-
-    $("f_name").value = "";
-    $("f_amount").value = "";
-    $("f_debitDay").value = "";
-    $("f_endMonth").value = "";
-    render();
-  });
-
-  $("v_add").addEventListener("click", () => {
-    const day = $("day").value;
-    const amount = num($("v_amount").value);
-    const catKey = $("v_cat").value; // ✅ chiave categoria
-    const note = $("v_note").value.trim();
-
-    if (!day) return;
-    if (!isFinite(amount) || amount <= 0) return toast(t("expense_invalid"));
-
-    state.expenses.push({ id: idgen(), date: day, amount: round2(amount), catKey, note });
-    save(state);
-
-    $("v_amount").value = "";
-    $("v_note").value = "";
-    render();
-  });
-
-  $("resetDay").addEventListener("click", () => {
-    const day = $("day").value;
-    const before = state.expenses.length;
-    state.expenses = state.expenses.filter(e => e.date !== day);
-    save(state);
-    toast(before === state.expenses.length ? t("nothing_to_delete") : t("day_reset"));
-    render();
-  });
-
-  $("v_export").addEventListener("click", () => exportCSVVariabili());
-  $("i_export").addEventListener("click", () => exportCSVEntrate());
-  $("f_export").addEventListener("click", () => exportCSVFisse());
-
-  // -------- BACKUP / RIPRISTINO --------
-  $("exportBackup").addEventListener("click", () => {
-    const data = localStorage.getItem(KEY);
-    if (!data) return toast(t("no_data_backup"));
-    const blob = new Blob([data], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "budget-backup.json";
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    toast(t("backup_exported"));
-  });
-
-  $("importBackup").addEventListener("click", () => $("importFile").click());
-
-  $("importFile").addEventListener("change", (ev) => {
-    const file = ev.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      try{
-        JSON.parse(reader.result);
-        localStorage.setItem(KEY, reader.result);
-        toast(t("backup_imported"));
-        setTimeout(()=>location.reload(), 800);
-      }catch{
-        toast(t("bad_file"));
-      }
-    };
-    reader.readAsText(file);
-  });
-
-  // Google Calendar
-  $("exportICS").addEventListener("click", () => exportICS());
-
-  // PWA Offline (service worker)
-  if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js").catch(() => {});
-  }
-
-  // Prima lingua + categorie
-  renderCategorySelects();
-  applyLanguage();
-
-  render();
-
-  // ------------------ CALCOLO PERIODO ------------------
-  function calcPeriod(dayISO){
-    const paydayISO = state.activePayday;
-    const period = periodKey(paydayISO);
-    const { start, end } = periodFromPayday(paydayISO);
-
-    const inc = round2(incomesForPeriod(period).reduce((s,i)=>s+i.amount,0));
-
-    // Fisse: conteggiate se attive e il loro addebito cade nel periodo
-    let fixTotal = 0;
-    state.fixedMonthly.forEach(f => {
-      const m1 = monthKey(start);
-      const m2 = monthKey(addDays(start, 20));
-      const active = fixedActiveInMonth(f, m1) || fixedActiveInMonth(f, m2);
-      if (!active) return;
-      const debit = fixedDebitDateForPeriod(f, start);
-      if (debit >= start && debit <= end) fixTotal += f.amount;
-    });
-    fixTotal = round2(fixTotal);
-
-    // Risparmi
-    const savings = round2(Number(state.savings || 0));
-    const autoSaveThisPeriod = round2(Number((state.goal?.perPeriod || {})[period] || 0));
-
-    const budgetPeriod = round2(inc - savings - autoSaveThisPeriod - fixTotal);
-
-    // Variabili nel periodo fino al giorno selezionato
-    const varSpent = round2(
-      state.expenses
-        .filter(e => inPeriod(e.date, start, end) && e.date <= dayISO)
-        .reduce((s,e)=>s+e.amount,0)
-    );
-
-    // Prudente: toglie già le fisse future (addebito > giorno selezionato)
-    let fixFuture = 0;
-    if ((state.settings.budgetMode || "simple") === "prudent") {
-      const day = parseISO(dayISO);
-      state.fixedMonthly.forEach(f => {
-        const m1 = monthKey(start);
-        const m2 = monthKey(addDays(start, 20));
-        const active = fixedActiveInMonth(f, m1) || fixedActiveInMonth(f, m2);
-        if (!active) return;
-
-        const debit = fixedDebitDateForPeriod(f, start);
-        if (debit < start || debit > end) return;
-
-        if (debit > day) fixFuture += f.amount;
-      });
-      fixFuture = round2(fixFuture);
-    }
-
-    // Vacanza
-    const vac = state.vac || { enabled:false };
-    const dayD = parseISO(dayISO);
-    const inVacation = !!(vac.enabled && vac.start && vac.end && (dayISO >= vac.start && dayISO <= vac.end));
-
-    let vacTotal = 0, vacSpent = 0, vacDaysLeft = 0, vacDaily = 0;
-    if (vac.enabled && vac.start && vac.end) {
-      const vacStart = maxDate(parseISO(vac.start), start);
-      const vacEnd = minDate(parseISO(vac.end), end);
-      if (vacEnd >= vacStart) {
-        vacTotal = round2(Number(vac.budget || 0));
-        const vacUntil = minDate(dayD, vacEnd);
-        if (vacUntil >= vacStart) {
-          vacSpent = round2(
-            state.expenses
-              .filter(e => {
-                const d = parseISO(e.date);
-                return d >= vacStart && d <= vacUntil;
-              })
-              .reduce((s,e)=>s+e.amount,0)
-          );
-        }
-        if (dayD <= vacEnd) {
-          const startCount = maxDate(dayD, vacStart);
-          vacDaysLeft = Math.max(0, daysBetweenInclusive(startCount, vacEnd));
-          vacDaily = vacDaysLeft > 0 ? round2((vacTotal - vacSpent) / vacDaysLeft) : 0;
-        }
-      }
-    }
-
-    const remaining = round2(budgetPeriod - fixFuture - varSpent);
-    const daysLeft = Math.max(1, daysBetweenInclusive(dayD, end));
-    const daily = round2(remaining / daysLeft);
-
-    return {
-      start, end, period,
-      inc, fixTotal, savings, autoSaveThisPeriod, budgetPeriod,
-      varSpent, fixFuture, remaining, daysLeft, daily,
-      inVacation, vacTotal, vacSpent, vacDaysLeft, vacDaily
-    };
-  }
-
-  // ------------------ RENDER ------------------
-  function render(){
-    const dayISO = $("day").value;
-    const p = calcPeriod(dayISO);
-
-    if (p.inVacation && p.vacDaysLeft > 0) {
-      $("kDaily").textContent = eur(p.vacDaily);
-      $("kRemain").textContent = eur(round2(p.vacTotal - p.vacSpent));
-      $("kDays").textContent = String(p.vacDaysLeft);
-    } else {
-      $("kDaily").textContent = eur(p.daily);
-      $("kRemain").textContent = eur(p.remaining);
-      $("kDays").textContent = String(p.daysLeft);
-    }
-
-    const used = (p.budgetPeriod === 0) ? 0 : Math.min(200, Math.round((p.varSpent / Math.max(1, p.budgetPeriod)) * 100));
-    const fill = $("barFill");
-    fill.style.width = Math.min(100, used) + "%";
-    fill.style.background =
-      (used < 80) ? "linear-gradient(135deg, #22c55e, #16a34a)" :
-      (used <= 100) ? "linear-gradient(135deg, #f59e0b, #d97706)" :
-      "linear-gradient(135deg, #ef4444, #b91c1c)";
-
-    const sISO = toISODate(p.start);
-    const eISO = toISODate(p.end);
-    const mode = (state.settings.budgetMode || "simple") === "prudent" ? t("budget_prudent") : t("budget_simple");
-
-    const vacNote = (p.inVacation && p.vacDaysLeft > 0)
-      ? ` | ${t("vac_note")} ${eur(round2(p.vacTotal - p.vacSpent))} / ${p.vacDaysLeft}`
-      : "";
-
-    $("kExplain").textContent =
-      `(${mode}) ${t("summary_period")} ${sISO} → ${eISO}. ` +
-      `${t("summary_income")} ${eur(p.inc)} − ${t("summary_savings")} ${eur(p.savings)} − ${t("summary_autosave")} ${eur(p.autoSaveThisPeriod)} − ${t("summary_fixed")} ${eur(p.fixTotal)} = ` +
-      `${t("summary_budget")} ${eur(p.budgetPeriod)}. ` +
-      `${t("summary_var_until")} ${dayISO}) ${eur(p.varSpent)}${(p.fixFuture>0?` − ${t("summary_future_fixed")} ${eur(p.fixFuture)}`:"")} → ` +
-      `${t("summary_remaining")} ${eur(p.remaining)} → ${t("summary_daily")} ${eur(p.daily)}${vacNote}.`;
-
-    const vac = state.vac || { enabled:false };
-    $("vacExplain").textContent =
-      (vac.enabled && vac.start && vac.end)
-        ? `${t("vac_label")} ${vac.start} → ${vac.end}, ${t("vac_budget")} ${eur(vac.budget||0)}.`
-        : t("vac_off");
-
-    const pct = Number(state.goal?.pct || 0);
-    const savedV = Number(state.goal?.saved || 0);
-    const target = Number(state.goal?.target || 0);
-    if (target > 0) {
-      const perc = Math.min(100, Math.round((savedV / target) * 100));
-      $("goalExplain").textContent = `${t("goal_target")}: ${eur(target)} · ${t("goal_saved")}: ${eur(savedV)} (${perc}%). ${t("goal_pct")}: ${pct}%`;
-    } else {
-      $("goalExplain").textContent = `${t("goal_pct")}: ${pct}%.`;
-    }
-
-    renderPeriodSelect();
-
-    renderIncomes(p.period);
-    renderFixed(p.start, p.end);
-    renderDayExpenses(dayISO);
-
-    drawCategoryChart(p.start, p.end, dayISO);
-
-    maybeAlert(p);
-    maybeAlertX(p);
-  }
-
-  function renderPeriodSelect(){
-    const sel = $("periodSelect");
-    const current = state.activePayday;
-
-    const set = new Set();
-    state.incomes.forEach(i => set.add(i.period));
-    Object.keys(state.goal?.perPeriod || {}).forEach(k => set.add(k));
-    if (current) set.add(current);
-
-    const periods = Array.from(set).filter(Boolean).sort().reverse();
-
-    sel.innerHTML = "";
-    periods.forEach(p => {
-      const opt = document.createElement("option");
-      opt.value = p;
-      opt.textContent = p;
-      if (p === current) opt.selected = true;
-      sel.appendChild(opt);
-    });
-  }
-
-  // ------------------ GRAFICO CATEGORIE ------------------
-  function drawCategoryChart(periodStart, periodEnd, dayISO){
-    const canvas = $("catChart");
-    const ctx = canvas.getContext("2d");
-
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    const w = Math.max(300, Math.floor(rect.width));
-    const h = Math.max(220, Math.floor(rect.height));
-    canvas.width = Math.floor(w * dpr);
-    canvas.height = Math.floor(h * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-
-    const totals = {};
-    state.expenses.forEach(e => {
-      const d = parseISO(e.date);
-      if (d < periodStart || d > periodEnd) return;
-      if (e.date > dayISO) return;
-      const k = e.catKey || "cat_other";
-      totals[k] = (totals[k] || 0) + Number(e.amount || 0);
-    });
-
-    const entries = Object.entries(totals)
-      .map(([k,v]) => [k, round2(v)])
-      .sort((a,b)=>b[1]-a[1])
-      .slice(0, 10);
-
-    ctx.clearRect(0,0,w,h);
-
-    if (entries.length === 0){
-      ctx.fillStyle = "#9ca3af";
-      ctx.font = "14px system-ui";
-      ctx.fillText(lang()==="en" ? "No expenses in the period (up to selected day)." : "Nessuna spesa nel periodo (fino al giorno selezionato).", 14, 30);
-      return;
-    }
-
-    const padL = 16, padR = 12, padT = 18;
-    const chartW = w - padL - padR;
-    const maxV = Math.max(...entries.map(x => x[1]), 1);
-
-    ctx.fillStyle = "#e5e7eb";
-    ctx.font = "12px system-ui";
-    ctx.fillText(lang()==="en" ? "Top categories (variable expenses)" : "Top categorie (spese variabili)", padL, padT);
-
-    const barTop = padT + 14;
-    const barH = Math.max(12, Math.floor((h - barTop - 16) / entries.length) - 6);
-
-    entries.forEach((it, idx) => {
-      const [catKey, val] = it;
-      const y = barTop + idx * (barH + 6);
-      const bw = Math.max(6, Math.floor((val / maxV) * (chartW * 0.62)));
-
-      const grad = ctx.createLinearGradient(padL, 0, padL + bw, 0);
-      grad.addColorStop(0, "#22c55e");
-      grad.addColorStop(1, "#3b82f6");
-      ctx.fillStyle = grad;
-      roundRect(ctx, padL, y, bw, barH, 10, true, false);
-
-      ctx.fillStyle = "#e5e7eb";
-      ctx.font = "12px system-ui";
-      ctx.fillText(catLabel(catKey), padL + bw + 10, y + barH - 2);
-
-      ctx.fillStyle = "#9ca3af";
-      ctx.font = "12px system-ui";
-      ctx.fillText(eur(val), padL + bw + 10, y + barH + 14);
-    });
-  }
-
-  function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
-    if (typeof radius === 'number') radius = {tl: radius, tr: radius, br: radius, bl: radius};
-    ctx.beginPath();
-    ctx.moveTo(x + radius.tl, y);
-    ctx.lineTo(x + width - radius.tr, y);
-    ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
-    ctx.lineTo(x + width, y + height - radius.br);
-    ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
-    ctx.lineTo(x + radius.bl, y + height);
-    ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
-    ctx.lineTo(x, y + radius.tl);
-    ctx.quadraticCurveTo(x, y, x + radius.tl, y);
-    ctx.closePath();
-    if (fill) ctx.fill();
-    if (stroke) ctx.stroke();
-  }
-
-  // ------------------ LISTE ------------------
-  function incomesForPeriod(period){ return state.incomes.filter(i => i.period === period); }
-
-  function renderIncomes(period){
-    const box = $("i_list");
-    box.innerHTML = "";
-    const items = incomesForPeriod(period).slice().sort((a,b)=>a.name.localeCompare(b.name));
-
-    if (items.length === 0){
-      box.innerHTML = `<p class="muted">${escapeHtml(t("no_income_period"))}</p>`;
-      return;
-    }
-
-    items.forEach(i => {
-      const el = document.createElement("div");
-      el.className = "item";
-      el.innerHTML = `
-        <div>
-          <div><strong>${escapeHtml(i.name)}</strong> <span class="muted">· ${escapeHtml(i.period)}</span></div>
-          <div class="meta">${escapeHtml(t("income_period"))}</div>
-        </div>
-        <div class="actions">
-          <div class="amt">${eur(i.amount)}</div>
-          <button class="secondary mini" data-idel="${i.id}">${lang()==="en"?"Delete":"Elimina"}</button>
-        </div>
-      `;
-      box.appendChild(el);
-    });
-
-    box.querySelectorAll("[data-idel]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-idel");
-        state.incomes = state.incomes.filter(x => x.id !== id);
-        save(state);
-        toast(t("income_deleted"));
-        render();
-      });
-    });
-  }
-
-  function renderFixed(periodStart, periodEnd){
-    const box = $("f_list");
-    box.innerHTML = "";
-    const items = state.fixedMonthly.slice().sort((a,b)=>a.debitDay-b.debitDay);
-
-    if (items.length === 0){
-      box.innerHTML = `<p class="muted">${escapeHtml(t("no_fixed_saved"))}</p>`;
-      return;
-    }
-
-    items.forEach(f => {
-      const active = `${f.startMonth}${f.endMonth ? " → " + f.endMonth : ""}`;
-      const debit = fixedDebitDateForPeriod(f, periodStart);
-
-      const m1 = monthKey(periodStart);
-      const m2 = monthKey(addDays(periodStart, 20));
-      const activeInPeriod = fixedActiveInMonth(f, m1) || fixedActiveInMonth(f, m2);
-
-      const willCount = (debit >= periodStart && debit <= periodEnd) && activeInPeriod;
-
-      const el = document.createElement("div");
-      el.className = "item";
-      el.innerHTML = `
-        <div>
-          <div><strong>${escapeHtml(f.name)}</strong> <span class="muted">· ${escapeHtml(catLabel(f.catKey || "cat_other"))}</span></div>
-          <div class="meta">
-            ${escapeHtml(t("fixed_debit"))} ${f.debitDay} (${toISODate(debit)}) ·
-            ${escapeHtml(t("fixed_active"))} ${escapeHtml(active)} ·
-            ${willCount ? escapeHtml(t("fixed_counted")) : escapeHtml(t("fixed_not_counted"))}
-          </div>
-        </div>
-        <div class="actions">
-          <div class="amt">${eur(f.amount)}</div>
-          <button class="secondary mini" data-fdel="${f.id}">${lang()==="en"?"Delete":"Elimina"}</button>
-        </div>
-      `;
-      box.appendChild(el);
-    });
-
-    box.querySelectorAll("[data-fdel]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-fdel");
-        state.fixedMonthly = state.fixedMonthly.filter(x => x.id !== id);
-        save(state);
-        toast(t("fixed_deleted"));
-        render();
-      });
-    });
-  }
-
-  function renderDayExpenses(dayISO){
-    const box = $("v_list");
-    box.innerHTML = "";
-    const items = state.expenses
-      .filter(e => e.date === dayISO)
-      .slice()
-      .sort((a,b)=> String(b.id).localeCompare(String(a.id)));
-
-    if (items.length === 0){
-      box.innerHTML = `<p class="muted">${escapeHtml(t("no_var_day"))}</p>`;
-      return;
-    }
-
-    items.forEach(e => {
-      const el = document.createElement("div");
-      el.className = "item";
-      el.innerHTML = `
-        <div>
-          <div><strong>${escapeHtml(catLabel(e.catKey || "cat_other"))}</strong> <span class="muted">· ${escapeHtml(e.date)}</span></div>
-          <div class="meta">${escapeHtml(e.note || "—")}</div>
-        </div>
-        <div class="actions">
-          <div class="amt">${eur(e.amount)}</div>
-          <button class="secondary mini" data-vdel="${e.id}">${lang()==="en"?"Delete":"Elimina"}</button>
-        </div>
-      `;
-      box.appendChild(el);
-    });
-
-    box.querySelectorAll("[data-vdel]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const id = btn.getAttribute("data-vdel");
-        state.expenses = state.expenses.filter(x => x.id !== id);
-        save(state);
-        toast(t("expense_deleted"));
-        render();
-      });
-    });
-  }
-
-  // ------------------ AVVISI ------------------
-  function maybeAlert(p){
-    if ((state.settings.alertMode ?? "on") === "off") return;
-    if (!p.inVacation && p.daily < 0) toast(t("warn_daily"));
-    if (p.inVacation && p.vacDaysLeft > 0 && p.vacDaily < 0) toast(t("warn_vac"));
-  }
-
-  function maybeAlertX(p){
-    const x = Number(state.settings.alertX || 0);
-    if (!x || x <= 0) return;
-    if (p.varSpent > x) toast(`${t("threshold_passed")} ${eur(p.varSpent)} > ${eur(x)}`);
-  }
-
-  // ------------------ EXPORT CSV ------------------
-  function exportCSVVariabili(){
-    const rows = [["Date","CategoryKey","Category","Amount","Note"]];
-    state.expenses
-      .slice()
-      .sort((a,b)=>a.date.localeCompare(b.date))
-      .forEach(e => rows.push([
-        e.date,
-        e.catKey || "cat_other",
-        catLabel(e.catKey || "cat_other"),
-        fmtCSVNum(e.amount),
-        e.note ?? ""
-      ]));
-    downloadCSV(rows, "variable-expenses.csv");
-    toast(t("csv_exported"));
-  }
-
-  function exportCSVEntrate(){
-    const rows = [["Period","Name","Amount"]];
-    state.incomes
-      .slice()
-      .sort((a,b)=>a.period.localeCompare(b.period))
-      .forEach(i => rows.push([i.period, i.name, fmtCSVNum(i.amount)]));
-    downloadCSV(rows, "income.csv");
-    toast(t("csv_exported"));
-  }
-
-  function exportCSVFisse(){
-    const rows = [["Name","CategoryKey","Category","Amount","DebitDay","Start","End"]];
-    state.fixedMonthly
-      .slice()
-      .sort((a,b)=>a.debitDay-b.debitDay)
-      .forEach(f => rows.push([
-        f.name,
-        f.catKey || "cat_other",
-        catLabel(f.catKey || "cat_other"),
-        fmtCSVNum(f.amount),
-        String(f.debitDay),
-        f.startMonth,
-        f.endMonth ?? ""
-      ]));
-    downloadCSV(rows, "fixed-expenses.csv");
-    toast(t("csv_exported"));
-  }
-
-  function downloadCSV(rows, filename){
-    const csv = rows.map(r => r.map(cell => `"${String(cell).replaceAll('"','""')}"`).join(";")).join("\n");
-    const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url; a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  // ------------------ STORAGE ------------------
-  function load(){
-    try{
-      const raw = localStorage.getItem(KEY);
-      if (!raw) return {
-        activePayday:null, incomes:[], fixedMonthly:[], expenses:[], savings:0,
-        settings:{alertMode:"on", budgetMode:"simple", alertX:0, lang:"it"},
-        vac:{enabled:false, start:null, end:null, budget:0},
-        goal:{pct:0, saved:0, target:0, perPeriod:{}}
-      };
-      const p = JSON.parse(raw);
-      return {
-        activePayday: p.activePayday || null,
-        incomes: Array.isArray(p.incomes) ? p.incomes : [],
-        fixedMonthly: Array.isArray(p.fixedMonthly) ? p.fixedMonthly : [],
-        expenses: Array.isArray(p.expenses) ? p.expenses : [],
-        savings: Number(p.savings || 0),
-        settings: p.settings || {alertMode:"on", budgetMode:"simple", alertX:0, lang:"it"},
-        vac: p.vac || {enabled:false, start:null, end:null, budget:0},
-        goal: p.goal || {pct:0, saved:0, target:0, perPeriod:{}}
-      };
-    } catch {
-      return {
-        activePayday:null, incomes:[], fixedMonthly:[], expenses:[], savings:0,
-        settings:{alertMode:"on", budgetMode:"simple", alertX:0, lang:"it"},
-        vac:{enabled:false, start:null, end:null, budget:0},
-        goal:{pct:0, saved:0, target:0, perPeriod:{}}
-      };
-    }
-  }
-  function save(s){ localStorage.setItem(KEY, JSON.stringify(s)); }
-
-  // ------------------ UTILS ------------------
-  function setDayAuto(iso){
-    suppressPin = true;
-    $("day").value = iso;
-    lastAutoDayISO = iso;
-    suppressPin = false;
-  }
-  function autoUpdateDayIfAllowed(){
-    const todayISO = toISODate(new Date());
-    const cur = $("day").value;
-    if (!dayPinnedByUser || cur === lastAutoDayISO) {
-      if (cur !== todayISO) {
-        setDayAuto(todayISO);
-        render();
-      }
-    }
-  }
-
-  function num(v){
-    const s = String(v ?? "").trim();
-    if (!s) return NaN;
-    if (s.includes(".") && s.includes(",")) return Number(s.replaceAll(".","").replace(",",".")); // 1.234,56
-    return Number(s.replace(",", "."));
-  }
-  function fmtCSVNum(n){ return String(Number(n)).replace(".", ","); }
-  function round2(n){ return Math.round(n * 100) / 100; }
-
-  function eur(n){
-    const v = Number(n);
-    const locale = (lang() === "en") ? "en-GB" : "it-IT";
-    return v.toLocaleString(locale,{minimumFractionDigits:2, maximumFractionDigits:2}) + " €";
-  }
-
-  function toISODate(d){
-  const Y = d.getFullYear();
-  const M = String(d.getMonth()+1).padStart(2,"0");
-  const D = String(d.getDate()).padStart(2,"0");
-  return `${Y}-${M}-${D}`;
-}
-  function parseISO(iso){
-    const [Y,M,D] = iso.split("-").map(Number);
-    return new Date(Y, M-1, D);
-  }
-  function monthKey(d){
-    const Y = d.getFullYear();
-    const M = String(d.getMonth()+1).padStart(2,"0");
-    return `${Y}-${M}`;
-  }
-  function addDays(d, n){
-    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-    x.setDate(x.getDate() + n);
-    return x;
-  }
-  function daysInMonth(y, m){ return new Date(y, m+1, 0).getDate(); }
-
-  function periodFromPayday(paydayISO){
-    const start = parseISO(paydayISO);
-    const y = start.getFullYear();
-    const m = start.getMonth();
-    const d = start.getDate();
-
-    const y2 = (m === 11) ? y+1 : y;
-    const m2 = (m === 11) ? 0 : m+1;
-    const d2 = Math.min(d, daysInMonth(y2, m2));
-    const next = new Date(y2, m2, d2);
-
-    const end = addDays(next, -1);
-    return { start, end };
-  }
-
-  function inPeriod(dateISO, start, end){
-    const d = parseISO(dateISO);
-    return d >= start && d <= end;
-  }
-
-  function periodKey(paydayISO){ return paydayISO; }
-
-  function fixedActiveInMonth(f, month){
-    if (f.startMonth > month) return false;
-    if (f.endMonth && month > f.endMonth) return false;
-    return true;
-  }
-
-  function fixedDebitDateForPeriod(f, periodStart){
-    const y = periodStart.getFullYear();
-    const m = periodStart.getMonth();
-
-    let d1 = new Date(y, m, Math.min(f.debitDay, daysInMonth(y, m)));
-    if (d1 < periodStart) {
-      const y2 = (m === 11) ? y+1 : y;
-      const m2 = (m === 11) ? 0 : m+1;
-      d1 = new Date(y2, m2, Math.min(f.debitDay, daysInMonth(y2, m2)));
-    }
-    return d1;
-  }
-
-  function idgen(){
-    try{
-      if (globalThis.crypto && typeof globalThis.crypto.randomUUID === "function") {
-        return globalThis.crypto.randomUUID();
-      }
-    } catch(e){}
-    return "id_" + Math.random().toString(16).slice(2) + Date.now();
-  }
-
-  function toast(msg){
-    const el = $("toast");
-    el.textContent = msg;
-    el.classList.add("show");
-    clearTimeout(toast._t);
-    toast._t = setTimeout(()=>el.classList.remove("show"), 2600);
-  }
-
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-  }
-
-  function daysBetweenInclusive(a, b){
-    const A = new Date(a.getFullYear(), a.getMonth(), a.getDate());
-    const B = new Date(b.getFullYear(), b.getMonth(), b.getDate());
-    return Math.floor((B - A) / (1000*60*60*24)) + 1;
-  }
-  function minDate(a,b){ return (a <= b) ? a : b; }
-  function maxDate(a,b){ return (a >= b) ? a : b; }
-
-  // ============================
-  // GOOGLE CALENDAR (.ics)
-  // ============================
-  function exportICS(){
-    const dayISO = $("day").value;
-    const p = calcPeriod(dayISO);
-    const { start, end, period } = p;
-
-    // Variabili: tutte nel periodo
-    const varItems = state.expenses
-      .filter(e => inPeriod(e.date, start, end))
-      .map(e => ({
-        dateISO: e.date,
-        title: `${lang()==="en" ? "Expense" : "Spesa"}: ${catLabel(e.catKey || "cat_other")} - ${eur(e.amount)}`,
-        desc: e.note ? `${lang()==="en" ? "Note" : "Nota"}: ${e.note}` : ""
-      }));
-
-    // Fisse: una occorrenza nel periodo se cade nel periodo ed è attiva
-    const fixedItems = [];
-    state.fixedMonthly.forEach(f => {
-      const m1 = monthKey(start);
-      const m2 = monthKey(addDays(start, 20));
-      const active = fixedActiveInMonth(f, m1) || fixedActiveInMonth(f, m2);
-      if (!active) return;
-
-      const debit = fixedDebitDateForPeriod(f, start);
-      if (debit < start || debit > end) return;
-
-      fixedItems.push({
-        dateISO: toISODate(debit),
-        title: `${lang()==="en" ? "Fixed" : "Fissa"}: ${f.name} - ${eur(f.amount)}`,
-        desc: `${t("fixed_cat")} ${catLabel(f.catKey || "cat_other")} · ${t("fixed_debit_day")} ${f.debitDay}`
-      });
-    });
-
-    const items = [...varItems, ...fixedItems].sort((a,b)=>a.dateISO.localeCompare(b.dateISO));
-    if (items.length === 0) {
-      toast(t("no_expenses_period"));
-      return;
-    }
-
-    const ics = buildICS(items, period);
-    downloadText(ics, `budgetwise-${period}.ics`, "text/calendar;charset=utf-8");
-    toast(t("ics_done"));
-  }
-
-  function buildICS(items, period){
-    const lines = [];
-    lines.push("BEGIN:VCALENDAR");
-    lines.push("VERSION:2.0");
-    lines.push("PRODID:-//BudgetWise//I18N");
-    lines.push("CALSCALE:GREGORIAN");
-    lines.push("METHOD:PUBLISH");
-
-    const dtstamp = icsNowStamp();
-
-    items.forEach((it, idx) => {
-      const uid = `${period}-${idx}-${Math.random().toString(16).slice(2)}@budgetwise`;
-      const dt = it.dateISO.replaceAll("-", "");
-
-      lines.push("BEGIN:VEVENT");
-      lines.push(`UID:${uid}`);
-      lines.push(`DTSTAMP:${dtstamp}`);
-      lines.push(`SUMMARY:${icsEscape(it.title)}`);
-      if (it.desc) lines.push(`DESCRIPTION:${icsEscape(it.desc)}`);
-      lines.push(`DTSTART;VALUE=DATE:${dt}`);
-      lines.push(`DTEND;VALUE=DATE:${addOneDayYYYYMMDD(dt)}`);
-      lines.push("END:VEVENT");
-    });
-
-    lines.push("END:VCALENDAR");
-    return lines.join("\r\n");
-  }
-
-  function icsNowStamp(){
-    const d = new Date();
-    const pad = (n)=>String(n).padStart(2,"0");
-    return `${d.getUTCFullYear()}${pad(d.getUTCMonth()+1)}${pad(d.getUTCDate())}T${pad(d.getUTCHours())}${pad(d.getUTCMinutes())}${pad(d.getUTCSeconds())}Z`;
-  }
-
-  function addOneDayYYYYMMDD(yyyymmdd){
-    const y = Number(yyyymmdd.slice(0,4));
-    const m = Number(yyyymmdd.slice(4,6));
-    const d = Number(yyyymmdd.slice(6,8));
-    const dt = new Date(y, m-1, d);
-    dt.setDate(dt.getDate()+1);
-    const pad = (n)=>String(n).padStart(2,"0");
-    return `${dt.getFullYear()}${pad(dt.getMonth()+1)}${pad(dt.getDate())}`;
-  }
-
-  function icsEscape(s){
-    return String(s)
-      .replaceAll("\\", "\\\\")
-      .replaceAll("\n", "\\n")
-      .replaceAll(",", "\\,")
-      .replaceAll(";", "\\;");
-  }
-
-  function downloadText(text, filename, mime){
-    const blob = new Blob([text], {type: mime});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-})();
-</script>
+    <!-- CARICA APP.JS -->
+    <script src="app.js"></script>
 </body>
 </html>
-
