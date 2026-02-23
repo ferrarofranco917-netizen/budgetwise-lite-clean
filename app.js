@@ -48,6 +48,7 @@ class BudgetWise {
                 send: 'Invia',
                 incomeDesc: 'Descrizione (es. Stipendio)',
                 incomeAmount: 'Importo €',
+                incomeDateLabel: 'Data',
                 fixedName: 'Nome (es. Mutuo)',
                 fixedAmount: 'Importo €',
                 fixedDay: 'Giorno (es. 27)',
@@ -136,6 +137,7 @@ class BudgetWise {
                 send: 'Send',
                 incomeDesc: 'Description (e.g. Salary)',
                 incomeAmount: 'Amount €',
+                incomeDateLabel: 'Date',
                 fixedName: 'Name (e.g. Mortgage)',
                 fixedAmount: 'Amount €',
                 fixedDay: 'Day (e.g. 27)',
@@ -346,6 +348,10 @@ class BudgetWise {
         const assistantNameText = document.getElementById('assistantNameText');
         if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
         
+        // NUOVA TRADUZIONE PER DATA ENTRATE
+        const incomeDateLabel = document.getElementById('incomeDateLabel');
+        if (incomeDateLabel) incomeDateLabel.textContent = this.t('incomeDateLabel');
+        
         const categorySelect = document.getElementById('expenseCategory');
         if (categorySelect) {
             const options = categorySelect.options;
@@ -374,19 +380,35 @@ class BudgetWise {
         return this.data.incomes.reduce((sum, inc) => sum + inc.amount, 0);
     }
 
+    // ========== ENTRATE CON DATA ==========
     addIncome() {
         const desc = document.getElementById('incomeDesc').value.trim();
         const amount = parseFloat(document.getElementById('incomeAmount').value);
+        const dateInput = document.getElementById('incomeDate').value;
+        
+        // Se non c'è data, usa oggi
+        const date = dateInput || new Date().toISOString().split('T')[0];
+        
         if (!desc || !amount) {
             alert(this.t('fillFields'));
             return;
         }
-        this.data.incomes.push({ desc, amount, date: new Date().toISOString().split('T')[0], id: Date.now() });
+        
+        this.data.incomes.push({
+            desc,
+            amount,
+            date: date,
+            id: Date.now()
+        });
+        
         this.saveData();
         this.updateUI();
         alert(this.t('incomeAdded'));
+        
+        // Reset campi
         document.getElementById('incomeDesc').value = '';
         document.getElementById('incomeAmount').value = '';
+        document.getElementById('incomeDate').value = '';
     }
 
     deleteIncome(id) {
@@ -739,6 +761,7 @@ class BudgetWise {
     updateIncomeList() {
         const container = document.getElementById('incomeList');
         if (!container) return;
+
         if (this.data.incomes.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
         } else {
@@ -755,8 +778,11 @@ class BudgetWise {
                 </div>
             `).join('');
         }
+
         const totalDisplay = document.getElementById('totalIncomeDisplay');
-        if (totalDisplay) totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
+        if (totalDisplay) {
+            totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
+        }
     }
 
     updateFixedExpensesList() {
