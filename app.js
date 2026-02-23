@@ -1414,7 +1414,177 @@ class BudgetWise {
             ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
             : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
     }
+// ========== HIGHLIGHT ==========
+highlightField(fieldId) {
+    // ... codice esistente ...
+}
 
+// ========== CHAT ASSISTANT ==========
+handleChatInput() {
+    // ... codice esistente ...
+}
+
+// ========== IMPORT CSV ==========
+setupCsvImport() {
+    const fileInput = document.getElementById('csvFileInput');
+    const importBtn = document.getElementById('importCsvBtn');
+    
+    importBtn.addEventListener('click', () => {
+        const file = fileInput.files[0];
+        if (!file) {
+            alert('Seleziona un file CSV');
+            return;
+        }
+        
+        const delimiter = document.getElementById('csvDelimiter').value;
+        const dateFormat = document.getElementById('csvDateFormat').value;
+        
+        this.parseCSV(file, delimiter, dateFormat);
+    });
+}
+
+parseCSV(file, delimiter, dateFormat) {
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        const text = e.target.result;
+        const lines = text.split('\n').filter(line => line.trim());
+        const headers = lines[0].split(delimiter).map(h => h.trim());
+        
+        // Mostra anteprima
+        this.showCSVPreview(headers, lines.slice(1, 6), delimiter);
+        
+        // Chiedi mappatura colonne
+        this.showColumnMapper(headers, lines.slice(1), delimiter, dateFormat);
+    };
+    
+    reader.readAsText(file);
+}
+
+showCSVPreview(headers, sampleLines, delimiter) {
+    const previewDiv = document.getElementById('csvPreview');
+    
+    let html = '<table><thead><tr>';
+    headers.forEach(h => html += `<th>${h}</th>`);
+    html += '</tr></thead><tbody>';
+    
+    sampleLines.forEach(line => {
+        const cells = line.split(delimiter);
+        html += '<tr>';
+        cells.forEach(cell => html += `<td>${cell.substring(0, 30)}</td>`);
+        html += '</tr>';
+    });
+    
+    html += '</tbody></table>';
+    previewDiv.innerHTML = html;
+    previewDiv.style.display = 'block';
+}
+
+showColumnMapper(headers, lines, delimiter, dateFormat) {
+    const mapperHtml = `
+        <div class="column-mapper">
+            <h4>Mappa le colonne</h4>
+            <div class="mapper-row">
+                <label>Data:</label>
+                <select id="mapDate">
+                    <option value="">- Seleziona -</option>
+                    ${headers.map(h => `<option value="${h}">${h}</option>`).join('')}
+                </select>
+            </div>
+            <div class="mapper-row">
+                <label>Descrizione:</label>
+                <select id="mapDesc">
+                    <option value="">- Seleziona -</option>
+                    ${headers.map(h => `<option value="${h}">${h}</option>`).join('')}
+                </select>
+            </div>
+            <div class="mapper-row">
+                <label>Importo:</label>
+                <select id="mapAmount">
+                    <option value="">- Seleziona -</option>
+                    ${headers.map(h => `<option value="${h}">${h}</option>`).join('')}
+                </select>
+            </div>
+            <button class="btn-primary" id="confirmImport">Conferma import</button>
+        </div>
+    `;
+    
+    document.getElementById('csvPreview').innerHTML += mapperHtml;
+    
+    document.getElementById('confirmImport').addEventListener('click', () => {
+        const dateCol = document.getElementById('mapDate').value;
+        const descCol = document.getElementById('mapDesc').value;
+        const amountCol = document.getElementById('mapAmount').value;
+        
+        this.processImport(lines, headers, dateCol, descCol, amountCol, delimiter, dateFormat);
+    });
+}
+
+processImport(lines, headers, dateCol, descCol, amountCol, delimiter, dateFormat) {
+    const dateIndex = headers.indexOf(dateCol);
+    const descIndex = headers.indexOf(descCol);
+    const amountIndex = headers.indexOf(amountCol);
+    
+    let imported = 0;
+    
+    lines.forEach(line => {
+        if (!line.trim()) return;
+        
+        const cells = line.split(delimiter);
+        if (cells.length < Math.max(dateIndex, descIndex, amountIndex)) return;
+        
+        const rawDate = cells[dateIndex];
+        const desc = cells[descIndex];
+        const rawAmount = cells[amountIndex].replace(',', '.');
+        
+        // Converti data
+        let date = this.parseDate(rawDate, dateFormat);
+        if (!date) return;
+        
+        // Converti importo
+        let amount = Math.abs(parseFloat(rawAmount));
+        if (isNaN(amount) || amount === 0) return;
+        
+        // Determina se è entrata o uscita
+        const isPositive = parseFloat(rawAmount) > 0;
+        
+        if (isPositive) {
+            // È un'entrata
+            this.data.incomes.push({
+                desc: desc.substring(0, 50),
+                amount: amount,
+                date: date,
+                id: Date.now() + imported,
+                imported: true
+            });
+        } else {
+            // È una spesa variabile
+            const today = date;
+            if (!this.data.variableExpenses[today]) {
+                this.data.variableExpenses[today] = [];
+            }
+            this.data.variableExpenses[today].push({
+                name: desc.substring(0, 50),
+                amount: amount,
+                category: 'Altro',
+                id: Date.now() + imported,
+                imported: true
+            });
+        }
+        
+        imported++;
+    });
+    
+    this.saveData();
+    this.updateUI();
+    this.updateChart();
+    this.showToast(`✅ Importate ${imported} transazioni`);
+}
+
+// ========== AI WIDGET ==========
+generateAiSuggestion() {
+    // ... codice esistente ...
+}
     // ========== AI WIDGET ==========
     generateAiSuggestion() {
         const suggestions = [];
