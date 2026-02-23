@@ -226,12 +226,6 @@ class BudgetWise {
         this.init();
     }
 
-    init() {
-        this.loadData();
-        this.setupEventListeners();
-        this.applyTheme();
-        this.updateUI();
-        this.updateChart();
         this.setupVoice();
         this.applyLanguage();
         this.startOnboarding(); // <-- ONBOARDING ATTIVATO
