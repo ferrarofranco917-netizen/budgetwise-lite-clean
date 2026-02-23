@@ -1982,8 +1982,8 @@ class BudgetWise {
     }
     // FIX: Collega il pulsante Importa CSV (aggiunto il 23/02/2026)
 document.addEventListener('DOMContentLoaded', function() {
-    // Aspetta che l'app sia inizializzata
-    setTimeout(function() {
+    // Funzione per applicare il fix
+    function applyFix() {
         const btn = document.getElementById('importCsvBtn');
         if (btn && window.app) {
             console.log('🔧 Applico fix al pulsante Importa CSV');
@@ -2026,12 +2026,18 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             
             console.log('✅ Fix import CSV applicato permanentemente');
+            return true;
         } else {
-            console.log('⏳ Pulsante non ancora disponibile, riprovo...');
-            // Se non trova il pulsante, riprova dopo 2 secondi
-            setTimeout(arguments.callee, 2000);
+            console.log('⏳ Pulsante non ancora disponibile, riprovo tra 1 secondo...');
+            return false;
         }
-    }, 1000);
+    }
+    
+    // Prova subito
+    if (!applyFix()) {
+        // Se non riesce, riprova dopo 1 secondo (usa setTimeout normale, non arguments.callee)
+        setTimeout(applyFix, 1000);
+    }
 });
 }
 
