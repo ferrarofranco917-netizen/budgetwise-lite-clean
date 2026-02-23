@@ -2753,63 +2753,68 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
         actionEl.style.display = 'flex';
     }
 
-    setupAiActions() {
-    document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-        const type = e.target.dataset.type;
-        const amount = parseFloat(e.target.dataset.amount);
+setupAiActions() {
+    const applyBtn = document.getElementById('applyAiSuggestion');
+    const dismissBtn = document.getElementById('dismissAiSuggestion');
+    const aiAction = document.getElementById('aiAction');
+    const aiWidget = document.getElementById('aiWidget');
 
-        if (type === 'reduce' && amount > 0) {
+    if (!applyBtn) return;
+
+    // Evita doppie registrazioni listener (GitHub Pages / SW cache / reload)
+    const cleanApplyBtn = applyBtn.cloneNode(true);
+    applyBtn.parentNode.replaceChild(cleanApplyBtn, applyBtn);
+
+    if (dismissBtn) {
+        const cleanDismissBtn = dismissBtn.cloneNode(true);
+        dismissBtn.parentNode.replaceChild(cleanDismissBtn, dismissBtn);
+        cleanDismissBtn.addEventListener('click', () => {
+            if (aiWidget) aiWidget.style.display = 'none';
+        });
+    }
+
+    cleanApplyBtn.addEventListener('click', (e) => {
+        const type = e.currentTarget.dataset.type || '';
+        const amount = parseFloat(e.currentTarget.dataset.amount || '0');
+
+        const bumpGoal = (extra) => {
             const currentGoal = this.data.savingsGoal || 0;
-            document.getElementById('saveGoal').value = currentGoal + amount;
+            const newGoal = currentGoal + (extra || 0);
+            const goalInput = document.getElementById('saveGoal');
+            if (goalInput) goalInput.value = newGoal;
 
             this.showToast(
                 this.data.language === 'it'
-                    ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                    : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                    ? `🎯 Obiettivo aumentato a ${this.formatCurrency(newGoal)}`
+                    : `🎯 Goal increased to ${this.formatCurrency(newGoal)}`,
                 'success'
             );
+        };
+
+        if (type === 'reduce' && amount > 0) {
+            bumpGoal(amount);
+        } else if (type === 'transport' && amount > 0) {
+            const message = this.data.language === 'it'
+                ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
+                : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
+
+            if (confirm(message)) bumpGoal(amount);
+        } else if (type === 'leisure' && amount > 0) {
+            const message = this.data.language === 'it'
+                ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
+                : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
+
+            if (confirm(message)) bumpGoal(amount);
         } else {
             this.showToast(this.t('featureInDev'), 'info');
         }
+
+        if (aiAction) aiAction.style.display = 'none';
+        setTimeout(() => {
+            if (aiWidget) aiWidget.style.display = 'none';
+        }, 2000);
     });
 }
-✅ STOP. Non aggiungere altro.
-🔍 Verifica (fondamentale)
-
-Salva → commit → push → ricarica pagina
-
-Poi Console:
-
-typeof window.app
-
-Deve rispondere:
-
-"object"
-
-Se sì → abbiamo FINITO la parte “crash JS” 🎉
-e finalmente l’i18n può funzionare.
-
-Scrivimi solo il risultato di:
-
-👉 typeof window.app
-
-e andiamo avanti.
-            
-            else if (type === 'leisure') {
-                const message = this.data.language === 'it'
-                    ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
-                    : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
-                
-                if (confirm(message)) {
-                    const currentGoal = this.data.savingsGoal || 0;
-                    document.getElementById('saveGoal').value = currentGoal + amount;
-                    this.showToast(
-                        this.data.language === 'it'
-                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                        'success'
-                    );
-                }
             }
            else {
   this.showToast(this.t('featureInDev'), 'info');
