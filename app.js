@@ -338,9 +338,11 @@ class BudgetWise {
                 document.getElementById('categoryDetail').style.display = 'none';
             });
         }
+
+        // Setup AI widget actions
+        this.setupAiActions();
     }
-// Setup AI widget actions
-this.setupAiActions();
+
     // ========== TRADUZIONE ==========
     t(key) {
         return this.translations[this.data.language][key] || key;
@@ -882,59 +884,59 @@ this.setupAiActions();
         document.getElementById('thresholdInput').value = this.data.threshold;
 
         // === NUOVA BARRA EMOZIONALE ===
-const progress = this.calculateSavingsProgress();
-const goal = this.data.savingsGoal;
-const percent = this.data.savingsPercent;
-const totalIncome = this.calculateTotalIncome();
-const savedPerMonth = (totalIncome * percent) / 100;
+        const progress = this.calculateSavingsProgress();
+        const goal = this.data.savingsGoal;
+        const percent = this.data.savingsPercent;
+        const totalIncome = this.calculateTotalIncome();
+        const savedPerMonth = (totalIncome * percent) / 100;
 
-const progressContainer = document.getElementById('progressContainer');
-const savingsMessage = document.getElementById('savingsMessage');
-const savingsTip = document.getElementById('savingsTip');
+        const progressContainer = document.getElementById('progressContainer');
+        const savingsMessage = document.getElementById('savingsMessage');
+        const savingsTip = document.getElementById('savingsTip');
 
-if (progress > 0 && goal > 0 && percent > 0) {
-    // Mostra la barra
-    progressContainer.style.display = 'block';
-    document.getElementById('progressBar').style.width = progress + '%';
-    
-    // Calcola data prevista
-    const today = new Date();
-    const monthsNeeded = Math.ceil(goal / savedPerMonth);
-    const targetDate = new Date(today);
-    targetDate.setMonth(today.getMonth() + monthsNeeded);
-    
-    const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    const formattedDate = targetDate.toLocaleDateString(
-        this.data.language === 'it' ? 'it-IT' : 'en-US', 
-        options
-    );
-    
-    // Messaggio predittivo
-    const message = this.data.language === 'it'
-        ? `🐷 Al ritmo attuale, raggiungerai l'obiettivo il ${formattedDate}`
-        : `🐷 At current pace, you'll reach your goal on ${formattedDate}`;
-    savingsMessage.textContent = message;
-    
-    // Suggerimento
-    if (percent < 20) {
-        const suggestedPercent = Math.min(percent + 5, 20);
-        const newMonths = Math.ceil(goal / ((totalIncome * suggestedPercent) / 100));
-        const monthsDiff = monthsNeeded - newMonths;
-        
-        const tip = this.data.language === 'it'
-            ? `💡 Se risparmiassi il ${suggestedPercent}% invece del ${percent}%, arriveresti ${monthsDiff} ${monthsDiff === 1 ? 'mese' : 'mesi'} prima!`
-            : `💡 If you saved ${suggestedPercent}% instead of ${percent}%, you'd get there ${monthsDiff} ${monthsDiff === 1 ? 'month' : 'months'} sooner!`;
-        savingsTip.textContent = tip;
-    } else {
-        savingsTip.textContent = this.data.language === 'it'
-            ? '🎉 Ottimo lavoro! Continua così!'
-            : '🎉 Great job! Keep it up!';
-    }
-} else {
-    progressContainer.style.display = 'none';
-    savingsMessage.textContent = '';
-    savingsTip.textContent = '';
-}
+        if (progress > 0 && goal > 0 && percent > 0) {
+            // Mostra la barra
+            progressContainer.style.display = 'block';
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // Calcola data prevista
+            const today = new Date();
+            const monthsNeeded = Math.ceil(goal / savedPerMonth);
+            const targetDate = new Date(today);
+            targetDate.setMonth(today.getMonth() + monthsNeeded);
+            
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDate = targetDate.toLocaleDateString(
+                this.data.language === 'it' ? 'it-IT' : 'en-US', 
+                options
+            );
+            
+            // Messaggio predittivo
+            const message = this.data.language === 'it'
+                ? `🐷 Al ritmo attuale, raggiungerai l'obiettivo il ${formattedDate}`
+                : `🐷 At current pace, you'll reach your goal on ${formattedDate}`;
+            savingsMessage.textContent = message;
+            
+            // Suggerimento
+            if (percent < 20) {
+                const suggestedPercent = Math.min(percent + 5, 20);
+                const newMonths = Math.ceil(goal / ((totalIncome * suggestedPercent) / 100));
+                const monthsDiff = monthsNeeded - newMonths;
+                
+                const tip = this.data.language === 'it'
+                    ? `💡 Se risparmiassi il ${suggestedPercent}% invece del ${percent}%, arriveresti ${monthsDiff} ${monthsDiff === 1 ? 'mese' : 'mesi'} prima!`
+                    : `💡 If you saved ${suggestedPercent}% instead of ${percent}%, you'd get there ${monthsDiff} ${monthsDiff === 1 ? 'month' : 'months'} sooner!`;
+                savingsTip.textContent = tip;
+            } else {
+                savingsTip.textContent = this.data.language === 'it'
+                    ? '🎉 Ottimo lavoro! Continua così!'
+                    : '🎉 Great job! Keep it up!';
+            }
+        } else {
+            progressContainer.style.display = 'none';
+            savingsMessage.textContent = '';
+            savingsTip.textContent = '';
+        }
 
         document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
 
@@ -948,6 +950,9 @@ if (progress > 0 && goal > 0 && percent > 0) {
         // Rimanenza sparkline (verde/rosso)
         const remainingColor = this.calculateRemaining() >= 0 ? '#2dc653' : '#ef233c';
         this.drawSparkline('remainingSparkline', last7Days, remainingColor);
+
+        // === AI WIDGET ===
+        this.generateAiSuggestion();
     }
 
     updateIncomeList() {
@@ -1305,137 +1310,7 @@ if (progress > 0 && goal > 0 && percent > 0) {
                 : `💪 You're doing well! You still have ${this.formatCurrency(remaining)} left.`;
         }
     }
-// ========== AI WIDGET ==========
-generateAiSuggestion() {
-    const suggestions = [];
-    const language = this.data.language;
-    
-    // Analizza spese per categoria
-    const categoryTotals = {};
-    Object.values(this.data.variableExpenses).forEach(day => {
-        day.forEach(exp => {
-            const cat = exp.category;
-            categoryTotals[cat] = (categoryTotals[cat] || 0) + exp.amount;
-        });
-    });
 
-    // Se non ci sono abbastanza dati, non mostrare nulla
-    if (Object.keys(categoryTotals).length === 0) {
-        document.getElementById('aiWidget').style.display = 'none';
-        return;
-    }
-
-    // Trova la categoria principale
-    const topCategory = Object.entries(categoryTotals)
-        .sort((a, b) => b[1] - a[1])[0];
-    
-    const topCatName = language === 'it'
-        ? this.t('category' + topCategory[0])
-        : this.t('category' + topCategory[0]);
-
-    // Suggerimento 1: Ridurre la spesa principale
-    if (topCategory[1] > 100) {
-        const reduction = Math.round(topCategory[1] * 0.1); // 10%
-        suggestions.push({
-            message: language === 'it'
-                ? `💡 Hai speso ${this.formatCurrency(topCategory[1])} in ${topCatName}. Riducendo del 10% (${this.formatCurrency(reduction)}), potresti destinare quella cifra al risparmio.`
-                : `💡 You spent ${this.formatCurrency(topCategory[1])} on ${topCatName}. By reducing it by 10% (${this.formatCurrency(reduction)}), you could add that to your savings.`,
-            action: language === 'it' ? 'Imposta obiettivo' : 'Set goal',
-            actionType: 'reduce',
-            category: topCategory[0],
-            amount: reduction
-        });
-    }
-
-    // Suggerimento 2: Confronto con trasporti
-    if (categoryTotals.Trasporti && categoryTotals.Trasporti > 50) {
-        const potentialSave = Math.round(categoryTotals.Trasporti * 0.2); // 20%
-        suggestions.push({
-            message: language === 'it'
-                ? `🚗 Hai speso ${this.formatCurrency(categoryTotals.Trasporti)} in trasporti. Usando più mezzi pubblici, potresti risparmiare circa ${this.formatCurrency(potentialSave)} al mese.`
-                : `🚗 You spent ${this.formatCurrency(categoryTotals.Trasporti)} on transport. Using public transport more could save you about ${this.formatCurrency(potentialSave)} per month.`,
-            action: language === 'it' ? 'Scopri come' : 'Learn how',
-            actionType: 'transport',
-            amount: potentialSave
-        });
-    }
-
-    // Suggerimento 3: Confronto con svago
-    if (categoryTotals.Svago && categoryTotals.Svago > 80) {
-        const potentialSave = Math.round(categoryTotals.Svago * 0.15); // 15%
-        suggestions.push({
-            message: language === 'it'
-                ? `🎮 Hai speso ${this.formatCurrency(categoryTotals.Svago)} in svago. Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(potentialSave)}.`
-                : `🎮 You spent ${this.formatCurrency(categoryTotals.Svago)} on leisure. Limiting to 2 outings per week could save you ${this.formatCurrency(potentialSave)}.`,
-            action: language === 'it' ? 'Pianifica' : 'Plan',
-            actionType: 'leisure',
-            amount: potentialSave
-        });
-    }
-
-    // Mostra un suggerimento casuale
-    if (suggestions.length > 0) {
-        const randomIndex = Math.floor(Math.random() * suggestions.length);
-        this.showAiSuggestion(suggestions[randomIndex]);
-    } else {
-        document.getElementById('aiWidget').style.display = 'none';
-    }
-}
-
-showAiSuggestion(suggestion) {
-    const widget = document.getElementById('aiWidget');
-    const messageEl = document.getElementById('aiMessage');
-    const actionEl = document.getElementById('aiAction');
-    const actionBtn = document.getElementById('applyAiSuggestion');
-    
-    messageEl.textContent = suggestion.message;
-    actionBtn.textContent = suggestion.action;
-    
-    // Salva i dati per l'azione
-    actionBtn.dataset.type = suggestion.actionType;
-    actionBtn.dataset.amount = suggestion.amount || 0;
-    actionBtn.dataset.category = suggestion.category || '';
-    
-    widget.style.display = 'block';
-    actionEl.style.display = 'flex';
-}
-
-setupAiActions() {
-    document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-        const type = e.target.dataset.type;
-        const amount = parseFloat(e.target.dataset.amount);
-        
-        if (type === 'reduce' && amount > 0) {
-            // Suggerisci di aumentare l'obiettivo di risparmio
-            const currentGoal = this.data.savingsGoal || 0;
-            document.getElementById('saveGoal').value = currentGoal + amount;
-            this.showToast(
-                this.data.language === 'it'
-                    ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                    : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                'success'
-            );
-        } else {
-            // Altri tipi di azione (es. apri link informativo)
-            this.showToast(
-                this.data.language === 'it'
-                    ? '🔍 Funzionalità in sviluppo'
-                    : '🔍 Feature in development',
-                'info'
-            );
-        }
-        
-        // Nascondi il widget dopo l'azione
-        document.getElementById('aiAction').style.display = 'none';
-        setTimeout(() => {
-            document.getElementById('aiWidget').style.display = 'none';
-        }, 2000);
-    });
-
-    document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
-        document.getElementById('aiWidget').style.display = 'none';
-    });
-}
     // ========== TEMA ==========
     toggleTheme() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
@@ -1730,6 +1605,138 @@ setupAiActions() {
         alert(this.data.language === 'it'
             ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
             : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
+    }
+
+    // ========== AI WIDGET ==========
+    generateAiSuggestion() {
+        const suggestions = [];
+        const language = this.data.language;
+        
+        // Analizza spese per categoria
+        const categoryTotals = {};
+        Object.values(this.data.variableExpenses).forEach(day => {
+            day.forEach(exp => {
+                const cat = exp.category;
+                categoryTotals[cat] = (categoryTotals[cat] || 0) + exp.amount;
+            });
+        });
+
+        // Se non ci sono abbastanza dati, non mostrare nulla
+        if (Object.keys(categoryTotals).length === 0) {
+            document.getElementById('aiWidget').style.display = 'none';
+            return;
+        }
+
+        // Trova la categoria principale
+        const topCategory = Object.entries(categoryTotals)
+            .sort((a, b) => b[1] - a[1])[0];
+        
+        const topCatName = language === 'it'
+            ? this.t('category' + topCategory[0])
+            : this.t('category' + topCategory[0]);
+
+        // Suggerimento 1: Ridurre la spesa principale
+        if (topCategory[1] > 100) {
+            const reduction = Math.round(topCategory[1] * 0.1); // 10%
+            suggestions.push({
+                message: language === 'it'
+                    ? `💡 Hai speso ${this.formatCurrency(topCategory[1])} in ${topCatName}. Riducendo del 10% (${this.formatCurrency(reduction)}), potresti destinare quella cifra al risparmio.`
+                    : `💡 You spent ${this.formatCurrency(topCategory[1])} on ${topCatName}. By reducing it by 10% (${this.formatCurrency(reduction)}), you could add that to your savings.`,
+                action: language === 'it' ? 'Imposta obiettivo' : 'Set goal',
+                actionType: 'reduce',
+                category: topCategory[0],
+                amount: reduction
+            });
+        }
+
+        // Suggerimento 2: Confronto con trasporti
+        if (categoryTotals.Trasporti && categoryTotals.Trasporti > 50) {
+            const potentialSave = Math.round(categoryTotals.Trasporti * 0.2); // 20%
+            suggestions.push({
+                message: language === 'it'
+                    ? `🚗 Hai speso ${this.formatCurrency(categoryTotals.Trasporti)} in trasporti. Usando più mezzi pubblici, potresti risparmiare circa ${this.formatCurrency(potentialSave)} al mese.`
+                    : `🚗 You spent ${this.formatCurrency(categoryTotals.Trasporti)} on transport. Using public transport more could save you about ${this.formatCurrency(potentialSave)} per month.`,
+                action: language === 'it' ? 'Scopri come' : 'Learn how',
+                actionType: 'transport',
+                amount: potentialSave
+            });
+        }
+
+        // Suggerimento 3: Confronto con svago
+        if (categoryTotals.Svago && categoryTotals.Svago > 80) {
+            const potentialSave = Math.round(categoryTotals.Svago * 0.15); // 15%
+            suggestions.push({
+                message: language === 'it'
+                    ? `🎮 Hai speso ${this.formatCurrency(categoryTotals.Svago)} in svago. Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(potentialSave)}.`
+                    : `🎮 You spent ${this.formatCurrency(categoryTotals.Svago)} on leisure. Limiting to 2 outings per week could save you ${this.formatCurrency(potentialSave)}.`,
+                action: language === 'it' ? 'Pianifica' : 'Plan',
+                actionType: 'leisure',
+                amount: potentialSave
+            });
+        }
+
+        // Mostra un suggerimento casuale
+        if (suggestions.length > 0) {
+            const randomIndex = Math.floor(Math.random() * suggestions.length);
+            this.showAiSuggestion(suggestions[randomIndex]);
+        } else {
+            document.getElementById('aiWidget').style.display = 'none';
+        }
+    }
+
+    showAiSuggestion(suggestion) {
+        const widget = document.getElementById('aiWidget');
+        const messageEl = document.getElementById('aiMessage');
+        const actionEl = document.getElementById('aiAction');
+        const actionBtn = document.getElementById('applyAiSuggestion');
+        
+        messageEl.textContent = suggestion.message;
+        actionBtn.textContent = suggestion.action;
+        
+        // Salva i dati per l'azione
+        actionBtn.dataset.type = suggestion.actionType;
+        actionBtn.dataset.amount = suggestion.amount || 0;
+        actionBtn.dataset.category = suggestion.category || '';
+        
+        widget.style.display = 'block';
+        actionEl.style.display = 'flex';
+    }
+
+    setupAiActions() {
+        document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
+            const type = e.target.dataset.type;
+            const amount = parseFloat(e.target.dataset.amount);
+            
+            if (type === 'reduce' && amount > 0) {
+                // Suggerisci di aumentare l'obiettivo di risparmio
+                const currentGoal = this.data.savingsGoal || 0;
+                document.getElementById('saveGoal').value = currentGoal + amount;
+                this.showToast(
+                    this.data.language === 'it'
+                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                    'success'
+                );
+            } else {
+                // Altri tipi di azione (es. apri link informativo)
+                this.showToast(
+                    this.data.language === 'it'
+                        ? '🔍 Funzionalità in sviluppo'
+                        : '🔍 Feature in development',
+                    'info'
+                );
+            }
+            
+            // Nascondi il widget dopo l'azione
+            document.getElementById('aiAction').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('aiWidget').style.display = 'none';
+            }, 2000);
+        });
+
+        document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
+            document.getElementById('aiWidget').style.display = 'none';
+        });
     }
 }
 
