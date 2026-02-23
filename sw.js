@@ -1,7 +1,7 @@
 // BudgetWise Service Worker - Production Safe
 // Works for browser + installed PWA (GitHub Pages friendly)
 
-const CACHE_VERSION = "v5";                 // <- aumenta a v6, v7... ad ogni release
+const CACHE_VERSION = "v6";                 // <- aumenta a v6, v7... ad ogni release
 const CACHE_NAME = `budgetwise-${CACHE_VERSION}`;
 
 const CORE_ASSETS = [
@@ -66,16 +66,47 @@ self.addEventListener("fetch", (event) => {
   if (!isCacheableRequest(req)) return;
 
   const url = new URL(req.url);
-  const path = url.pathname.split("/").pop() || "./";
-  const isCore = CORE_ASSETS.includes("./" + path) || CORE_ASSETS.includes(url.pathname) || url.pathname.endsWith("/");
+    const file = url.pathname.split("/").pop() || "";
+  const isCore =
+    CORE_ASSETS.includes("./" + file) ||
+    CORE_ASSETS.includes(url.pathname) ||
+    file === "style.css" ||
+    file === "app.js" ||
+    file === "manifest.json" ||
+    file.startsWith("icon-");
+  
 
+   // 🔥 index.html: Network-First (evita “app vecchia” dopo release)
+  const isIndex =
+    url.pathname.endsWith("/index.html") ||
+    url.pathname.endsWith("/") ||
+    url.pathname === self.location.pathname; // safety
+
+  if (isIndex) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        try {
+          const res = await fetch(req);
+          if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+          return res;
+        } catch {
+          const cached = await cache.match(req);
+          if (cached) return cached;
+          return new Response("Offline", { status: 503 });
+        }
+      })()
+    );
+    return;
+  }
+
+  // ✅ CORE assets (css/js/icons/manifest): Stale-While-Revalidate
   if (isCore) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME);
         const cached = await cache.match(req);
 
-        // Update in background
         const fetchPromise = fetch(req)
           .then((res) => {
             if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
