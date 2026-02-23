@@ -415,48 +415,7 @@
         </div>
     </div>
     <script>
-  // Service Worker (prod-ready)
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", async () => {
-      try {
-        const reg = await navigator.serviceWorker.register("./sw.js");
-        console.log("✅ ServiceWorker registrato:", reg.scope);
-
-        // Se c'è un SW in attesa, attivalo subito
-        if (reg.waiting) {
-          reg.waiting.postMessage({ type: "SKIP_WAITING" });
-        }
-
-        // Quando trova un update
-        reg.addEventListener("updatefound", () => {
-          const newWorker = reg.installing;
-          if (!newWorker) return;
-
-          newWorker.addEventListener("statechange", () => {
-            if (newWorker.state === "installed") {
-              if (navigator.serviceWorker.controller) {
-                console.log("♻️ Aggiornamento pronto, ricarico...");
-                window.location.reload();
-              }
-            }
-          });
-        });
-      } catch (err) {
-        console.log("❌ ServiceWorker errore:", err);
-      }
-    });
-  }
-
-  // Verifica icone
-  window.addEventListener("load", () => {
-    fetch("./icon-192.png")
-      .then(() => console.log("✅ Icona 192px OK"))
-      .catch(() => console.warn("⚠️ Icona 192px non trovata"));
-
-    fetch("./icon-512.png")
-      .then(() => console.log("✅ Icona 512px OK"))
-      .catch(() => console.warn("⚠️ Icona 512px non trovata"));
-  });
+ 
 </script>
 <!-- Service Worker + check icone (1 sola volta) -->
 <script>
