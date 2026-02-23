@@ -1158,3 +1158,51 @@ input:focus, select:focus {
     margin-top: 4px;
     font-style: italic;
 }
+
+/* ========== MAPPATURA CSV ========== */
+.csv-mapping-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.csv-mapping-select:hover {
+    border-color: var(--accent);
+}
+
+.csv-mapping-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.preview-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+#csvMappingHeaders th {
+    padding: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+
+#csvMappingPreview td {
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card-bg);
+}
+
+#csvMappingPreview tr:last-child td {
+    border-bottom: none;
+}
