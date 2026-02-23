@@ -964,12 +964,10 @@ inDays: 'In {days} days',
 
         // Testo giorni rimasti
         const daysText = diffDays < 0 
-            ? this.data.language === 'it' ? `Scaduta da ${Math.abs(diffDays)} giorni` : `Expired ${Math.abs(diffDays)} days ago`
-            : diffDays === 0
-                ? this.data.language === 'it' ? 'Scade oggi' : 'Due today'
-                : this.data.language === 'it' 
-                    ? `Tra ${diffDays} giorni` 
-                    : `In ${diffDays} days`;
+    ? this.t('daysAgo').replace('{days}', Math.abs(diffDays))
+    : diffDays === 0
+        ? this.t('dueToday')
+        : this.t('inDays').replace('{days}', diffDays);
 
         return `
             <div class="expense-item fixed-expense-item ${statusClass}">
@@ -1564,6 +1562,7 @@ inDays: 'In {days} days',
 
 const app = new BudgetWise();
 window.app = app;
+
 
 
 
