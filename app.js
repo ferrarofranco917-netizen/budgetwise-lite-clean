@@ -1345,10 +1345,14 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
             this.saveData();
         });
         document.getElementById('languageSelect').addEventListener('change', (e) => {
-            this.data.language = e.target.value;
-            this.saveData();
-            this.applyLanguage();
-        });
+    this.data.language = e.target.value;
+    this.saveData();
+
+    // Applica traduzioni UI + rigenera liste/messaggi (es. "Nessuna entrata")
+    this.applyLanguage();
+    this.updateUI();
+    this.updateChart();
+});
         const closeDetailBtn = document.getElementById('closeDetailBtn');
         if (closeDetailBtn) {
             closeDetailBtn.addEventListener('click', () => {
