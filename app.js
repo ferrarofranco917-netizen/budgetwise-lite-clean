@@ -372,16 +372,16 @@ class BudgetWise {
     }
 
     updatePeriodInfo() {
-    document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
-    
-    const sourceEl = document.getElementById('periodSource');
-    if (sourceEl && this.data.incomes && this.data.incomes.length > 0) {
-        const firstIncome = this.data.incomes.sort((a,b) => new Date(a.date) - new Date(b.date))[0];
-        sourceEl.textContent = this.data.language === 'it'
-            ? `⏳ Periodo iniziato con: ${firstIncome.desc} del ${firstIncome.date}`
-            : `⏳ Period started with: ${firstIncome.desc} on ${firstIncome.date}`;
+        document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
+        
+        const sourceEl = document.getElementById('periodSource');
+        if (sourceEl && this.data.incomes && this.data.incomes.length > 0) {
+            const firstIncome = this.data.incomes.sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+            sourceEl.textContent = this.data.language === 'it'
+                ? `⏳ Periodo iniziato con: ${firstIncome.desc} del ${firstIncome.date}`
+                : `⏳ Period started with: ${firstIncome.desc} on ${firstIncome.date}`;
+        }
     }
-}
 
     // ========== CALCOLI CON CONTROLLI ==========
     calculateTotalIncome() {
@@ -454,47 +454,55 @@ class BudgetWise {
 
     // ========== ENTRATE ==========
     addIncome() {
-    const desc = document.getElementById('incomeDesc').value.trim();
-    const amount = parseFloat(document.getElementById('incomeAmount').value);
-    const dateInput = document.getElementById('incomeDate').value;
-    
-    // Se non c'è data, usa oggi
-    const date = dateInput || new Date().toISOString().split('T')[0];
-    
-    if (!desc || !amount) {
-        alert(this.t('fillFields'));
-        return;
-    }
-    
-    // Se è la PRIMA entrata, imposta il periodo
-    if (!Array.isArray(this.data.incomes) || this.data.incomes.length === 0) {
-        const startDate = new Date(date);
-        const endDate = new Date(startDate);
-        endDate.setDate(startDate.getDate() + 30); // 30 giorni di periodo
+        const desc = document.getElementById('incomeDesc').value.trim();
+        const amount = parseFloat(document.getElementById('incomeAmount').value);
+        const dateInput = document.getElementById('incomeDate').value;
         
-        this.data.periodStart = startDate.toISOString().split('T')[0];
-        this.data.periodEnd = endDate.toISOString().split('T')[0];
+        // Se non c'è data, usa oggi
+        const date = dateInput || new Date().toISOString().split('T')[0];
         
-        console.log('📅 Nuovo periodo impostato da', this.data.periodStart, 'a', this.data.periodEnd);
+        if (!desc || !amount) {
+            alert(this.t('fillFields'));
+            return;
+        }
+        
+        // Se è la PRIMA entrata, imposta il periodo
+        if (!Array.isArray(this.data.incomes) || this.data.incomes.length === 0) {
+            const startDate = new Date(date);
+            const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 30); // 30 giorni di periodo
+            
+            this.data.periodStart = startDate.toISOString().split('T')[0];
+            this.data.periodEnd = endDate.toISOString().split('T')[0];
+            
+            console.log('📅 Nuovo periodo impostato da', this.data.periodStart, 'a', this.data.periodEnd);
+        }
+        
+        if (!Array.isArray(this.data.incomes)) this.data.incomes = [];
+        
+        this.data.incomes.push({
+            desc,
+            amount,
+            date: date,
+            id: Date.now()
+        });
+        
+        this.saveData();
+        this.updateUI();
+        alert(this.t('incomeAdded'));
+        
+        document.getElementById('incomeDesc').value = '';
+        document.getElementById('incomeAmount').value = '';
+        document.getElementById('incomeDate').value = '';
     }
-    
-    if (!Array.isArray(this.data.incomes)) this.data.incomes = [];
-    
-    this.data.incomes.push({
-        desc,
-        amount,
-        date: date,
-        id: Date.now()
-    });
-    
-    this.saveData();
-    this.updateUI();
-    alert(this.t('incomeAdded'));
-    
-    document.getElementById('incomeDesc').value = '';
-    document.getElementById('incomeAmount').value = '';
-    document.getElementById('incomeDate').value = '';
-}
+
+    deleteIncome(id) {
+        if (!Array.isArray(this.data.incomes)) return;
+        this.data.incomes = this.data.incomes.filter(inc => inc.id !== id);
+        this.saveData();
+        this.updateUI();
+        alert(this.t('incomeDeleted'));
+    }
 
     // ========== SPESE FISSE ==========
     addFixedExpense() {
@@ -794,61 +802,71 @@ class BudgetWise {
         this.generateAiSuggestion();
     }
 
+    // ========== FUNZIONI DI VISUALIZZAZIONE LISTE ==========
+    
     updateIncomeList() {
-    const container = document.getElementById('incomeList');
-    if (!container) return;
+        const container = document.getElementById('incomeList');
+        if (!container) return;
 
-    if (!this.data.incomes || this.data.incomes.length === 0) {
-        container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
-    } else {
-        container.innerHTML = this.data.incomes.map(inc => `
-            <div class="expense-item" data-income-id="${inc.id}">
-                <div class="expense-info">
-                    <span class="expense-name">${inc.desc || '?'}</span>
-                    <span class="expense-category">${inc.date || ''}</span>
+        if (!this.data.incomes || this.data.incomes.length === 0) {
+            container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
+        } else {
+            container.innerHTML = this.data.incomes.map(inc => `
+                <div class="expense-item" data-income-id="${inc.id}">
+                    <div class="expense-info">
+                        <span class="expense-name">${inc.desc || '?'}</span>
+                        <span class="expense-category">${inc.date || ''}</span>
+                    </div>
+                    <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount || 0)}</span>
+                    <div class="expense-actions">
+                        <button class="delete-income-btn" data-id="${inc.id}">🗑️</button>
+                    </div>
                 </div>
-                <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount || 0)}</span>
-                <div class="expense-actions">
-                    <button class="delete-income-btn" data-id="${inc.id}">🗑️</button>
-                </div>
-            </div>
-        `).join('');
-    }
+            `).join('');
+        }
 
-    // Aggiungi event listener a tutti i pulsanti di eliminazione
-    document.querySelectorAll('.delete-income-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const id = parseInt(e.target.dataset.id);
-            this.deleteIncome(id);
+        // Event listener per i pulsanti di eliminazione entrate
+        document.querySelectorAll('.delete-income-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(e.currentTarget.dataset.id);
+                this.deleteIncome(id);
+            });
         });
-    });
 
-    const totalDisplay = document.getElementById('totalIncomeDisplay');
-    if (totalDisplay) {
-        totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
+        const totalDisplay = document.getElementById('totalIncomeDisplay');
+        if (totalDisplay) {
+            totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
+        }
     }
-}
 
     updateFixedExpensesList() {
         const container = document.getElementById('fixedExpensesList');
+        if (!container) return;
+        
         if (!this.data.fixedExpenses || this.data.fixedExpenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noFixed')}</p>`;
             return;
         }
+        
         const today = new Date();
         today.setHours(0, 0, 0, 0);
+        
         container.innerHTML = this.data.fixedExpenses.map(exp => {
             const endDate = new Date(exp.endDate);
             endDate.setHours(0, 0, 0, 0);
             const diffTime = endDate - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
             let statusClass = '', badgeClass = '';
             if (diffDays < 0) { statusClass = 'expired'; badgeClass = 'expired'; }
             else if (diffDays <= 3) { statusClass = 'warning'; badgeClass = 'warning'; }
             else { statusClass = 'future'; badgeClass = 'future'; }
+            
             const daysText = diffDays < 0 
                 ? this.t('daysAgo').replace('{days}', Math.abs(diffDays))
                 : diffDays === 0 ? this.t('dueToday') : this.t('inDays').replace('{days}', diffDays);
+            
             return `
                 <div class="expense-item fixed-expense-item ${statusClass}">
                     <div class="expense-info">
@@ -860,21 +878,32 @@ class BudgetWise {
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
-                        <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
+                        <button class="delete-fixed-btn" data-id="${exp.id}">🗑️</button>
                     </div>
                 </div>
             `;
         }).join('');
+
+        // Event listener per i pulsanti di eliminazione spese fisse
+        document.querySelectorAll('.delete-fixed-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(e.currentTarget.dataset.id);
+                this.deleteFixedExpense(id);
+            });
+        });
     }
 
     updateVariableExpensesList() {
         const date = document.getElementById('expenseDate').value;
         const container = document.getElementById('variableExpensesList');
         const expenses = (this.data.variableExpenses && this.data.variableExpenses[date]) || [];
+        
         if (expenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noVariable')}</p>`;
             return;
         }
+        
         container.innerHTML = expenses.map(exp => `
             <div class="expense-item">
                 <div class="expense-info">
@@ -883,10 +912,20 @@ class BudgetWise {
                 </div>
                 <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                 <div class="expense-actions">
-                    <button onclick="app.deleteVariableExpense('${date}', ${exp.id})">🗑️</button>
+                    <button class="delete-variable-btn" data-id="${exp.id}" data-date="${date}">🗑️</button>
                 </div>
             </div>
         `).join('');
+
+        // Event listener per i pulsanti di eliminazione spese variabili
+        document.querySelectorAll('.delete-variable-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(e.currentTarget.dataset.id);
+                const date = e.currentTarget.dataset.date;
+                this.deleteVariableExpense(date, id);
+            });
+        });
     }
 
     updateChart() {
@@ -1122,43 +1161,43 @@ class BudgetWise {
     }
 
     loadData() {
-    const saved = localStorage.getItem('budgetwise-data');
-    if (saved) {
-        try {
-            const parsed = JSON.parse(saved);
-            
-            // Se ci sono entrate ma non c'è periodStart, lo impostiamo dalla prima entrata
-            if (parsed.incomes && parsed.incomes.length > 0 && !parsed.periodStart) {
-                const firstIncome = parsed.incomes.sort((a, b) => 
-                    new Date(a.date) - new Date(b.date)
-                )[0];
+        const saved = localStorage.getItem('budgetwise-data');
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
                 
-                const startDate = new Date(firstIncome.date);
-                const endDate = new Date(startDate);
-                endDate.setDate(startDate.getDate() + 30);
+                // Se ci sono entrate ma non c'è periodStart, lo impostiamo dalla prima entrata
+                if (parsed.incomes && parsed.incomes.length > 0 && !parsed.periodStart) {
+                    const firstIncome = parsed.incomes.sort((a, b) => 
+                        new Date(a.date) - new Date(b.date)
+                    )[0];
+                    
+                    const startDate = new Date(firstIncome.date);
+                    const endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 30);
+                    
+                    parsed.periodStart = startDate.toISOString().split('T')[0];
+                    parsed.periodEnd = endDate.toISOString().split('T')[0];
+                }
                 
-                parsed.periodStart = startDate.toISOString().split('T')[0];
-                parsed.periodEnd = endDate.toISOString().split('T')[0];
+                // Gestione retrocompatibilità
+                if (parsed.income !== undefined && !parsed.incomes) {
+                    parsed.incomes = [{
+                        desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
+                        amount: parsed.income,
+                        date: new Date().toISOString().split('T')[0],
+                        id: Date.now()
+                    }];
+                    delete parsed.income;
+                }
+                
+                this.data = parsed;
+            } catch (e) {
+                console.warn('Errore nel caricamento dati, reset automatico');
+                this.resetAll();
             }
-            
-            // Gestione retrocompatibilità
-            if (parsed.income !== undefined && !parsed.incomes) {
-                parsed.incomes = [{
-                    desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
-                    amount: parsed.income,
-                    date: new Date().toISOString().split('T')[0],
-                    id: Date.now()
-                }];
-                delete parsed.income;
-            }
-            
-            this.data = parsed;
-        } catch (e) {
-            console.warn('Errore nel caricamento dati, reset automatico');
-            this.resetAll();
         }
     }
-}
 
     backupData() {
         const dataStr = JSON.stringify(this.data, null, 2);
@@ -1190,29 +1229,29 @@ class BudgetWise {
     }
 
     resetAll() {
-    if (confirm(this.t('confirmReset'))) {
-        localStorage.clear();
-        const today = new Date();
-        const end = new Date(today);
-        end.setDate(today.getDate() + 28);
-        
-        this.data = {
-            incomes: [],
-            fixedExpenses: [],
-            variableExpenses: {},
-            savingsPercent: 0,
-            savingsGoal: 0,
-            threshold: 50,
-            language: this.data.language,
-            periodStart: today.toISOString().split('T')[0],
-            periodEnd: end.toISOString().split('T')[0]
-        };
-        this.updateUI();
-        this.updateChart();
-        this.applyLanguage();
-        alert(this.t('resetCompleted'));
+        if (confirm(this.t('confirmReset'))) {
+            localStorage.clear();
+            const today = new Date();
+            const end = new Date(today);
+            end.setDate(today.getDate() + 28);
+            
+            this.data = {
+                incomes: [],
+                fixedExpenses: [],
+                variableExpenses: {},
+                savingsPercent: 0,
+                savingsGoal: 0,
+                threshold: 50,
+                language: this.data.language,
+                periodStart: today.toISOString().split('T')[0],
+                periodEnd: end.toISOString().split('T')[0]
+            };
+            this.updateUI();
+            this.updateChart();
+            this.applyLanguage();
+            alert(this.t('resetCompleted'));
+        }
     }
-}
 
     exportToCalendar() {
         let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
