@@ -22,6 +22,11 @@ class BudgetWise {
         // ========== REGOLE CATEGORIE APPRESE ==========
         this.categoryRules = JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {};
         
+        // ========== CATEGORIE PERSONALIZZATE ==========
+        this.defaultCategories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
+        const savedCustom = JSON.parse(localStorage.getItem('budgetwise-custom-categories')) || [];
+        this.customCategories = savedCustom.filter(cat => !this.defaultCategories.includes(cat));
+        
         // ========== TRADUZIONI ==========
         this.translations = {
             it: {
@@ -142,7 +147,22 @@ class BudgetWise {
                 csvComma: 'Virgola (,)',
                 csvSemicolon: 'Punto e virgola (;)',
                 csvTab: 'Tabulazione',
-                csvPreview: 'Anteprima'
+                csvPreview: 'Anteprima',
+                
+                // Gestione categorie
+                manageCategories: '📂 Gestisci categorie',
+                addCategory: '➕ Aggiungi categoria',
+                categoryName: 'Nome categoria',
+                saveCategory: 'Salva',
+                deleteCategory: '🗑️ Elimina',
+                confirmDeleteCategory: 'Sei sicuro di voler eliminare la categoria "{name}"?',
+                categoryAlreadyExists: 'Categoria già esistente',
+                categoryAdded: '✅ Categoria aggiunta!',
+                categoryDeleted: '🗑️ Categoria eliminata',
+                categoryUpdated: '✏️ Categoria aggiornata',
+                defaultCategories: 'Categorie predefinite',
+                customCategories: 'Le tue categorie',
+                noCustomCategories: 'Nessuna categoria personalizzata'
             },
             en: {
                 budget: 'Daily budget',
@@ -262,7 +282,22 @@ class BudgetWise {
                 csvComma: 'Comma (,)',
                 csvSemicolon: 'Semicolon (;)',
                 csvTab: 'Tab',
-                csvPreview: 'Preview'
+                csvPreview: 'Preview',
+                
+                // Gestione categorie
+                manageCategories: '📂 Manage categories',
+                addCategory: '➕ Add category',
+                categoryName: 'Category name',
+                saveCategory: 'Save',
+                deleteCategory: '🗑️ Delete',
+                confirmDeleteCategory: 'Are you sure you want to delete the category "{name}"?',
+                categoryAlreadyExists: 'Category already exists',
+                categoryAdded: '✅ Category added!',
+                categoryDeleted: '🗑️ Category deleted',
+                categoryUpdated: '✏️ Category updated',
+                defaultCategories: 'Default categories',
+                customCategories: 'Your categories',
+                noCustomCategories: 'No custom categories'
             }
         };
         
@@ -278,6 +313,7 @@ class BudgetWise {
         this.setupVoice();
         this.applyLanguage();
         this.startOnboarding();
+        this.updateAllCategorySelects(); // Popola i select con le categorie
     }
 
     getDefaultPeriodStart() {
@@ -683,7 +719,7 @@ class BudgetWise {
         this.updateUI();
         this.updateChart();
 
-        const categoryEmoji = { Alimentari: '🍎', Trasporti: '🚗', Svago: '🎮', Salute: '💊', Abbigliamento: '👕', Altro: '📦' }[category] || '💰';
+        const categoryEmoji = this.getCategoryEmoji(category);
         this.showToast(`${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`, 'success');
         this.highlightField('expenseName');
         this.highlightField('expenseAmount');
@@ -833,6 +869,21 @@ class BudgetWise {
                 document.getElementById('categoryDetail').style.display = 'none';
             });
         }
+        
+        // Gestione categorie
+        const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+        if (manageCategoriesBtn) {
+            manageCategoriesBtn.addEventListener('click', () => this.showCategoryManager());
+        }
+        const saveCategoryBtn = document.getElementById('saveCategoryBtn');
+        if (saveCategoryBtn) {
+            saveCategoryBtn.addEventListener('click', () => this.saveCategory());
+        }
+        const closeCategoryManager = document.getElementById('closeCategoryManager');
+        if (closeCategoryManager) {
+            closeCategoryManager.addEventListener('click', () => this.hideCategoryManager());
+        }
+        
         this.setupAiActions();
     }
 
@@ -1017,18 +1068,22 @@ class BudgetWise {
             return;
         }
         
-        container.innerHTML = expenses.map(exp => `
-            <div class="expense-item">
-                <div class="expense-info">
-                    <span class="expense-name">${exp.name || '?'}</span>
-                    <span class="expense-category">${this.t('category' + (exp.category || 'Altro'))}</span>
+        container.innerHTML = expenses.map(exp => {
+            const cat = exp.category || 'Altro';
+            const catDisplay = this.getAllCategories().includes(cat) ? cat : 'Altro';
+            return `
+                <div class="expense-item">
+                    <div class="expense-info">
+                        <span class="expense-name">${exp.name || '?'}</span>
+                        <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${catDisplay}</span>
+                    </div>
+                    <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
+                    <div class="expense-actions">
+                        <button class="delete-variable-btn" data-id="${exp.id}" data-date="${date}">🗑️</button>
+                    </div>
                 </div>
-                <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
-                <div class="expense-actions">
-                    <button class="delete-variable-btn" data-id="${exp.id}" data-date="${date}">🗑️</button>
-                </div>
-            </div>
-        `).join('');
+            `;
+        }).join('');
 
         // Event listener per i pulsanti di eliminazione spese variabili
         document.querySelectorAll('.delete-variable-btn').forEach(btn => {
@@ -1049,10 +1104,10 @@ class BudgetWise {
             Object.values(this.data.variableExpenses).forEach(day => {
                 if (Array.isArray(day)) {
                     day.forEach(expense => {
-                        const catName = this.t('category' + (expense.category || 'Altro'));
-                        categories[catName] = (categories[catName] || 0) + (expense.amount || 0);
-                        if (!categoryExpenses[catName]) categoryExpenses[catName] = [];
-                        categoryExpenses[catName].push({ 
+                        const cat = expense.category || 'Altro';
+                        categories[cat] = (categories[cat] || 0) + (expense.amount || 0);
+                        if (!categoryExpenses[cat]) categoryExpenses[cat] = [];
+                        categoryExpenses[cat].push({ 
                             name: expense.name || '?', 
                             amount: expense.amount || 0, 
                             date: day 
@@ -1211,7 +1266,7 @@ class BudgetWise {
                 Object.values(this.data.variableExpenses).forEach(day => {
                     if (Array.isArray(day)) {
                         day.forEach(exp => {
-                            const catName = this.t('category' + (exp.category || 'Altro'));
+                            const catName = exp.category || 'Altro';
                             categories[catName] = (categories[catName] || 0) + (exp.amount || 0);
                         });
                     }
@@ -1430,6 +1485,142 @@ class BudgetWise {
         return 'Altro'; // Default
     }
 
+    // ========== GESTIONE CATEGORIE PERSONALIZZATE ==========
+    getAllCategories() {
+        return [...this.defaultCategories, ...this.customCategories];
+    }
+    
+    saveCustomCategories() {
+        localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
+    }
+    
+    showCategoryManager() {
+        const overlay = document.getElementById('categoryManagerOverlay');
+        if (!overlay) return;
+        this.refreshCategoryList();
+        overlay.style.display = 'flex';
+    }
+    
+    hideCategoryManager() {
+        const overlay = document.getElementById('categoryManagerOverlay');
+        if (overlay) overlay.style.display = 'none';
+    }
+    
+    refreshCategoryList() {
+        const defaultList = document.getElementById('defaultCategoriesList');
+        const customList = document.getElementById('customCategoriesList');
+        
+        if (defaultList) {
+            defaultList.innerHTML = this.defaultCategories.map(cat => 
+                `<div class="category-item default"><span>${cat}</span></div>`
+            ).join('');
+        }
+        
+        if (customList) {
+            if (this.customCategories.length === 0) {
+                customList.innerHTML = `<p class="empty-message">${this.t('noCustomCategories')}</p>`;
+            } else {
+                customList.innerHTML = this.customCategories.map((cat, index) => `
+                    <div class="category-item custom">
+                        <span>${cat}</span>
+                        <div>
+                            <button class="edit-category-btn" data-index="${index}">✏️</button>
+                            <button class="delete-category-btn" data-index="${index}">🗑️</button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.querySelectorAll('.edit-category-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        this.editCategory(parseInt(index));
+                    });
+                });
+                
+                document.querySelectorAll('.delete-category-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const index = e.target.dataset.index;
+                        this.deleteCategory(parseInt(index));
+                    });
+                });
+            }
+        }
+    }
+    
+    editCategory(index) {
+        const oldName = this.customCategories[index];
+        const newName = prompt(this.t('categoryName'), oldName);
+        if (!newName || newName.trim() === '') return;
+        const trimmed = newName.trim();
+        
+        if (this.getAllCategories().includes(trimmed) && trimmed !== oldName) {
+            alert(this.t('categoryAlreadyExists'));
+            return;
+        }
+        
+        this.customCategories[index] = trimmed;
+        this.saveCustomCategories();
+        this.refreshCategoryList();
+        this.updateAllCategorySelects();
+        alert(this.t('categoryUpdated'));
+    }
+    
+    deleteCategory(index) {
+        const cat = this.customCategories[index];
+        if (!confirm(this.t('confirmDeleteCategory').replace('{name}', cat))) return;
+        
+        this.customCategories.splice(index, 1);
+        this.saveCustomCategories();
+        this.refreshCategoryList();
+        this.updateAllCategorySelects();
+        alert(this.t('categoryDeleted'));
+    }
+    
+    saveCategory() {
+        const input = document.getElementById('newCategoryName');
+        if (!input) return;
+        const newCat = input.value.trim();
+        if (!newCat) return;
+        
+        if (this.getAllCategories().includes(newCat)) {
+            alert(this.t('categoryAlreadyExists'));
+            return;
+        }
+        
+        this.customCategories.push(newCat);
+        this.saveCustomCategories();
+        input.value = '';
+        this.refreshCategoryList();
+        this.updateAllCategorySelects();
+        alert(this.t('categoryAdded'));
+    }
+    
+    updateAllCategorySelects() {
+        const categories = this.getAllCategories();
+        const optionsHtml = categories.map(cat => 
+            `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
+        ).join('');
+        
+        const mainSelect = document.getElementById('expenseCategory');
+        if (mainSelect) {
+            mainSelect.innerHTML = optionsHtml;
+        }
+        
+        // Se ci sono select di revisione aperti, li aggiorniamo? (opzionale)
+    }
+    
+    getCategoryEmoji(category) {
+        const emojiMap = {
+            'Alimentari': '🍎',
+            'Trasporti': '🚗',
+            'Svago': '🎮',
+            'Salute': '💊',
+            'Abbigliamento': '👕',
+            'Altro': '📦'
+        };
+        return emojiMap[category] || '📌';
+    }
+
     // ========== REVISIONE IMPORT CSV ==========
     showImportReview(importedExpenses) {
         return new Promise((resolve) => {
@@ -1441,39 +1632,40 @@ class BudgetWise {
                 return;
             }
             
-            // Genera HTML per ogni spesa
-            listEl.innerHTML = importedExpenses.map((exp, index) => {
-                const categories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
-                const options = categories.map(cat => 
-                    `<option value="${cat}" ${exp.category === cat ? 'selected' : ''}>${this.t('category' + cat)}</option>`
-                ).join('');
-                
-                return `
-                    <div class="review-item" data-index="${index}">
-                        <div class="review-info">
-                            <span class="review-date">${exp.date}</span>
-                            <span class="review-name">${exp.name}</span>
-                            <span class="review-amount">${this.formatCurrency(exp.amount)}</span>
-                        </div>
-                        <div class="review-category">
-                            <select class="review-select" data-index="${index}">
-                                ${options}
-                            </select>
-                            <small class="review-hint">${this.t('importLearn')}</small>
-                        </div>
-                    </div>
-                `;
-            }).join('');
+            const categories = this.getAllCategories();
+            const options = categories.map(cat => 
+                `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
+            ).join('');
             
-            // Mostra overlay
+            listEl.innerHTML = importedExpenses.map((exp, index) => `
+                <div class="review-item" data-index="${index}">
+                    <div class="review-info">
+                        <span class="review-date">${exp.date}</span>
+                        <span class="review-name">${exp.name}</span>
+                        <span class="review-amount">${this.formatCurrency(exp.amount)}</span>
+                    </div>
+                    <div class="review-category">
+                        <select class="review-select" data-index="${index}">
+                            ${options}
+                        </select>
+                        <small class="review-hint">${this.t('importLearn')}</small>
+                    </div>
+                </div>
+            `).join('');
+            
+            importedExpenses.forEach((exp, index) => {
+                const select = document.querySelector(`.review-select[data-index="${index}"]`);
+                if (select) {
+                    select.value = exp.category;
+                }
+            });
+            
             overlay.style.display = 'flex';
             
-            // Gestisci conferma
             const confirmBtn = document.getElementById('confirmImportBtn');
             const cancelBtn = document.getElementById('cancelImportBtn');
             
             const onConfirm = () => {
-                // Raccogli le categorie modificate
                 const selects = document.querySelectorAll('.review-select');
                 selects.forEach(select => {
                     const index = select.dataset.index;
@@ -1482,7 +1674,6 @@ class BudgetWise {
                     
                     importedExpenses[index].category = newCategory;
                     
-                    // Se l'utente ha cambiato categoria, impara la regola
                     if (newCategory !== oldCategory) {
                         this.learnCategory(importedExpenses[index].name, newCategory);
                     }
@@ -1494,7 +1685,7 @@ class BudgetWise {
             
             const onCancel = () => {
                 cleanup();
-                resolve([]); // Annulla import
+                resolve([]);
             };
             
             const cleanup = () => {
@@ -1536,18 +1727,14 @@ class BudgetWise {
                     line.split(delimiter).map(cell => cell.trim())
                 );
                 
-                // Mostra overlay
                 overlay.style.display = 'flex';
                 
-                // Genera header tabella
                 headersRow.innerHTML = headers.map(h => `<th>${h || '?'}</th>`).join('');
                 
-                // Genera anteprima (mostra 5 righe)
                 previewBody.innerHTML = previewData.map(row => 
                     `<tr>${row.map(cell => `<td class="preview-cell">${cell || ''}</td>`).join('')}</tr>`
                 ).join('');
                 
-                // Campi di mappatura
                 const fieldOptions = [
                     { value: 'date', label: '📅 Data' },
                     { value: 'description', label: '📝 Descrizione' },
@@ -1556,29 +1743,21 @@ class BudgetWise {
                     { value: 'ignore', label: '❌ Ignora' }
                 ];
                 
-                fieldsDiv.innerHTML = headers.map((header, index) => {
-                    // Selezione predefinita intelligente
-                    let selectedDate = index === 0 ? 'selected' : '';
-                    let selectedDesc = index === 1 ? 'selected' : '';
-                    let selectedAmount = index === 2 ? 'selected' : '';
-                    
-                    return `
-                        <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
-                            <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
-                            <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
-                                ${fieldOptions.map(opt => {
-                                    let selected = '';
-                                    if (opt.value === 'date' && index === 0) selected = 'selected';
-                                    else if (opt.value === 'description' && index === 1) selected = 'selected';
-                                    else if (opt.value === 'amount' && index === 2) selected = 'selected';
-                                    return `<option value="${opt.value}" ${selected}>${opt.label}</option>`;
-                                }).join('')}
-                            </select>
-                        </div>
-                    `;
-                }).join('');
+                fieldsDiv.innerHTML = headers.map((header, index) => `
+                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
+                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
+                        <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
+                            ${fieldOptions.map(opt => {
+                                let selected = '';
+                                if (opt.value === 'date' && index === 0) selected = 'selected';
+                                else if (opt.value === 'description' && index === 1) selected = 'selected';
+                                else if (opt.value === 'amount' && index === 2) selected = 'selected';
+                                return `<option value="${opt.value}" ${selected}>${opt.label}</option>`;
+                            }).join('')}
+                        </select>
+                    </div>
+                `).join('');
                 
-                // Gestisci conferma
                 const confirmBtn = document.getElementById('confirmMappingBtn');
                 const cancelBtn = document.getElementById('cancelMappingBtn');
                 
@@ -1601,7 +1780,6 @@ class BudgetWise {
                         }
                     });
                     
-                    // Verifica campi obbligatori
                     if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
                         alert('❌ Devi mappare Data, Descrizione e Importo!');
                         return;
@@ -1616,11 +1794,9 @@ class BudgetWise {
                     resolve(null);
                 };
                 
-                // Rimuovi vecchi listener
                 confirmBtn.replaceWith(confirmBtn.cloneNode(true));
                 cancelBtn.replaceWith(cancelBtn.cloneNode(true));
                 
-                // Aggiungi nuovi listener
                 document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
                 document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
             };
@@ -1663,7 +1839,6 @@ class BudgetWise {
                 
                 if (!dateStr || !description || !amountStr) continue;
                 
-                // Converti data
                 if (dateFormat === 'DD/MM/YYYY') {
                     const parts = dateStr.split(/[\/\-]/);
                     if (parts.length === 3) {
@@ -1680,7 +1855,6 @@ class BudgetWise {
                     } else continue;
                 }
                 
-                // Pulisci e converti importo
                 let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
                 if (isNaN(amount)) continue;
                 
@@ -1796,18 +1970,15 @@ class BudgetWise {
             <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
             <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
             
-            <!-- SOLO TESTO ISTRUZIONE -->
             <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
                 <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
             </div>
             
-            <!-- SOLO PULSANTI AVANTI/SALTA -->
             <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
                 <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
                 <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
             </div>
             
-            <!-- PROGRESS -->
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                 <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
                 <div style="flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
@@ -2033,7 +2204,7 @@ class BudgetWise {
         }
 
         const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
-        const topCatName = language === 'it' ? this.t('category' + topCategory[0]) : this.t('category' + topCategory[0]);
+        const topCatName = topCategory[0];
 
         if (topCategory[1] > 100) {
             const reduction = Math.round(topCategory[1] * 0.1);
