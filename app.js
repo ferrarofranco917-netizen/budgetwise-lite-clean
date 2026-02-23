@@ -2777,11 +2777,11 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
                     const currentGoal = this.data.savingsGoal || 0;
                     document.getElementById('saveGoal').value = currentGoal + amount;
                     this.showToast(
-                        this.data.language === 'it'
-                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                        'success'
-                    );
+    this.data.language === 'it'
+        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+    'success'
+);
                 }
             }
             else if (type === 'leisure') {
