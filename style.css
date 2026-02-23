@@ -1088,3 +1088,73 @@ input:focus, select:focus {
         padding: 20px;
     }
 }
+
+/* ========== MAPPATURA CSV ========== */
+.csv-mapping-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.csv-mapping-table th {
+    background: var(--accent);
+    color: white;
+    padding: 12px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.csv-mapping-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--card-bg);
+}
+
+.csv-mapping-table tr:last-child td {
+    border-bottom: none;
+}
+
+.csv-mapping-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.csv-mapping-select:hover {
+    border-color: var(--accent);
+}
+
+.csv-mapping-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.mapping-preview-row {
+    background: var(--bg-color);
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+.preview-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mapping-hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-style: italic;
+}
