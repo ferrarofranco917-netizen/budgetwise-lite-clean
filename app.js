@@ -2125,25 +2125,25 @@ localStorage.removeItem('budgetwise-onboarding-completed');
         return [...this.defaultCategories, ...this.customCategories];
     }
     
-    saveCustomCategories() {
-        localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
+   saveCustomCategories() {
+  localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
+}
+
+ensureDemoCategories() {
+  const demoCats = ['Casa', 'Bambini', 'Lavoro'];
+  let changed = false;
+
+  demoCats.forEach(cat => {
+    if (!this.getAllCategories().includes(cat)) {
+      this.customCategories.push(cat);
+      changed = true;
     }
-    ensureDemoCategories() {
-    const demoCats = ['Casa', 'Bambini', 'Lavoro'];
+  });
 
-    let changed = false;
-
-    demoCats.forEach(cat => {
-        if (!this.getAllCategories().includes(cat)) {
-            this.customCategories.push(cat);
-            changed = true;
-        }
-    });
-
-    if (changed) {
-        this.saveCustomCategories();
-        this.updateAllCategorySelects();
-    }
+  if (changed) {
+    this.saveCustomCategories();
+    this.updateAllCategorySelects();
+  }
 }
     showCategoryManager() {
         const overlay = document.getElementById('categoryManagerOverlay');
