@@ -2800,13 +2800,9 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
                     );
                 }
             }
-            else {
-                this.showToast(
-                    this.data.language === 'it'
-                        ? this.t('featureInDev'),
-                    'info'
-                );
-            }
+           else {
+  this.showToast(this.t('featureInDev'), 'info');
+}
             
             document.getElementById('aiAction').style.display = 'none';
             setTimeout(() => {
