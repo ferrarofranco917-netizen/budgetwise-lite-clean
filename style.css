@@ -1206,3 +1206,52 @@ input:focus, select:focus {
 #csvMappingPreview tr:last-child td {
     border-bottom: none;
 }
+/* ========== GESTIONE CATEGORIE ========== */
+.categories-list {
+    margin: 15px 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.category-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin: 4px 0;
+    background: var(--bg-color);
+    border-radius: 8px;
+}
+
+.category-item.default {
+    background: var(--bg-color);
+    border-left: 3px solid var(--accent);
+}
+
+.category-item.custom {
+    background: var(--bg-color);
+    border-left: 3px solid var(--success);
+}
+
+.category-item button {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-left: 4px;
+    padding: 4px;
+}
+
+.category-item button:hover {
+    transform: scale(1.1);
+}
+
+.empty-message {
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    padding: 15px;
+}
