@@ -1550,6 +1550,7 @@ class BudgetWise {
 
     // ========== ONBOARDING GUIDATO ==========
    // ========== ONBOARDING GUIDATO ==========
+// ========== ONBOARDING GUIDATO ==========
 startOnboarding() {
     // Controlla se già completato
     if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
@@ -1574,16 +1575,36 @@ startOnboarding() {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(4px);
         z-index: 9999;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         transition: opacity 0.3s ease;
     `;
 
-    // Card principale
+    // Testo descrittivo (SOPRA la card)
+    const descriptionText = document.createElement('div');
+    descriptionText.style.cssText = `
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.3);
+        padding: 12px 24px;
+        border-radius: 50px;
+        backdrop-filter: blur(2px);
+        max-width: 80%;
+        text-align: center;
+        animation: fadeInUp 0.4s ease;
+    `;
+    descriptionText.id = 'onboarding-description';
+    descriptionText.textContent = steps[0].text;
+
+    // Card principale (SOTTO il testo)
     const card = document.createElement('div');
     card.style.cssText = `
         background: var(--card-bg, #ffffff);
@@ -1592,33 +1613,32 @@ startOnboarding() {
         max-width: 420px;
         width: 90%;
         text-align: center;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3), 0 0 0 2px var(--accent) inset;
-        animation: onboardingSlideUp 0.4s ease;
-        border: 1px solid rgba(255,255,255,0.1);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        animation: onboardingSlideUp 0.5s ease;
+        border: 1px solid var(--accent);
         transform: translateY(0);
-        transition: transform 0.2s;
     `;
 
     card.innerHTML = `
-        <div style="font-size: 3rem; margin-bottom: 10px;">✨</div>
-        <h3 style="margin: 10px 0 8px; color: var(--accent); font-size: 1.8rem; font-weight: 700;">${this.t('onboardingWelcome')}</h3>
-        <p id="onboarding-text" style="margin: 15px 0 25px; color: var(--text-secondary); font-size: 1.2rem; line-height: 1.5; font-weight: 500;"></p>
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-            <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; box-shadow: 0 8px 16px rgba(67, 97, 238, 0.3);">${this.t('onboardingNext')}</button>
-            <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">${this.t('onboardingSkip')}</button>
+        <div style="font-size: 3.5rem; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));">✨</div>
+        <h3 style="margin: 0 0 20px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
+        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 25px 0 15px;">
+            <button id="onboarding-next" class="btn-primary" style="padding: 16px 36px; font-size: 1.2rem; border-radius: 50px; min-width: 160px; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4); font-weight: 700;">${this.t('onboardingNext')} →</button>
+            <button id="onboarding-skip" class="btn-secondary" style="padding: 16px 36px; font-size: 1.2rem; border-radius: 50px; min-width: 160px; background: transparent; border: 2px solid var(--border); font-weight: 600;">✕ ${this.t('onboardingSkip')}</button>
         </div>
-        <div style="margin-top: 15px; font-size: 1rem; color: var(--text-secondary); font-weight: 500; background: var(--bg-color); padding: 8px 16px; border-radius: 50px; display: inline-block;">
-            <span id="onboarding-counter" style="font-weight: 600; color: var(--accent);">1</span> / ${steps.length}
+        <div style="margin-top: 20px; font-size: 1.1rem; color: var(--text-secondary); font-weight: 600; background: var(--bg-color); padding: 10px 20px; border-radius: 50px; display: inline-block;">
+            <span id="onboarding-counter" style="font-weight: 700; color: var(--accent); font-size: 1.3rem;">1</span> / ${steps.length}
         </div>
-        <div style="margin-top: 20px; width: 100%; height: 4px; background: var(--border); border-radius: 4px; overflow: hidden;">
-            <div id="onboarding-progress" style="width: ${(1/steps.length)*100}%; height: 100%; background: linear-gradient(90deg, var(--accent-light), var(--accent)); transition: width 0.3s ease;"></div>
+        <div style="margin-top: 25px; width: 100%; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
+            <div id="onboarding-progress" style="width: ${(1/steps.length)*100}%; height: 100%; background: linear-gradient(90deg, var(--accent-light), var(--accent)); transition: width 0.4s ease;"></div>
         </div>
     `;
 
+    overlay.appendChild(descriptionText);
     overlay.appendChild(card);
     document.body.appendChild(overlay);
 
-    // Aggiungi stili animazione e highlight
+    // Aggiungi stili animazione
     if (!document.getElementById('onboarding-style')) {
         const style = document.createElement('style');
         style.id = 'onboarding-style';
@@ -1626,18 +1646,28 @@ startOnboarding() {
             @keyframes onboardingSlideUp {
                 from { 
                     opacity: 0;
-                    transform: translateY(40px) scale(0.95);
+                    transform: translateY(50px) scale(0.95);
                 }
                 to { 
                     opacity: 1;
                     transform: translateY(0) scale(1);
                 }
             }
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
             .onboarding-highlight {
                 outline: 6px solid var(--accent) !important;
                 outline-offset: 8px !important;
                 border-radius: 16px !important;
-                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+                transition: all 0.3s ease !important;
                 position: relative !important;
                 z-index: 10000 !important;
                 box-shadow: 0 0 0 6px rgba(67, 97, 238, 0.4), 0 0 30px rgba(67, 97, 238, 0.5) !important;
@@ -1654,7 +1684,7 @@ startOnboarding() {
 
     const showStep = () => {
         const step = steps[stepIndex];
-        document.getElementById('onboarding-text').innerText = step.text;
+        document.getElementById('onboarding-description').textContent = step.text;
         document.getElementById('onboarding-counter').innerText = stepIndex + 1;
         
         // Aggiorna barra di progresso
