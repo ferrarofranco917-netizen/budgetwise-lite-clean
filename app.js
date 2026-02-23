@@ -446,42 +446,47 @@ class BudgetWise {
 
     // ========== ENTRATE ==========
     addIncome() {
-        const desc = document.getElementById('incomeDesc').value.trim();
-        const amount = parseFloat(document.getElementById('incomeAmount').value);
-        const dateInput = document.getElementById('incomeDate').value;
-        
-        const date = dateInput || new Date().toISOString().split('T')[0];
-        
-        if (!desc || !amount) {
-            alert(this.t('fillFields'));
-            return;
-        }
-        
-        if (!Array.isArray(this.data.incomes)) this.data.incomes = [];
-        
-        this.data.incomes.push({
-            desc,
-            amount,
-            date: date,
-            id: Date.now()
-        });
-        
-        this.saveData();
-        this.updateUI();
-        alert(this.t('incomeAdded'));
-        
-        document.getElementById('incomeDesc').value = '';
-        document.getElementById('incomeAmount').value = '';
-        document.getElementById('incomeDate').value = '';
+    const desc = document.getElementById('incomeDesc').value.trim();
+    const amount = parseFloat(document.getElementById('incomeAmount').value);
+    const dateInput = document.getElementById('incomeDate').value;
+    
+    // Se non c'è data, usa oggi
+    const date = dateInput || new Date().toISOString().split('T')[0];
+    
+    if (!desc || !amount) {
+        alert(this.t('fillFields'));
+        return;
     }
-
-    deleteIncome(id) {
-        if (!Array.isArray(this.data.incomes)) return;
-        this.data.incomes = this.data.incomes.filter(inc => inc.id !== id);
-        this.saveData();
-        this.updateUI();
-        alert(this.t('incomeDeleted'));
+    
+    // Se è la PRIMA entrata, imposta il periodo
+    if (!Array.isArray(this.data.incomes) || this.data.incomes.length === 0) {
+        const startDate = new Date(date);
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 30); // 30 giorni di periodo
+        
+        this.data.periodStart = startDate.toISOString().split('T')[0];
+        this.data.periodEnd = endDate.toISOString().split('T')[0];
+        
+        console.log('📅 Nuovo periodo impostato da', this.data.periodStart, 'a', this.data.periodEnd);
     }
+    
+    if (!Array.isArray(this.data.incomes)) this.data.incomes = [];
+    
+    this.data.incomes.push({
+        desc,
+        amount,
+        date: date,
+        id: Date.now()
+    });
+    
+    this.saveData();
+    this.updateUI();
+    alert(this.t('incomeAdded'));
+    
+    document.getElementById('incomeDesc').value = '';
+    document.getElementById('incomeAmount').value = '';
+    document.getElementById('incomeDate').value = '';
+}
 
     // ========== SPESE FISSE ==========
     addFixedExpense() {
