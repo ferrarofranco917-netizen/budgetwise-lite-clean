@@ -150,6 +150,11 @@ class BudgetWise {
                 csvPreview: 'Anteprima',
                 
                 // Gestione categorie
+                categoriesSectionTitle: '📂 Gestione categorie',
+                manageCustomCategories: '➕ Gestisci categorie personalizzate',
+                newCategoryLabel: 'Nuova categoria',
+                newCategoryPlaceholder: 'es. Viaggi',
+                close: 'Chiudi',
                 manageCategories: '📂 Gestisci categorie',
                 addCategory: '➕ Aggiungi categoria',
                 categoryName: 'Nome categoria',
@@ -285,6 +290,11 @@ class BudgetWise {
                 csvPreview: 'Preview',
                 
                 // Gestione categorie
+                categoriesSectionTitle: '📂 Category management',
+                manageCustomCategories: '➕ Manage custom categories',
+                newCategoryLabel: 'New category',
+                newCategoryPlaceholder: 'e.g. Travel',
+                close: 'Close',
                 manageCategories: '📂 Manage categories',
                 addCategory: '➕ Add category',
                 categoryName: 'Category name',
@@ -355,9 +365,40 @@ class BudgetWise {
             else if (text.includes('🤖')) h2.innerHTML = this.t('assistant');
             else if (text.includes('🎯')) h2.innerHTML = this.t('savings');
             else if (text.includes('⚙️')) h2.innerHTML = this.t('settings');
+            else if (text.includes('📂')) h2.innerHTML = this.t('categoriesSectionTitle');
         });
         
-        const badge = document.querySelector('.badge');
+        
+        // Gestione categorie (se presenti)
+        const manageBtn = document.getElementById('manageCategoriesBtn');
+        if (manageBtn) manageBtn.innerHTML = this.t('manageCustomCategories');
+
+        const catTitle = document.getElementById('categoryManagerTitle');
+        if (catTitle) catTitle.textContent = this.t('manageCategories');
+
+        const defHead = document.getElementById('defaultCategoriesHeading');
+        if (defHead) defHead.textContent = this.t('defaultCategories');
+
+        const custHead = document.getElementById('customCategoriesHeading');
+        if (custHead) custHead.textContent = this.t('customCategories');
+
+        const newCatLabel = document.getElementById('newCategoryLabel');
+        if (newCatLabel) newCatLabel.textContent = this.t('newCategoryLabel');
+
+        const newCatInput = document.getElementById('newCategoryName');
+        if (newCatInput) newCatInput.placeholder = this.t('newCategoryPlaceholder');
+
+        const addCatBtn = document.getElementById('saveCategoryBtn');
+        if (addCatBtn) addCatBtn.textContent = this.data.language === 'it' ? 'Aggiungi' : 'Add';
+
+        const closeCatBtn = document.getElementById('closeCategoryManager');
+        if (closeCatBtn) closeCatBtn.textContent = this.t('close');
+
+        // Aggiorna select categorie e liste (traduzione label)
+        this.updateCategorySelects();
+        this.refreshCategoryList();
+
+const badge = document.querySelector('.badge');
         if (badge) badge.textContent = this.t('badge');
         
         document.getElementById('addIncomeBtn').innerHTML = this.t('addIncome');
@@ -1086,7 +1127,7 @@ class BudgetWise {
                 <div class="expense-item">
                     <div class="expense-info">
                         <span class="expense-name">${exp.name || '?'}</span>
-                        <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${catDisplay}</span>
+                        <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${this.esc(this.getCategoryLabel(catDisplay))}</span>
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
@@ -1696,7 +1737,33 @@ class BudgetWise {
         return [...this.defaultCategories, ...this.customCategories];
     }
     
-    saveCustomCategories() {
+    
+    // Etichette categoria (traduzione solo per categorie predefinite)
+    getCategoryLabel(category) {
+        const cat = String(category || '').trim();
+        if (this.data.language !== 'en') return cat;
+        const map = {
+            'Alimentari': 'Food',
+            'Trasporti': 'Transport',
+            'Svago': 'Leisure',
+            'Salute': 'Health',
+            'Abbigliamento': 'Clothing',
+            'Altro': 'Other'
+        };
+        return map[cat] || cat;
+    }
+
+    // Escape base per testo inserito dall’utente (evita HTML injection in template string)
+    esc(text) {
+        return String(text ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+
+saveCustomCategories() {
         localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
     }
     
@@ -1717,9 +1784,10 @@ class BudgetWise {
         const customList = document.getElementById('customCategoriesList');
         
         if (defaultList) {
-            defaultList.innerHTML = this.defaultCategories.map(cat => 
-                `<div class="category-item default"><span>${cat}</span></div>`
-            ).join('');
+            defaultList.innerHTML = this.defaultCategories.map(cat => {
+                const label = this.getCategoryLabel(cat);
+                return `<div class="category-item default"><span>${this.esc(label)}</span></div>`;
+            }).join('');
         }
         
         if (customList) {
@@ -1728,7 +1796,7 @@ class BudgetWise {
             } else {
                 customList.innerHTML = this.customCategories.map((cat, index) => `
                     <div class="category-item custom">
-                        <span>${cat}</span>
+                        <span>${this.esc(cat)}</span>
                         <div>
                             <button class="edit-category-btn" data-index="${index}">✏️</button>
                             <button class="delete-category-btn" data-index="${index}">🗑️</button>
@@ -1804,7 +1872,7 @@ class BudgetWise {
     updateAllCategorySelects() {
         const categories = this.getAllCategories();
         const optionsHtml = categories.map(cat => 
-            `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
+            `<option value="${cat}">${this.getCategoryEmoji(cat)} ${this.esc(this.getCategoryLabel(cat))}</option>`
         ).join('');
         
         const mainSelect = document.getElementById('expenseCategory');
@@ -1840,7 +1908,7 @@ class BudgetWise {
             
             const categories = this.getAllCategories();
             const options = categories.map(cat => 
-                `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
+                `<option value="${cat}">${this.getCategoryEmoji(cat)} ${this.esc(this.getCategoryLabel(cat))}</option>`
             ).join('');
             
             listEl.innerHTML = importedExpenses.map((exp, index) => `
