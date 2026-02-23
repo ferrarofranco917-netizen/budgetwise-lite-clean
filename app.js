@@ -2754,40 +2754,47 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
     }
 
     setupAiActions() {
-        document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-            const type = e.target.dataset.type;
-            const amount = parseFloat(e.target.dataset.amount);
+    document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
+        const type = e.target.dataset.type;
+        const amount = parseFloat(e.target.dataset.amount);
+
+        if (type === 'reduce' && amount > 0) {
+            const currentGoal = this.data.savingsGoal || 0;
+            document.getElementById('saveGoal').value = currentGoal + amount;
+
+            this.showToast(
+                this.data.language === 'it'
+                    ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                    : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                'success'
+            );
+        } else {
+            this.showToast(this.t('featureInDev'), 'info');
+        }
+    });
+}
+✅ STOP. Non aggiungere altro.
+🔍 Verifica (fondamentale)
+
+Salva → commit → push → ricarica pagina
+
+Poi Console:
+
+typeof window.app
+
+Deve rispondere:
+
+"object"
+
+Se sì → abbiamo FINITO la parte “crash JS” 🎉
+e finalmente l’i18n può funzionare.
+
+Scrivimi solo il risultato di:
+
+👉 typeof window.app
+
+e andiamo avanti.
             
-            if (type === 'reduce' && amount > 0) {
-                const currentGoal = this.data.savingsGoal || 0;
-                document.getElementById('saveGoal').value = currentGoal + amount;
-                this.showToast(
-                    this.data.language === 'it'
-                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                    'success'
-                );
-            }             else {
-                this.showToast(this.t('featureInDev'), 'info');
-            }
-        });
-    }
-            else if (type === 'transport') {
-                const message = this.data.language === 'it'
-                    ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
-                    : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
-                
-                if (confirm(message)) {
-                    const currentGoal = this.data.savingsGoal || 0;
-                    document.getElementById('saveGoal').value = currentGoal + amount;
-                    this.showToast(
-    this.data.language === 'it'
-        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-    'success'
-);
-                }
-            }
             else if (type === 'leisure') {
                 const message = this.data.language === 'it'
                     ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
