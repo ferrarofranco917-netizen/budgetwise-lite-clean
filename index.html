@@ -364,6 +364,36 @@
     <script src="app.js"></script>
 </body>
 </html>
+<!-- SEZIONE IMPORT CSV -->
+<div class="section-card">
+    <h2>📤 Importa movimenti bancari</h2>
+    <div class="section-content">
+        <div class="input-group">
+            <label>Scarica l'estratto conto dalla tua banca in formato CSV</label>
+            <input type="file" id="csvFileInput" accept=".csv" class="file-input">
+        </div>
+        <div class="input-group-row">
+            <div class="input-group half">
+                <label for="csvDateFormat">Formato data</label>
+                <select id="csvDateFormat">
+                    <option value="DD/MM/YYYY">GG/MM/AAAA</option>
+                    <option value="MM/DD/YYYY">MM/GG/AAAA</option>
+                    <option value="YYYY-MM-DD">AAAA-MM-GG</option>
+                </select>
+            </div>
+            <div class="input-group half">
+                <label for="csvDelimiter">Separatore</label>
+                <select id="csvDelimiter">
+                    <option value=",">Virgola (,)</option>
+                    <option value=";">Punto e virgola (;)</option>
+                    <option value="\t">Tabulazione</option>
+                </select>
+            </div>
+        </div>
+        <button class="btn-secondary" id="importCsvBtn">📥 Importa CSV</button>
+        <div id="csvPreview" class="csv-preview" style="display: none;"></div>
+    </div>
+</div>
 
 
 
