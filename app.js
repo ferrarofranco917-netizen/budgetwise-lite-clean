@@ -1548,7 +1548,7 @@ class BudgetWise {
         reader.readAsText(file);
     }
 
-    // ========== ONBOARDING GUIDATO ==========
+   // ========== ONBOARDING GUIDATO ==========
 startOnboarding() {
     // Controlla se già completato
     if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
@@ -1584,7 +1584,7 @@ startOnboarding() {
         box-sizing: border-box;
     `;
 
-    // Card principale
+    // Card principale (SOLO benvenuto e controlli)
     const card = document.createElement('div');
     card.style.cssText = `
         background: var(--card-bg, #ffffff);
@@ -1648,7 +1648,6 @@ startOnboarding() {
                 transition: all 0.3s ease !important;
                 position: relative !important;
                 z-index: 10000 !important;
-                cursor: pointer !important;
             }
             @keyframes targetGlow {
                 0% { 
@@ -1683,7 +1682,7 @@ startOnboarding() {
             el.classList.remove('onboarding-highlight');
         });
 
-        // Evidenzia l'elemento target (il bottone VERO)
+        // Evidenzia l'elemento target (il bottone VERO che sta SOTTO la card)
         const target = document.querySelector(step.highlight);
         if (target) {
             target.classList.add('onboarding-highlight');
