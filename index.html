@@ -242,7 +242,23 @@
                 </div>
             </div>
         </div>
-
+<!-- ==================== WIDGET AI PERSONALIZZATO ==================== -->
+<div class="section-card" id="aiWidget" style="display: none;">
+    <div class="section-header">
+        <h2>🤖 Suggerimenti AI</h2>
+        <span class="badge">intelligente</span>
+    </div>
+    <div class="section-content">
+        <div id="aiSuggestion" class="ai-suggestion">
+            <span class="ai-icon">💡</span>
+            <span id="aiMessage"></span>
+        </div>
+        <div id="aiAction" class="ai-action" style="display: none;">
+            <button id="applyAiSuggestion" class="btn-secondary"></button>
+            <button id="dismissAiSuggestion" class="btn-text">✕</button>
+        </div>
+    </div>
+</div>
         <!-- ==================== RISPARMIO ==================== -->
 <div class="section-card">
     <h2 id="savingsTitle">🎯 Obiettivo risparmio</h2>
@@ -337,6 +353,7 @@
     <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
