@@ -371,7 +371,38 @@
                 <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
             </div>
         </div>
+<!-- ==================== GESTIONE CATEGORIE ==================== -->
+<div class="section-card">
+    <h2>📂 Gestione categorie</h2>
+    <div class="section-content">
+        <button id="manageCategoriesBtn" class="btn-secondary">➕ Gestisci categorie personalizzate</button>
+    </div>
+</div>
 
+<!-- MODALE GESTIONE CATEGORIE -->
+<div id="categoryManagerOverlay" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 500px;">
+        <h3>📂 Gestisci categorie</h3>
+        
+        <h4>Categorie predefinite</h4>
+        <div id="defaultCategoriesList" class="categories-list"></div>
+        
+        <h4>Le tue categorie</h4>
+        <div id="customCategoriesList" class="categories-list"></div>
+        
+        <div class="input-group" style="margin-top: 20px;">
+            <label for="newCategoryName">Nuova categoria</label>
+            <div style="display: flex; gap: 8px;">
+                <input type="text" id="newCategoryName" placeholder="es. Viaggi">
+                <button id="saveCategoryBtn" class="btn-primary" style="width: auto;">Aggiungi</button>
+            </div>
+        </div>
+        
+        <div class="button-group" style="margin-top: 20px;">
+            <button id="closeCategoryManager" class="btn-secondary">Chiudi</button>
+        </div>
+    </div>
+</div>
         <!-- FOOTER -->
         <div class="footer">
             <p id="footerText">BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
@@ -455,3 +486,4 @@
     </div>
 </body>
 </html>
+
