@@ -800,6 +800,12 @@ class BudgetWise {
         this.drawSparkline('remainingSparkline', last7Days, remainingColor);
 
         this.generateAiSuggestion();
+        setupEventListeners() {
+    // ... tutto il codice esistente ...
+    
+    // Setup import CSV
+    this.setupCsvImport();
+}
     }
 
     // ========== FUNZIONI DI VISUALIZZAZIONE LISTE ==========
@@ -1580,7 +1586,44 @@ processImport(lines, headers, dateCol, descCol, amountCol, delimiter, dateFormat
     this.updateChart();
     this.showToast(`✅ Importate ${imported} transazioni`);
 }
-
+parseDate(dateStr, format) {
+    if (!dateStr) return null;
+    
+    // Rimuovi spazi e caratteri strani
+    dateStr = dateStr.trim();
+    
+    let day, month, year;
+    
+    switch(format) {
+        case 'DD/MM/YYYY':
+            [day, month, year] = dateStr.split(/[\/\-]/);
+            break;
+        case 'MM/DD/YYYY':
+            [month, day, year] = dateStr.split(/[\/\-]/);
+            break;
+        case 'YYYY-MM-DD':
+            [year, month, day] = dateStr.split('-');
+            break;
+        default:
+            return null;
+    }
+    
+    if (!day || !month || !year) return null;
+    
+    // Assicura che siano numeri
+    day = parseInt(day);
+    month = parseInt(month);
+    year = parseInt(year);
+    
+    if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+    
+    // Gestisci anni a 2 cifre
+    if (year < 100) {
+        year = year < 50 ? 2000 + year : 1900 + year;
+    }
+    
+    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+}
 // ========== AI WIDGET ==========
 generateAiSuggestion() {
     // ... codice esistente ...
