@@ -1703,12 +1703,29 @@ class BudgetWise {
     }
 
     setupAiActions() {
-        document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-            const type = e.target.dataset.type;
-            const amount = parseFloat(e.target.dataset.amount);
+    document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
+        const type = e.target.dataset.type;
+        const amount = parseFloat(e.target.dataset.amount);
+        
+        if (type === 'reduce' && amount > 0) {
+            // Suggerisci di aumentare l'obiettivo di risparmio
+            const currentGoal = this.data.savingsGoal || 0;
+            document.getElementById('saveGoal').value = currentGoal + amount;
+            this.showToast(
+                this.data.language === 'it'
+                    ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                    : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                'success'
+            );
+        } 
+        else if (type === 'transport') {
+            // Azione per il suggerimento trasporti
+            const message = this.data.language === 'it'
+                ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
+                : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
             
-            if (type === 'reduce' && amount > 0) {
-                // Suggerisci di aumentare l'obiettivo di risparmio
+            if (confirm(message)) {
+                // Aumenta l'obiettivo di risparmio
                 const currentGoal = this.data.savingsGoal || 0;
                 document.getElementById('saveGoal').value = currentGoal + amount;
                 this.showToast(
@@ -1717,27 +1734,45 @@ class BudgetWise {
                         : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
                     'success'
                 );
-            } else {
-                // Altri tipi di azione (es. apri link informativo)
+            }
+        }
+        else if (type === 'leisure') {
+            // Azione per il suggerimento svago
+            const message = this.data.language === 'it'
+                ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
+                : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
+            
+            if (confirm(message)) {
+                const currentGoal = this.data.savingsGoal || 0;
+                document.getElementById('saveGoal').value = currentGoal + amount;
                 this.showToast(
                     this.data.language === 'it'
-                        ? '🔍 Funzionalità in sviluppo'
-                        : '🔍 Feature in development',
-                    'info'
+                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                    'success'
                 );
             }
-            
-            // Nascondi il widget dopo l'azione
-            document.getElementById('aiAction').style.display = 'none';
-            setTimeout(() => {
-                document.getElementById('aiWidget').style.display = 'none';
-            }, 2000);
-        });
-
-        document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
+        }
+        else {
+            // Altri tipi di azione (fallback)
+            this.showToast(
+                this.data.language === 'it'
+                    ? '🔍 Funzionalità in sviluppo'
+                    : '🔍 Feature in development',
+                'info'
+            );
+        }
+        
+        // Nascondi il widget dopo l'azione
+        document.getElementById('aiAction').style.display = 'none';
+        setTimeout(() => {
             document.getElementById('aiWidget').style.display = 'none';
-        });
-    }
+        }, 2000);
+    });
+
+    document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
+        document.getElementById('aiWidget').style.display = 'none';
+    });
 }
 
 // ============================================
