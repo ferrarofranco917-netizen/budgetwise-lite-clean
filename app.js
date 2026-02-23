@@ -1,4 +1,3 @@
-console.log("BudgetWise Build v2026.02.23-1");
 // ============================================
 // BUDGETWISE 2.0 - VERSIONE STABILE COMPLETA
 // ============================================
@@ -499,7 +498,12 @@ class BudgetWise {
         const delimiterSelect = document.getElementById('csvDelimiter');
         if (delimiterSelect) {
             const options = delimiterSelect.options;
-            if (options.length >= 2) {
+            // [0]=AUTO, [1]=DD/MM, [2]=MM/DD
+            if (options.length >= 3) {
+                options[0].text = this.data.language === 'it' ? 'Auto (consigliato)' : 'Auto (recommended)';
+                options[1].text = this.data.language === 'it' ? 'GG/MM/AAAA' : 'DD/MM/YYYY';
+                options[2].text = this.data.language === 'it' ? 'MM/DD/AAAA' : 'MM/DD/YYYY';
+            } else if (options.length >= 2) {
                 options[0].text = this.data.language === 'it' ? 'GG/MM/AAAA' : 'DD/MM/YYYY';
                 options[1].text = this.data.language === 'it' ? 'MM/DD/AAAA' : 'MM/DD/YYYY';
             }
@@ -508,7 +512,13 @@ class BudgetWise {
         const separatorSelect = document.getElementById('csvSeparator');
         if (separatorSelect) {
             const options = separatorSelect.options;
-            if (options.length >= 3) {
+            // [0]=AUTO, [1]=comma, [2]=semicolon, [3]=tab
+            if (options.length >= 4) {
+                options[0].text = this.data.language === 'it' ? 'Auto (consigliato)' : 'Auto (recommended)';
+                options[1].text = this.t('csvComma');
+                options[2].text = this.t('csvSemicolon');
+                options[3].text = this.t('csvTab');
+            } else if (options.length >= 3) {
                 options[0].text = this.t('csvComma');
                 options[1].text = this.t('csvSemicolon');
                 options[2].text = this.t('csvTab');
@@ -1501,6 +1511,186 @@ class BudgetWise {
         return 'Altro'; // Default
     }
 
+    // ========== CSV IMPORT HELPERS (AUTO + TEMPLATE + DEDUP) ==========
+    normalizeCsvDescription(desc) {
+        return (desc || '')
+            .toLowerCase()
+            .replace(/[\u2019']/g, "'")
+            .replace(/[^\p{L}\p{N}\s]/gu, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    toAmountNumber(amountStr) {
+        if (!amountStr) return NaN;
+        // gestisce: 1.234,56  |  1,234.56  |  1234,56  |  1234.56  |  € 1.234,56
+        let s = String(amountStr).trim();
+
+        // rimuove simboli valuta e testi
+        s = s.replace(/[^0-9,\.\-]/g, '');
+
+        // se contiene sia . che , prova a capire il separatore decimale
+        const hasDot = s.includes('.');
+        const hasComma = s.includes(',');
+        if (hasDot && hasComma) {
+            // se ultima virgola è dopo l'ultimo punto → virgola decimale (it)
+            if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
+                s = s.replace(/\./g, '').replace(',', '.');
+            } else {
+                // punto decimale (en)
+                s = s.replace(/,/g, '');
+            }
+        } else if (hasComma && !hasDot) {
+            s = s.replace(',', '.');
+        }
+        const n = parseFloat(s);
+        return Number.isFinite(n) ? n : NaN;
+    }
+
+    computeImportKey(type, dateISO, amountAbs, description) {
+        const a = (Math.round((amountAbs || 0) * 100) / 100).toFixed(2);
+        const d = this.normalizeCsvDescription(description);
+        return `${type}|${dateISO}|${a}|${d}`;
+    }
+
+    buildExistingImportKeys() {
+        const keys = new Set();
+
+        // Entrate
+        if (Array.isArray(this.data.incomes)) {
+            for (const inc of this.data.incomes) {
+                if (!inc) continue;
+                const k = this.computeImportKey('income', inc.date, Math.abs(Number(inc.amount) || 0), inc.desc || inc.name || '');
+                keys.add(k);
+            }
+        }
+
+        // Spese variabili
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            for (const [date, arr] of Object.entries(this.data.variableExpenses)) {
+                if (!Array.isArray(arr)) continue;
+                for (const exp of arr) {
+                    if (!exp) continue;
+                    const k = this.computeImportKey('expense', date, Math.abs(Number(exp.amount) || 0), exp.name || exp.desc || '');
+                    keys.add(k);
+                }
+            }
+        }
+
+        return keys;
+    }
+
+    detectCsvDelimiter(sampleText) {
+        // prova , ; \t scegliendo quello con numero colonne medio più alto
+        const candidates = [',', ';', '\t'];
+        const lines = String(sampleText || '').split(/\r?\n/).filter(l => l.trim()).slice(0, 25);
+        if (lines.length === 0) return ';';
+
+        let best = { delim: ';', score: -1 };
+
+        for (const delim of candidates) {
+            const counts = lines.map(l => l.split(delim).length);
+            const avg = counts.reduce((a,b)=>a+b,0) / counts.length;
+            const variance = counts.reduce((a,c)=>a+Math.pow(c-avg,2),0) / counts.length;
+            // preferisci più colonne e stabilità (bassa varianza)
+            const score = avg - (variance * 0.05);
+            if (score > best.score) best = { delim, score };
+        }
+        return best.delim;
+    }
+
+    detectHeaderIndex(lines, delimiter) {
+        // cerca tra le prime 30 righe quella che "sembra" un header o comunque quella con più colonne stabili
+        const maxScan = Math.min(lines.length, 30);
+        const keywords = ['data','date','descr','descrizione','causale','importo','amount','dare','avere','categoria','category'];
+
+        let bestIdx = 0;
+        let bestScore = -1;
+
+        for (let i = 0; i < maxScan; i++) {
+            const raw = lines[i];
+            if (!raw || !raw.trim()) continue;
+            const cells = raw.split(delimiter).map(c => c.trim());
+            const colCount = cells.length;
+
+            // scarta righe troppo corte
+            if (colCount < 3) continue;
+
+            const joined = cells.join(' ').toLowerCase();
+            const kwHits = keywords.reduce((acc,k)=>acc + (joined.includes(k) ? 1 : 0), 0);
+
+            // header tende a contenere parole, non solo numeri
+            const nonNumericCells = cells.filter(c => c && !/^[-+]?\d+(?:[\.,]\d+)?$/.test(c)).length;
+
+            // penalizza righe "estratto conto" introduttive
+            const looksLikeIntro = joined.includes('estratto') || joined.includes('account') || joined.includes('saldo');
+
+            const score = (colCount * 2) + (kwHits * 10) + nonNumericCells - (looksLikeIntro ? 15 : 0);
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestIdx = i;
+            }
+        }
+        return bestIdx;
+    }
+
+    guessDateFormatFromSample(dateStr) {
+        const s = (dateStr || '').trim();
+        const parts = s.split(/[\/\-\.]/).filter(Boolean);
+        if (parts.length !== 3) return 'DD/MM/YYYY';
+
+        const p1 = parseInt(parts[0], 10);
+        const p2 = parseInt(parts[1], 10);
+
+        if (Number.isFinite(p1) && Number.isFinite(p2)) {
+            if (p1 > 12 && p2 <= 12) return 'DD/MM/YYYY';
+            if (p2 > 12 && p1 <= 12) return 'MM/DD/YYYY';
+        }
+        return 'DD/MM/YYYY';
+    }
+
+    csvHeadersSignature(headers, delimiter) {
+        return `${delimiter}::${(headers || []).map(h => String(h).trim().toLowerCase()).join('|')}`;
+    }
+
+    getCsvTemplates() {
+        if (!this.data.csvTemplates) this.data.csvTemplates = [];
+        if (!Array.isArray(this.data.csvTemplates)) this.data.csvTemplates = [];
+        return this.data.csvTemplates;
+    }
+
+    findTemplateBySignature(signature) {
+        const templates = this.getCsvTemplates();
+        return templates.find(t => t && t.signature === signature) || null;
+    }
+
+    saveCsvTemplate({ name, signature, delimiter, dateFormat, mapping }) {
+        const templates = this.getCsvTemplates();
+        const safeName = (name || '').trim() || 'Template CSV';
+
+        // se esiste già, aggiorna
+        const existing = templates.find(t => t && t.signature === signature);
+        const payload = {
+            id: existing?.id || (Date.now() + Math.floor(Math.random()*1000)),
+            name: safeName,
+            signature,
+            delimiter,
+            dateFormat,
+            mapping,
+            updatedAt: new Date().toISOString()
+        };
+
+        if (existing) {
+            const idx = templates.indexOf(existing);
+            templates[idx] = payload;
+        } else {
+            templates.push(payload);
+        }
+        this.data.csvTemplates = templates;
+        this.saveData();
+    }
+
     // ========== GESTIONE CATEGORIE PERSONALIZZATE ==========
     getAllCategories() {
         return [...this.defaultCategories, ...this.customCategories];
@@ -1716,219 +1906,333 @@ class BudgetWise {
     }
 
     // ========== MAPPATURA CAMPI CSV ==========
-    async showMappingDialog(file, delimiter) {
+    
+    // ========== MAPPATURA CAMPI CSV (AUTO + TEMPLATE) ==========
+    async showMappingDialog(file, delimiter, headerIndex = 0, dateFormat = 'DD/MM/YYYY', signature = '') {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const csvText = e.target.result;
+                    const lines = String(csvText).split(/\r?\n/).filter(line => line.trim());
+                    if (lines.length === 0) return resolve(null);
+
+                    // ricalcola headerIndex se fuori range
+                    const hi = Math.min(Math.max(headerIndex || 0, 0), Math.max(lines.length - 1, 0));
+                    const headers = lines[hi].split(delimiter).map(h => h.trim());
+                    const previewData = lines.slice(hi + 1, hi + 6).map(line =>
+                        line.split(delimiter).map(cell => cell.trim())
+                    );
+
+                    const tpl = signature ? this.findTemplateBySignature(signature) : null;
+                    if (tpl && tpl.mapping) {
+                        const ok = confirm(`📌 Rilevato template CSV: "${tpl.name}".\nVuoi usarlo automaticamente?`);
+                        if (ok) return resolve(tpl.mapping);
+                    }
+
+                    const mapping = await this.showMappingDialogFromText(headers, previewData, { delimiter, dateFormat, signature });
+                    resolve(mapping);
+                } catch (err) {
+                    console.error('Errore showMappingDialog:', err);
+                    resolve(null);
+                }
+            };
+            reader.onerror = () => resolve(null);
+            reader.readAsText(file);
+        });
+    }
+
+    async showMappingDialogFromText(headers, previewData, opts = {}) {
         return new Promise((resolve) => {
             const overlay = document.getElementById('csvMappingOverlay');
             const headersRow = document.getElementById('csvMappingHeaders');
             const previewBody = document.getElementById('csvMappingPreview');
             const fieldsDiv = document.getElementById('csvMappingFields');
-            
+
             if (!overlay || !headersRow || !previewBody || !fieldsDiv) {
                 console.error('Elementi mappatura non trovati');
                 resolve(null);
                 return;
             }
-            
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const text = e.target.result;
-                const lines = text.split('\n').filter(line => line.trim());
-                if (lines.length === 0) {
-                    resolve(null);
-                    return;
-                }
-                
-                const headers = lines[0].split(delimiter).map(h => h.trim());
-                const previewData = lines.slice(1, 6).map(line => 
-                    line.split(delimiter).map(cell => cell.trim())
-                );
-                
-                overlay.style.display = 'flex';
-                
-                headersRow.innerHTML = headers.map(h => `<th>${h || '?'}</th>`).join('');
-                
-                previewBody.innerHTML = previewData.map(row => 
-                    `<tr>${row.map(cell => `<td class="preview-cell">${cell || ''}</td>`).join('')}</tr>`
-                ).join('');
-                
-                const fieldOptions = [
-                    { value: 'date', label: '📅 Data' },
-                    { value: 'description', label: '📝 Descrizione' },
-                    { value: 'amount', label: '💰 Importo' },
-                    { value: 'category', label: '🏷️ Categoria' },
-                    { value: 'ignore', label: '❌ Ignora' }
-                ];
-                
-                fieldsDiv.innerHTML = headers.map((header, index) => `
-                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
+
+            overlay.style.display = 'flex';
+
+            headersRow.innerHTML = headers.map(h => `<th>${h || '?'}</th>`).join('');
+
+            previewBody.innerHTML = previewData.map(row =>
+                `<tr>${row.map(cell => `<td class="preview-cell">${cell || ''}</td>`).join('')}</tr>`
+            ).join('');
+
+            const fieldOptions = [
+                { value: 'date', label: '📅 Data' },
+                { value: 'description', label: '📝 Descrizione' },
+                { value: 'amount', label: '💰 Importo' },
+                { value: 'category', label: '🏷️ Categoria' },
+                { value: 'ignore', label: '❌ Ignora' }
+            ];
+
+            // UI template salva/aggiorna
+            fieldsDiv.innerHTML = `
+                <div style="display:flex; align-items:center; gap:12px; padding:12px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); margin-bottom:16px;">
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
+                        <input id="saveCsvTemplateChk" type="checkbox" style="transform: scale(1.1);" />
+                        <span style="font-weight:600;">💾 Salva come template</span>
+                    </label>
+                    <input id="csvTemplateName" type="text" placeholder="Nome template (es. Intesa, Unicredit...)" style="flex:1; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.25); color:var(--text);" />
+                    <span style="font-size:.9rem; opacity:.8;">(opzionale)</span>
+                </div>
+                ${headers.map((header, index) => `
+                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px; margin-bottom:10px;">
                         <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
                         <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
                             ${fieldOptions.map(opt => {
                                 let selected = '';
-                                if (opt.value === 'date' && index === 0) selected = 'selected';
-                                else if (opt.value === 'description' && index === 1) selected = 'selected';
-                                else if (opt.value === 'amount' && index === 2) selected = 'selected';
+                                const h = String(header || '').toLowerCase();
+                                // pre-selezione smart basata sul nome colonna
+                                if (opt.value === 'date' && (h.includes('data') || h.includes('date'))) selected = 'selected';
+                                else if (opt.value === 'description' && (h.includes('descr') || h.includes('causale') || h.includes('dettag'))) selected = 'selected';
+                                else if (opt.value === 'amount' && (h.includes('importo') || h.includes('amount') || h.includes('valore'))) selected = 'selected';
+                                else if (opt.value === 'category' && (h.includes('cat') || h.includes('categoria'))) selected = 'selected';
+                                // fallback: prime 3 colonne
+                                if (!selected) {
+                                    if (opt.value === 'date' && index === 0) selected = 'selected';
+                                    else if (opt.value === 'description' && index === 1) selected = 'selected';
+                                    else if (opt.value === 'amount' && index === 2) selected = 'selected';
+                                }
                                 return `<option value="${opt.value}" ${selected}>${opt.label}</option>`;
                             }).join('')}
                         </select>
                     </div>
-                `).join('');
-                
-                const confirmBtn = document.getElementById('confirmMappingBtn');
-                const cancelBtn = document.getElementById('cancelMappingBtn');
-                
-                const onConfirm = () => {
-                    const mapping = {
-                        dateCol: -1,
-                        descCol: -1,
-                        amountCol: -1,
-                        categoryCol: -1
-                    };
-                    
-                    headers.forEach((_, index) => {
-                        const select = document.getElementById(`mapping-${index}`);
-                        if (select) {
-                            const value = select.value;
-                            if (value === 'date') mapping.dateCol = index;
-                            else if (value === 'description') mapping.descCol = index;
-                            else if (value === 'amount') mapping.amountCol = index;
-                            else if (value === 'category') mapping.categoryCol = index;
-                        }
+                `).join('')}
+            `;
+
+            const confirmBtn = document.getElementById('confirmMappingBtn');
+            const cancelBtn = document.getElementById('cancelMappingBtn');
+
+            const onConfirm = () => {
+                const mapping = { dateCol: -1, descCol: -1, amountCol: -1, categoryCol: -1 };
+
+                headers.forEach((_, index) => {
+                    const select = document.getElementById(`mapping-${index}`);
+                    if (!select) return;
+                    const value = select.value;
+                    if (value === 'date') mapping.dateCol = index;
+                    else if (value === 'description') mapping.descCol = index;
+                    else if (value === 'amount') mapping.amountCol = index;
+                    else if (value === 'category') mapping.categoryCol = index;
+                });
+
+                if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
+                    alert('❌ Devi mappare Data, Descrizione e Importo!');
+                    return;
+                }
+
+                // salva template se richiesto
+                const chk = document.getElementById('saveCsvTemplateChk');
+                if (chk && chk.checked) {
+                    const nameEl = document.getElementById('csvTemplateName');
+                    const name = nameEl ? nameEl.value : '';
+                    const signature = opts.signature || this.csvHeadersSignature(headers, opts.delimiter || ';');
+                    this.saveCsvTemplate({
+                        name,
+                        signature,
+                        delimiter: opts.delimiter || ';',
+                        dateFormat: opts.dateFormat || 'DD/MM/YYYY',
+                        mapping
                     });
-                    
-                    if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
-                        alert('❌ Devi mappare Data, Descrizione e Importo!');
-                        return;
-                    }
-                    
-                    overlay.style.display = 'none';
-                    resolve(mapping);
-                };
-                
-                const onCancel = () => {
-                    overlay.style.display = 'none';
-                    resolve(null);
-                };
-                
-                confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-                
-                document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
-                document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
+                }
+
+                overlay.style.display = 'none';
+                resolve(mapping);
             };
-            
-            reader.onerror = () => {
+
+            const onCancel = () => {
+                overlay.style.display = 'none';
                 resolve(null);
             };
-            
-            reader.readAsText(file);
+
+            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+
+            document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
+            document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
         });
     }
+
     
     // ========== IMPORT CSV CON MAPPATURA ==========
+    
+    // ========== IMPORT CSV CON MAPPATURA (AUTO + TEMPLATE + DEDUP) ==========
     async parseCSV(file, delimiter, dateFormat) {
         console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
-        
-        const mapping = await this.showMappingDialog(file, delimiter);
-        if (!mapping) {
-            alert('⏸️ Import annullato');
-            return;
-        }
-        
+
         const reader = new FileReader();
         reader.onload = async (e) => {
-            const text = e.target.result;
-            const lines = text.split('\n').filter(line => line.trim()).slice(1);
-            const importedExpenses = [];
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                
-                const parts = line.split(delimiter);
-                if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol)) continue;
-                
-                let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
-                let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
-                let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
-                let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
-                
-                if (!dateStr || !description || !amountStr) continue;
-                
-                if (dateFormat === 'DD/MM/YYYY') {
-                    const parts = dateStr.split(/[\/\-]/);
-                    if (parts.length === 3) {
-                        const [d, m, y] = parts;
-                        if (d && m && y) dateStr = `${y}-${m}-${d}`;
-                        else continue;
-                    } else continue;
-                } else if (dateFormat === 'MM/DD/YYYY') {
-                    const parts = dateStr.split(/[\/\-]/);
-                    if (parts.length === 3) {
-                        const [m, d, y] = parts;
-                        if (m && d && y) dateStr = `${y}-${m}-${d}`;
-                        else continue;
-                    } else continue;
+            try {
+                const csvText = e.target.result;
+
+                // 1) AUTO delimiter
+                let usedDelimiter = delimiter;
+                if (!usedDelimiter || usedDelimiter === 'AUTO') {
+                    usedDelimiter = this.detectCsvDelimiter(csvText);
+                    console.log('🧠 Delimiter auto-detect:', usedDelimiter);
                 }
-                
-                let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
-                if (isNaN(amount)) continue;
-                
-                if (!category) category = this.suggestCategory(description);
-                
-                if (amount > 0) {
-                    if (!this.data.incomes) this.data.incomes = [];
-                    this.data.incomes.push({
-                        desc: description,
-                        amount: amount,
-                        date: dateStr,
-                        id: Date.now() + i
-                    });
-                } else {
-                    amount = Math.abs(amount);
-                    importedExpenses.push({
-                        name: description,
-                        amount: amount,
-                        date: dateStr,
-                        category: category || 'Altro',
-                        id: Date.now() + i
-                    });
+
+                // 2) lines + header detect
+                const linesAll = String(csvText).split(/\r?\n/).filter(line => line.trim());
+                if (linesAll.length === 0) {
+                    alert('❌ CSV vuoto');
+                    return;
                 }
-            }
-            
-            if (importedExpenses.length > 0) {
-                const reviewed = await this.showImportReview(importedExpenses);
-                if (reviewed.length > 0) {
-                    for (const exp of reviewed) {
-                        if (!this.data.variableExpenses) this.data.variableExpenses = {};
-                        if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
-                        this.data.variableExpenses[exp.date].push({
-                            name: exp.name,
-                            amount: exp.amount,
-                            category: exp.category,
-                            id: exp.id
+
+                const headerIndex = this.detectHeaderIndex(linesAll, usedDelimiter);
+                const headers = linesAll[headerIndex].split(usedDelimiter).map(h => h.trim());
+                const signature = this.csvHeadersSignature(headers, usedDelimiter);
+
+                // 3) AUTO dateFormat (prende un sample dalla colonna data dopo mapping, ma qui facciamo una guess iniziale)
+                let usedDateFormat = dateFormat;
+                if (!usedDateFormat || usedDateFormat === 'AUTO') {
+                    // prova a pescare una data dalla prima riga dati
+                    const sampleLine = linesAll[headerIndex + 1] || '';
+                    const sampleCells = sampleLine.split(usedDelimiter).map(c => c.trim());
+                    const sampleDate = sampleCells[0] || '';
+                    usedDateFormat = this.guessDateFormatFromSample(sampleDate);
+                    console.log('🧠 DateFormat auto-guess:', usedDateFormat);
+                }
+
+                // 4) mapping (con template se presente)
+                const mapping = await this.showMappingDialog(file, usedDelimiter, headerIndex, usedDateFormat, signature);
+                if (!mapping) {
+                    alert('⏸️ Import annullato');
+                    return;
+                }
+
+                // 5) importa + dedup
+                const existingKeys = this.buildExistingImportKeys();
+                let skippedDuplicates = 0;
+
+                const dataLines = linesAll.slice(headerIndex + 1);
+                const importedExpenses = [];
+                const incomesToAdd = [];
+
+                for (let i = 0; i < dataLines.length; i++) {
+                    const line = dataLines[i].trim();
+                    if (!line) continue;
+
+                    const parts = line.split(usedDelimiter);
+                    if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol, mapping.categoryCol)) continue;
+
+                    let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
+                    let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
+                    let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
+                    let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
+
+                    if (!dateStr || !description || !amountStr) continue;
+
+                    // normalizza data in ISO YYYY-MM-DD
+                    const p = dateStr.split(/[\/\-\.]/).filter(Boolean);
+                    if (p.length === 3) {
+                        if (usedDateFormat === 'DD/MM/YYYY') {
+                            const [d, m, y] = p;
+                            if (d && m && y) dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                            else continue;
+                        } else if (usedDateFormat === 'MM/DD/YYYY') {
+                            const [m, d, y] = p;
+                            if (m && d && y) dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+                            else continue;
+                        }
+                    } else {
+                        // se già ISO lo lasciamo, altrimenti skip
+                        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
+                    }
+
+                    let amount = this.toAmountNumber(amountStr);
+                    if (isNaN(amount)) continue;
+
+                    if (!category) category = this.suggestCategory(description);
+
+                    if (amount > 0) {
+                        const key = this.computeImportKey('income', dateStr, Math.abs(amount), description);
+                        if (existingKeys.has(key)) { skippedDuplicates++; continue; }
+                        existingKeys.add(key);
+
+                        incomesToAdd.push({
+                            desc: description,
+                            amount: amount,
+                            date: dateStr,
+                            id: Date.now() + i
+                        });
+                    } else {
+                        const absAmount = Math.abs(amount);
+                        const key = this.computeImportKey('expense', dateStr, absAmount, description);
+                        if (existingKeys.has(key)) { skippedDuplicates++; continue; }
+                        existingKeys.add(key);
+
+                        importedExpenses.push({
+                            name: description,
+                            amount: absAmount,
+                            date: dateStr,
+                            category: category || 'Altro',
+                            id: Date.now() + i
                         });
                     }
-                    this.saveData();
-                    this.updateUI();
-                    this.updateChart();
-                    alert(`✅ Importate ${reviewed.length} spese!`);
-                } else {
-                    alert('⏸️ Import annullato');
                 }
-            } else {
+
+                // aggiungi entrate
+                if (incomesToAdd.length) {
+                    if (!this.data.incomes) this.data.incomes = [];
+                    this.data.incomes.push(...incomesToAdd);
+                }
+
+                // review spese e inserimento
+                let importedCount = 0;
+
+                if (importedExpenses.length > 0) {
+                    const reviewed = await this.showImportReview(importedExpenses);
+                    if (reviewed.length > 0) {
+                        for (const exp of reviewed) {
+                            // dedup anche post-review (per sicurezza)
+                            const key = this.computeImportKey('expense', exp.date, Math.abs(exp.amount), exp.name);
+                            if (this.buildExistingImportKeys().has(key)) { skippedDuplicates++; continue; }
+
+                            if (!this.data.variableExpenses) this.data.variableExpenses = {};
+                            if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
+                            this.data.variableExpenses[exp.date].push({
+                                name: exp.name,
+                                amount: exp.amount,
+                                category: exp.category,
+                                id: exp.id
+                            });
+                            importedCount++;
+                        }
+                    } else {
+                        alert('⏸️ Import annullato');
+                        return;
+                    }
+                }
+
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
-                alert('✅ File importato con successo!');
+
+                const totalAdded = (incomesToAdd.length) + importedCount;
+                const dupMsg = skippedDuplicates > 0 ? `\n⚠️ Duplicati saltati: ${skippedDuplicates}` : '';
+                alert(`✅ Import completato!\n➕ Aggiunti: ${totalAdded}${dupMsg}`);
+
+            } catch (err) {
+                console.error('❌ Errore import CSV:', err);
+                alert('❌ Errore durante l\'import CSV');
             }
         };
+
         reader.onerror = () => {
             console.error('❌ Errore lettura file');
             alert('❌ Errore durante la lettura del file');
         };
+
         reader.readAsText(file);
     }
+
 
     // ========== ONBOARDING GUIDATO ==========
     startOnboarding() {

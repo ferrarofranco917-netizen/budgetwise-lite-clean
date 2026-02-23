@@ -1255,21 +1255,3 @@ input:focus, select:focus {
     text-align: center;
     padding: 15px;
 }
-
-.bw-footer{
-  position: fixed;
-  left: 12px;
-  bottom: 12px;
-  z-index: 9999;
-  pointer-events: none;
-}
-.bw-build{
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  opacity: .75;
-  border: 1px solid rgba(255,255,255,.12);
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(6px);
-}

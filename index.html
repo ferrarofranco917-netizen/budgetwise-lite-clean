@@ -8,8 +8,6 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6366f1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BudgetWise">
     <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
@@ -234,6 +232,7 @@
                     <div class="input-group half">
                         <label for="csvDelimiter" id="csvDateFormatLabel">Formato data</label>
                         <select id="csvDelimiter">
+                            <option value="AUTO">Auto (consigliato)</option>
                             <option value="DD/MM/YYYY">GG/MM/AAAA</option>
                             <option value="MM/DD/YYYY">MM/DD/AAAA</option>
                         </select>
@@ -241,6 +240,7 @@
                     <div class="input-group half">
                         <label for="csvSeparator" id="csvSeparatorLabel">Separatore</label>
                         <select id="csvSeparator">
+                            <option value="AUTO">Auto (consigliato)</option>
                             <option value=",">Virgola (,)</option>
                             <option value=";">Punto e virgola (;)</option>
                             <option value="\t">Tabulazione</option>
@@ -486,12 +486,6 @@
             </div>
         </div>
     </div>
-    <footer class="bw-footer">
-  <span class="bw-build" id="bwBuild">Build v2026.02.23-1</span>
-</footer>
 </body>
 </html>
-
-
-
 

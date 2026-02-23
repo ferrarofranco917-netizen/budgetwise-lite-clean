@@ -50,33 +50,22 @@ self.addEventListener('activate', event => {
 });
 
 // Strategia di fetch: Network First, fallback su cache
-self.addEventListener("fetch", (event) => {
-  const req = event.request;
-  const url = new URL(req.url);
+self.addEventListener('fetch', event => {
+    if (event.request.method !== 'GET') return;
 
-  // ✅ Non gestire richieste non GET
-  if (req.method !== "GET") return;
-
-  // ✅ Ignora schemi non supportati (chrome-extension, moz-extension, file, etc.)
-  if (url.protocol !== "http:" && url.protocol !== "https:") return;
-
-  // ✅ Cache solo risorse della tua app (same-origin)
-  if (url.origin !== self.location.origin) return;
-
-  event.respondWith(
-    caches.match(req).then((cached) => {
-      if (cached) return cached;
-
-      return fetch(req)
-        .then((res) => {
-          // ✅ non cachare risposte non valide
-          if (!res || res.status !== 200 || res.type !== "basic") return res;
-
-          const resClone = res.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
-          return res;
-        })
-        .catch(() => caches.match("./index.html")); // opzionale fallback offline
-    })
-  );
+    event.respondWith(
+        fetch(event.request)
+            .then(response => {
+                if (response && response.status === 200) {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseClone);
+                    });
+                }
+                return response;
+            })
+            .catch(() => {
+                return caches.match(event.request);
+            })
+    );
 });
