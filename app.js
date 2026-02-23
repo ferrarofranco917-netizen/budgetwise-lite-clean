@@ -2767,7 +2767,11 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
                         : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
                     'success'
                 );
-            } 
+            }             else {
+                this.showToast(this.t('featureInDev'), 'info');
+            }
+        });
+    }
             else if (type === 'transport') {
                 const message = this.data.language === 'it'
                     ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
