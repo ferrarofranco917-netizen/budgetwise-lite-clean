@@ -1157,25 +1157,29 @@ class BudgetWise {
     }
 
     resetAll() {
-        if (confirm(this.t('confirmReset'))) {
-            localStorage.clear();
-            this.data = {
-                incomes: [],
-                fixedExpenses: [],
-                variableExpenses: {},
-                savingsPercent: 0,
-                savingsGoal: 0,
-                threshold: 50,
-                language: this.data.language,
-                periodStart: this.getDefaultPeriodStart(),
-                periodEnd: this.getDefaultPeriodEnd()
-            };
-            this.updateUI();
-            this.updateChart();
-            this.applyLanguage();
-            alert(this.t('resetCompleted'));
-        }
+    if (confirm(this.t('confirmReset'))) {
+        localStorage.clear();
+        const today = new Date();
+        const end = new Date(today);
+        end.setDate(today.getDate() + 28);
+        
+        this.data = {
+            incomes: [],
+            fixedExpenses: [],
+            variableExpenses: {},
+            savingsPercent: 0,
+            savingsGoal: 0,
+            threshold: 50,
+            language: this.data.language,
+            periodStart: today.toISOString().split('T')[0],
+            periodEnd: end.toISOString().split('T')[0]
+        };
+        this.updateUI();
+        this.updateChart();
+        this.applyLanguage();
+        alert(this.t('resetCompleted'));
     }
+}
 
     exportToCalendar() {
         let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
