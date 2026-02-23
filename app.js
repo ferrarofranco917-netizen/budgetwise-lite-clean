@@ -922,34 +922,64 @@ class BudgetWise {
     }
 
     updateFixedExpensesList() {
-        const container = document.getElementById('fixedExpensesList');
-        if (this.data.fixedExpenses.length === 0) {
-            container.innerHTML = `<p class="chart-note">${this.t('noFixed')}</p>`;
-            return;
+    const container = document.getElementById('fixedExpensesList');
+    if (this.data.fixedExpenses.length === 0) {
+        container.innerHTML = `<p class="chart-note">${this.t('noFixed')}</p>`;
+        return;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    container.innerHTML = this.data.fixedExpenses.map(exp => {
+        const endDate = new Date(exp.endDate);
+        endDate.setHours(0, 0, 0, 0);
+        
+        // Calcola giorni rimasti
+        const diffTime = endDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        // Determina stato e classe CSS
+        let statusClass = '';
+        let badgeClass = '';
+        
+        if (diffDays < 0) {
+            statusClass = 'expired';
+            badgeClass = 'expired';
+        } else if (diffDays <= 3) {
+            statusClass = 'warning';
+            badgeClass = 'warning';
+        } else {
+            statusClass = 'future';
+            badgeClass = 'future';
         }
 
-        container.innerHTML = this.data.fixedExpenses.map(exp => {
-            const today = new Date();
-            const endDate = new Date(exp.endDate);
-            const isActive = endDate >= today;
-            const status = isActive ? this.t('active') : this.t('expired');
-            
-            return `
-                <div class="expense-item">
-                    <div class="expense-info">
-                        <span class="expense-name">${exp.name}</span>
-                        <span class="expense-category">
-                            📅 ${this.t('dayLabel')} ${exp.day} · ${this.t('endDateLabel')}: ${exp.endDate} ${status}
-                        </span>
-                    </div>
-                    <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
-                    <div class="expense-actions">
-                        <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
-                    </div>
+        // Testo giorni rimasti
+        const daysText = diffDays < 0 
+            ? this.data.language === 'it' ? `Scaduta da ${Math.abs(diffDays)} giorni` : `Expired ${Math.abs(diffDays)} days ago`
+            : diffDays === 0
+                ? this.data.language === 'it' ? 'Scade oggi' : 'Due today'
+                : this.data.language === 'it' 
+                    ? `Tra ${diffDays} giorni` 
+                    : `In ${diffDays} days`;
+
+        return `
+            <div class="expense-item fixed-expense-item ${statusClass}">
+                <div class="expense-info">
+                    <span class="expense-name">${exp.name}</span>
+                    <span class="expense-category">
+                        📅 Giorno ${exp.day} · Scad. ${exp.endDate}
+                        <span class="days-badge ${badgeClass}">${daysText}</span>
+                    </span>
                 </div>
-            `;
-        }).join('');
-    }
+                <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                <div class="expense-actions">
+                    <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
 
     updateVariableExpensesList() {
         const date = document.getElementById('expenseDate').value;
@@ -1526,3 +1556,4 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
