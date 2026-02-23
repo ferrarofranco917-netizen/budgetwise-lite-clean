@@ -1564,7 +1564,7 @@ startOnboarding() {
 
     let stepIndex = 0;
 
-    // Crea overlay onboarding (sfondo scuro)
+    // Crea overlay onboarding
     const overlay = document.createElement('div');
     overlay.id = 'onboarding-overlay';
     overlay.style.cssText = `
@@ -1573,79 +1573,59 @@ startOnboarding() {
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(4px);
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(5px);
         z-index: 9999;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        transition: opacity 0.3s ease;
+        padding: 20px;
+        box-sizing: border-box;
     `;
 
-    // Testo descrittivo (SOPRA la card)
-    const descriptionText = document.createElement('div');
-    descriptionText.style.cssText = `
-        color: white;
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 30px;
-        text-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        background: rgba(0,0,0,0.3);
-        padding: 15px 30px;
-        border-radius: 50px;
-        backdrop-filter: blur(4px);
-        max-width: 80%;
-        text-align: center;
-        animation: fadeInUp 0.4s ease;
-        border: 1px solid rgba(255,255,255,0.2);
-        box-shadow: 0 0 30px rgba(255,255,255,0.1);
-    `;
-    descriptionText.id = 'onboarding-description';
-    descriptionText.textContent = steps[0].text;
-
-    // Card principale (SOTTO il testo)
+    // Card principale
     const card = document.createElement('div');
     card.style.cssText = `
         background: var(--card-bg, #ffffff);
-        padding: 35px 30px;
+        padding: 30px 25px;
         border-radius: 28px;
         max-width: 450px;
-        width: 90%;
+        width: 100%;
         text-align: center;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         animation: onboardingSlideUp 0.5s ease;
-        border: 1px solid var(--accent);
-        transform: translateY(0);
+        border: 2px solid var(--accent);
         margin-bottom: 30px;
+        box-sizing: border-box;
     `;
 
     card.innerHTML = `
-        <div style="font-size: 4rem; margin-bottom: 15px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));">✨</div>
-        <h3 style="margin: 0 0 10px; color: var(--accent); font-size: 2.2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
-        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 20px; opacity: 0.8;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the step-by-step guide'}</p>
-        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin: 20px 0;">
-            <button id="onboarding-next" class="btn-primary" style="padding: 16px 36px; font-size: 1.2rem; border-radius: 50px; min-width: 160px; box-shadow: 0 10px 20px rgba(67, 97, 238, 0.4); font-weight: 700;">${this.t('onboardingNext')} →</button>
-            <button id="onboarding-skip" class="btn-secondary" style="padding: 16px 36px; font-size: 1.2rem; border-radius: 50px; min-width: 160px; background: transparent; border: 2px solid var(--border); font-weight: 600;">✕ ${this.t('onboardingSkip')}</button>
+        <div style="font-size: 3.5rem; margin-bottom: 10px;">✨</div>
+        <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
+        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
+        
+        <!-- ISTRUZIONE DEL PASSO (dentro la card) -->
+        <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
+            <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
         </div>
-        <div style="margin-top: 20px; width: 100%; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
-            <div id="onboarding-progress" style="width: ${(1/steps.length)*100}%; height: 100%; background: linear-gradient(90deg, var(--accent-light), var(--accent)); transition: width 0.4s ease;"></div>
+        
+        <!-- PULSANTI DI CONTROLLO -->
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+            <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
+            <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
+        </div>
+        
+        <!-- PROGRESS -->
+        <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+            <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
+            <div style="flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
+                <div id="onboarding-progress" style="width: ${(1/steps.length)*100}%; height: 100%; background: linear-gradient(90deg, var(--accent-light), var(--accent)); transition: width 0.4s ease;"></div>
+            </div>
         </div>
     `;
 
-    // Elemento evidenziato (es. il bottone "Aggiungi spesa fissa")
-    const highlightContainer = document.createElement('div');
-    highlightContainer.id = 'onboarding-highlight-container';
-    highlightContainer.style.cssText = `
-        margin-top: 20px;
-        display: flex;
-        justify-content: center;
-        animation: fadeInUp 0.6s ease;
-    `;
-
-    overlay.appendChild(descriptionText);
     overlay.appendChild(card);
-    overlay.appendChild(highlightContainer);
     document.body.appendChild(overlay);
 
     // Aggiungi stili animazione
@@ -1656,26 +1636,19 @@ startOnboarding() {
             @keyframes onboardingSlideUp {
                 from { 
                     opacity: 0;
-                    transform: translateY(50px) scale(0.95);
+                    transform: translateY(40px);
                 }
                 to { 
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-            @keyframes fadeInUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(30px);
-                }
-                to {
                     opacity: 1;
                     transform: translateY(0);
                 }
             }
-            .onboarding-highlight-target {
+            .onboarding-highlight {
                 animation: targetGlow 2s infinite !important;
                 transition: all 0.3s ease !important;
+                position: relative !important;
+                z-index: 10000 !important;
+                cursor: pointer !important;
             }
             @keyframes targetGlow {
                 0% { 
@@ -1698,6 +1671,7 @@ startOnboarding() {
     const showStep = () => {
         const step = steps[stepIndex];
         document.getElementById('onboarding-description').textContent = step.text;
+        document.getElementById('onboarding-counter').innerText = stepIndex + 1;
         
         // Aggiorna barra di progresso
         const progress = ((stepIndex + 1) / steps.length) * 100;
@@ -1705,40 +1679,15 @@ startOnboarding() {
         if (progressBar) progressBar.style.width = progress + '%';
 
         // Rimuovi highlight precedente
-        document.querySelectorAll('.onboarding-highlight-target').forEach(el => {
-            el.classList.remove('onboarding-highlight-target');
+        document.querySelectorAll('.onboarding-highlight').forEach(el => {
+            el.classList.remove('onboarding-highlight');
         });
 
-        // Evidenzia l'elemento target nel DOM (quello vero, non un clone)
+        // Evidenzia l'elemento target (il bottone VERO)
         const target = document.querySelector(step.highlight);
         if (target) {
-            target.classList.add('onboarding-highlight-target');
+            target.classList.add('onboarding-highlight');
             target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            
-            // Mostra un piccolo indicatore testuale sotto la card
-            const hintText = this.data.language === 'it' 
-                ? `👉 Clicca qui sotto: ${step.text.replace('Inserisci', '').replace('Aggiungi', '').replace('Registra', '').trim()}`
-                : `👉 Click below: ${step.text.replace('Add', '').replace('Record', '').trim()}`;
-            
-            // Aggiorna o crea hint
-            let hintEl = document.getElementById('onboarding-hint');
-            if (!hintEl) {
-                hintEl = document.createElement('div');
-                hintEl.id = 'onboarding-hint';
-                hintEl.style.cssText = `
-                    margin-top: 15px;
-                    color: var(--accent);
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    background: rgba(67, 97, 238, 0.2);
-                    padding: 10px 20px;
-                    border-radius: 50px;
-                    border: 1px solid var(--accent);
-                    backdrop-filter: blur(4px);
-                `;
-                highlightContainer.appendChild(hintEl);
-            }
-            hintEl.textContent = hintText;
         }
     };
 
@@ -1751,8 +1700,8 @@ startOnboarding() {
             localStorage.setItem('budgetwise-onboarding-completed', 'true');
             overlay.style.opacity = '0';
             setTimeout(() => overlay.remove(), 300);
-            document.querySelectorAll('.onboarding-highlight-target').forEach(el => {
-                el.classList.remove('onboarding-highlight-target');
+            document.querySelectorAll('.onboarding-highlight').forEach(el => {
+                el.classList.remove('onboarding-highlight');
             });
         }
     });
@@ -1762,15 +1711,14 @@ startOnboarding() {
         localStorage.setItem('budgetwise-onboarding-completed', 'true');
         overlay.style.opacity = '0';
         setTimeout(() => overlay.remove(), 300);
-        document.querySelectorAll('.onboarding-highlight-target').forEach(el => {
-            el.classList.remove('onboarding-highlight-target');
+        document.querySelectorAll('.onboarding-highlight').forEach(el => {
+            el.classList.remove('onboarding-highlight');
         });
     });
 
     // Mostra primo step
     showStep();
 }
-
     setupVoice() {
         console.log('Setup voice...');
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
