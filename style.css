@@ -978,3 +978,113 @@ input:focus, select:focus {
 #dismissAiSuggestion:hover {
     opacity: 1;
 }
+/* ========== REVISIONE IMPORT CSV ========== */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 30px;
+    border-radius: 24px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease;
+}
+
+.review-item {
+    background: var(--bg-color);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--accent);
+}
+
+.review-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.review-date {
+    color: var(--text-secondary);
+    min-width: 100px;
+}
+
+.review-name {
+    font-weight: 600;
+    flex: 1;
+}
+
+.review-amount {
+    font-weight: 700;
+    color: var(--danger);
+    min-width: 80px;
+    text-align: right;
+}
+
+.review-category {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.review-select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 12px;
+    border: 2px solid var(--border);
+    background: var(--card-bg);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.review-select:hover {
+    border-color: var(--accent);
+}
+
+.review-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+}
+
+.review-hint {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+    margin-left: 4px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .review-info {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .review-amount {
+        text-align: left;
+    }
+    
+    .modal-content {
+        padding: 20px;
+    }
+}
