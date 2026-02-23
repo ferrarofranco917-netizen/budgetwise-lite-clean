@@ -1506,8 +1506,8 @@ class BudgetWise {
             confirmBtn.addEventListener('click', onConfirm);
             cancelBtn.addEventListener('click', onCancel);
         });
-    },
-    
+    }
+
     // ========== MAPPATURA CAMPI CSV ==========
     async showMappingDialog(file, delimiter) {
         return new Promise((resolve) => {
@@ -1516,7 +1516,12 @@ class BudgetWise {
             const previewBody = document.getElementById('csvMappingPreview');
             const fieldsDiv = document.getElementById('csvMappingFields');
             
-            // Leggi le prime righe del file
+            if (!overlay || !headersRow || !previewBody || !fieldsDiv) {
+                console.error('Elementi mappatura non trovati');
+                resolve(null);
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = (e) => {
                 const text = e.target.result;
@@ -1544,23 +1549,34 @@ class BudgetWise {
                 
                 // Campi di mappatura
                 const fieldOptions = [
-                    { value: 'date', label: '📅 Data', required: true },
-                    { value: 'description', label: '📝 Descrizione', required: true },
-                    { value: 'amount', label: '💰 Importo', required: true },
-                    { value: 'category', label: '🏷️ Categoria (opzionale)' },
+                    { value: 'date', label: '📅 Data' },
+                    { value: 'description', label: '📝 Descrizione' },
+                    { value: 'amount', label: '💰 Importo' },
+                    { value: 'category', label: '🏷️ Categoria' },
                     { value: 'ignore', label: '❌ Ignora' }
                 ];
                 
-                fieldsDiv.innerHTML = headers.map((header, index) => `
-                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
-                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
-                        <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
-                            ${fieldOptions.map(opt => 
-                                `<option value="${opt.value}" ${opt.required && index < 3 ? 'selected' : ''}>${opt.label}</option>`
-                            ).join('')}
-                        </select>
-                    </div>
-                `).join('');
+                fieldsDiv.innerHTML = headers.map((header, index) => {
+                    // Selezione predefinita intelligente
+                    let selectedDate = index === 0 ? 'selected' : '';
+                    let selectedDesc = index === 1 ? 'selected' : '';
+                    let selectedAmount = index === 2 ? 'selected' : '';
+                    
+                    return `
+                        <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
+                            <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
+                            <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
+                                ${fieldOptions.map(opt => {
+                                    let selected = '';
+                                    if (opt.value === 'date' && index === 0) selected = 'selected';
+                                    else if (opt.value === 'description' && index === 1) selected = 'selected';
+                                    else if (opt.value === 'amount' && index === 2) selected = 'selected';
+                                    return `<option value="${opt.value}" ${selected}>${opt.label}</option>`;
+                                }).join('')}
+                            </select>
+                        </div>
+                    `;
+                }).join('');
                 
                 // Gestisci conferma
                 const confirmBtn = document.getElementById('confirmMappingBtn');
@@ -1591,23 +1607,22 @@ class BudgetWise {
                         return;
                     }
                     
-                    cleanup();
+                    overlay.style.display = 'none';
                     resolve(mapping);
                 };
                 
                 const onCancel = () => {
-                    cleanup();
+                    overlay.style.display = 'none';
                     resolve(null);
                 };
                 
-                const cleanup = () => {
-                    overlay.style.display = 'none';
-                    confirmBtn.removeEventListener('click', onConfirm);
-                    cancelBtn.removeEventListener('click', onCancel);
-                };
+                // Rimuovi vecchi listener
+                confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
                 
-                confirmBtn.addEventListener('click', onConfirm);
-                cancelBtn.addEventListener('click', onCancel);
+                // Aggiungi nuovi listener
+                document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
+                document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
             };
             
             reader.onerror = () => {
@@ -1616,13 +1631,12 @@ class BudgetWise {
             
             reader.readAsText(file);
         });
-    },
+    }
     
-    // ========== IMPORT CSV MODIFICATO ==========
+    // ========== IMPORT CSV CON MAPPATURA ==========
     async parseCSV(file, delimiter, dateFormat) {
         console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
         
-        // Mostra dialog di mappatura con anteprima
         const mapping = await this.showMappingDialog(file, delimiter);
         if (!mapping) {
             alert('⏸️ Import annullato');
@@ -1630,24 +1644,18 @@ class BudgetWise {
         }
         
         const reader = new FileReader();
-        
         reader.onload = async (e) => {
             const text = e.target.result;
-            const lines = text.split('\n').filter(line => line.trim());
-            
-            // Salta intestazione
-            const dataLines = lines.slice(1);
-            
+            const lines = text.split('\n').filter(line => line.trim()).slice(1);
             const importedExpenses = [];
             
-            for (let i = 0; i < dataLines.length; i++) {
-                const line = dataLines[i].trim();
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
                 if (!line) continue;
                 
                 const parts = line.split(delimiter);
                 if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol)) continue;
                 
-                // Estrai campi in base alla mappatura
                 let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
                 let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
                 let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
@@ -1657,32 +1665,28 @@ class BudgetWise {
                 
                 // Converti data
                 if (dateFormat === 'DD/MM/YYYY') {
-                    const [day, month, year] = dateStr.split(/[\/\-]/);
-                    if (day && month && year) {
-                        dateStr = `${year}-${month}-${day}`;
-                    } else {
-                        continue;
-                    }
+                    const parts = dateStr.split(/[\/\-]/);
+                    if (parts.length === 3) {
+                        const [d, m, y] = parts;
+                        if (d && m && y) dateStr = `${y}-${m}-${d}`;
+                        else continue;
+                    } else continue;
                 } else if (dateFormat === 'MM/DD/YYYY') {
-                    const [month, day, year] = dateStr.split(/[\/\-]/);
-                    if (month && day && year) {
-                        dateStr = `${year}-${month}-${day}`;
-                    } else {
-                        continue;
-                    }
+                    const parts = dateStr.split(/[\/\-]/);
+                    if (parts.length === 3) {
+                        const [m, d, y] = parts;
+                        if (m && d && y) dateStr = `${y}-${m}-${d}`;
+                        else continue;
+                    } else continue;
                 }
                 
                 // Pulisci e converti importo
                 let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
                 if (isNaN(amount)) continue;
                 
-                // Se non c'è categoria, usa suggerimento
-                if (!category) {
-                    category = this.suggestCategory(description);
-                }
+                if (!category) category = this.suggestCategory(description);
                 
                 if (amount > 0) {
-                    // Entrata
                     if (!this.data.incomes) this.data.incomes = [];
                     this.data.incomes.push({
                         desc: description,
@@ -1691,7 +1695,6 @@ class BudgetWise {
                         id: Date.now() + i
                     });
                 } else {
-                    // Spesa
                     amount = Math.abs(amount);
                     importedExpenses.push({
                         name: description,
@@ -1703,15 +1706,12 @@ class BudgetWise {
                 }
             }
             
-            // Mostra revisione per le spese
             if (importedExpenses.length > 0) {
-                const reviewedExpenses = await this.showImportReview(importedExpenses);
-                
-                if (reviewedExpenses.length > 0) {
-                    for (const exp of reviewedExpenses) {
+                const reviewed = await this.showImportReview(importedExpenses);
+                if (reviewed.length > 0) {
+                    for (const exp of reviewed) {
                         if (!this.data.variableExpenses) this.data.variableExpenses = {};
                         if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
-                        
                         this.data.variableExpenses[exp.date].push({
                             name: exp.name,
                             amount: exp.amount,
@@ -1719,13 +1719,10 @@ class BudgetWise {
                             id: exp.id
                         });
                     }
-                    
                     this.saveData();
                     this.updateUI();
                     this.updateChart();
-                    
-                    console.log('✅ Import CSV completato con revisione');
-                    alert(`✅ Importate ${reviewedExpenses.length} spese!`);
+                    alert(`✅ Importate ${reviewed.length} spese!`);
                 } else {
                     alert('⏸️ Import annullato');
                 }
@@ -1733,17 +1730,13 @@ class BudgetWise {
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
-                
-                console.log('✅ Import CSV completato (solo entrate)');
                 alert('✅ File importato con successo!');
             }
         };
-        
         reader.onerror = () => {
             console.error('❌ Errore lettura file');
             alert('❌ Errore durante la lettura del file');
         };
-        
         reader.readAsText(file);
     }
 
