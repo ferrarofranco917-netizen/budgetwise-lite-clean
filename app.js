@@ -113,7 +113,15 @@ class BudgetWise {
                 // Stati spese fisse
                 active: '🟢 Attivo',
                 expired: '🔴 Scaduto',
-                
+                // In it (cerca la sezione it e aggiungi:)
+dueToday: 'Scade oggi',
+daysAgo: 'Scaduta da {days} giorni',
+inDays: 'Tra {days} giorni',
+
+// In en (cerca la sezione en e aggiungi:)
+dueToday: 'Due today',
+daysAgo: 'Expired {days} days ago',
+inDays: 'In {days} days',
                 // Conferme
                 confirmReset: 'Sei sicuro di voler cancellare TUTTI i dati?',
                 
@@ -1556,4 +1564,5 @@ class BudgetWise {
 
 const app = new BudgetWise();
 window.app = app;
+
 
