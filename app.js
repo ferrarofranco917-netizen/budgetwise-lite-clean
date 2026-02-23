@@ -795,31 +795,39 @@ class BudgetWise {
     }
 
     updateIncomeList() {
-        const container = document.getElementById('incomeList');
-        if (!container) return;
+    const container = document.getElementById('incomeList');
+    if (!container) return;
 
-        if (!this.data.incomes || this.data.incomes.length === 0) {
-            container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
-        } else {
-            container.innerHTML = this.data.incomes.map(inc => `
-                <div class="expense-item">
-                    <div class="expense-info">
-                        <span class="expense-name">${inc.desc || '?'}</span>
-                        <span class="expense-category">${inc.date || ''}</span>
-                    </div>
-                    <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount || 0)}</span>
-                    <div class="expense-actions">
-                        <button onclick="app.deleteIncome(${inc.id})">🗑️</button>
-                    </div>
+    if (!this.data.incomes || this.data.incomes.length === 0) {
+        container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
+    } else {
+        container.innerHTML = this.data.incomes.map(inc => `
+            <div class="expense-item" data-income-id="${inc.id}">
+                <div class="expense-info">
+                    <span class="expense-name">${inc.desc || '?'}</span>
+                    <span class="expense-category">${inc.date || ''}</span>
                 </div>
-            `).join('');
-        }
-
-        const totalDisplay = document.getElementById('totalIncomeDisplay');
-        if (totalDisplay) {
-            totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
-        }
+                <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount || 0)}</span>
+                <div class="expense-actions">
+                    <button class="delete-income-btn" data-id="${inc.id}">🗑️</button>
+                </div>
+            </div>
+        `).join('');
     }
+
+    // Aggiungi event listener a tutti i pulsanti di eliminazione
+    document.querySelectorAll('.delete-income-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const id = parseInt(e.target.dataset.id);
+            this.deleteIncome(id);
+        });
+    });
+
+    const totalDisplay = document.getElementById('totalIncomeDisplay');
+    if (totalDisplay) {
+        totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
+    }
+}
 
     updateFixedExpensesList() {
         const container = document.getElementById('fixedExpensesList');
