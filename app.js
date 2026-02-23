@@ -1981,52 +1981,37 @@ class BudgetWise {
         });
     }
  // ============================================
-// FIX: Pulsante Importa CSV (AGGIUNTO ALLA FINE DEL FILE)
-// ============================================
-setTimeout(function() {
-    'use strict';
-    
-    const btn = document.getElementById('importCsvBtn');
-    if (!btn || !window.app) {
-        console.log('Fix CSV: elementi non trovati');
-        return;
-    }
-    
-    // Crea un nuovo pulsante per rimuovere listener vecchi
-    const newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
-    
-    newBtn.addEventListener('click', function() {
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.csv,.txt';
-        fileInput.style.display = 'none';
-        
-        fileInput.addEventListener('change', function(evt) {
-            const file = evt.target.files[0];
-            if (!file) return;
-            
-            const proto = Object.getPrototypeOf(window.app);
-            if (proto && proto.parseCSV) {
-                proto.parseCSV.call(window.app, file, ',', 'DD/MM/YYYY');
-                console.log('✅ CSV importato:', file.name);
-            }
-        });
-        
-        document.body.appendChild(fileInput);
-        fileInput.click();
-        setTimeout(function() {
-            if (fileInput.parentNode) {
-                fileInput.parentNode.removeChild(fileInput);
-            }
-        }, 1000);
-    });
-    
-    console.log('✅ Fix CSV applicato correttamente');
-}, 2000);
-// ============================================
 // INIZIALIZZAZIONE
 // ============================================
 
 const app = new BudgetWise();
 window.app = app;
+
+// FIX CSV - AGGIUNTO DOPO L'INIZIALIZZAZIONE
+setTimeout(function() {
+    var btn = document.getElementById('importCsvBtn');
+    if (!btn || !window.app) return;
+    
+    var newBtn = btn.cloneNode(true);
+    btn.parentNode.replaceChild(newBtn, btn);
+    
+    newBtn.onclick = function() {
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.csv';
+        input.onchange = function(e) {
+            var file = e.target.files[0];
+            if (file && window.app) {
+                var proto = Object.getPrototypeOf(window.app);
+                if (proto && proto.parseCSV) {
+                    proto.parseCSV.call(window.app, file, ',', 'DD/MM/YYYY');
+                }
+            }
+        };
+        document.body.appendChild(input);
+        input.click();
+        setTimeout(function() {
+            document.body.removeChild(input);
+        }, 1000);
+    };
+}, 2000);
