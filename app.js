@@ -1431,23 +1431,15 @@ class BudgetWise {
     }
 
     // ========== REVISIONE IMPORT CSV ==========
-    showImportReview(importedExpenses) {    // ========== MAPPATURA CAMPI CSV ==========
+        // ========== REVISIONE IMPORT CSV ==========
+    showImportReview(importedExpenses) {
+        // ... tutto il codice ...
+    }, // <-- VIRGOLA QUI!
+    
+    // ========== MAPPATURA CAMPI CSV ==========
     async showMappingDialog(file, delimiter) {
-        return new Promise((resolve) => {
-            const overlay = document.getElementById('csvMappingOverlay');
-            const headersRow = document.getElementById('csvMappingHeaders');
-            const previewBody = document.getElementById('csvMappingPreview');
-            const fieldsDiv = document.getElementById('csvMappingFields');
-            
-            // Leggi le prime righe del file
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const text = e.target.result;
-                const lines = text.split('\n').filter(line => line.trim());
-                if (lines.length === 0) {
-                    resolve(null);
-                    return;
-                }
+        // ... codice ...
+    }
                 
                 const headers = lines[0].split(delimiter).map(h => h.trim());
                 const previewData = lines.slice(1, 6).map(line => 
