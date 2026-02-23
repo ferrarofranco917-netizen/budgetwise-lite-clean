@@ -339,7 +339,8 @@ class BudgetWise {
             });
         }
     }
-
+// Setup AI widget actions
+this.setupAiActions();
     // ========== TRADUZIONE ==========
     t(key) {
         return this.translations[this.data.language][key] || key;
