@@ -880,14 +880,60 @@ class BudgetWise {
         document.getElementById('saveGoal').value = this.data.savingsGoal;
         document.getElementById('thresholdInput').value = this.data.threshold;
 
-        const progress = this.calculateSavingsProgress();
-        if (progress > 0 && this.data.savingsGoal) {
-            document.getElementById('progressContainer').style.display = 'block';
-            document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressBar').textContent = Math.round(progress) + '%';
-        } else {
-            document.getElementById('progressContainer').style.display = 'none';
-        }
+        // === NUOVA BARRA EMOZIONALE ===
+const progress = this.calculateSavingsProgress();
+const goal = this.data.savingsGoal;
+const percent = this.data.savingsPercent;
+const totalIncome = this.calculateTotalIncome();
+const savedPerMonth = (totalIncome * percent) / 100;
+
+const progressContainer = document.getElementById('progressContainer');
+const savingsMessage = document.getElementById('savingsMessage');
+const savingsTip = document.getElementById('savingsTip');
+
+if (progress > 0 && goal > 0 && percent > 0) {
+    // Mostra la barra
+    progressContainer.style.display = 'block';
+    document.getElementById('progressBar').style.width = progress + '%';
+    
+    // Calcola data prevista
+    const today = new Date();
+    const monthsNeeded = Math.ceil(goal / savedPerMonth);
+    const targetDate = new Date(today);
+    targetDate.setMonth(today.getMonth() + monthsNeeded);
+    
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = targetDate.toLocaleDateString(
+        this.data.language === 'it' ? 'it-IT' : 'en-US', 
+        options
+    );
+    
+    // Messaggio predittivo
+    const message = this.data.language === 'it'
+        ? `🐷 Al ritmo attuale, raggiungerai l'obiettivo il ${formattedDate}`
+        : `🐷 At current pace, you'll reach your goal on ${formattedDate}`;
+    savingsMessage.textContent = message;
+    
+    // Suggerimento
+    if (percent < 20) {
+        const suggestedPercent = Math.min(percent + 5, 20);
+        const newMonths = Math.ceil(goal / ((totalIncome * suggestedPercent) / 100));
+        const monthsDiff = monthsNeeded - newMonths;
+        
+        const tip = this.data.language === 'it'
+            ? `💡 Se risparmiassi il ${suggestedPercent}% invece del ${percent}%, arriveresti ${monthsDiff} ${monthsDiff === 1 ? 'mese' : 'mesi'} prima!`
+            : `💡 If you saved ${suggestedPercent}% instead of ${percent}%, you'd get there ${monthsDiff} ${monthsDiff === 1 ? 'month' : 'months'} sooner!`;
+        savingsTip.textContent = tip;
+    } else {
+        savingsTip.textContent = this.data.language === 'it'
+            ? '🎉 Ottimo lavoro! Continua così!'
+            : '🎉 Great job! Keep it up!';
+    }
+} else {
+    progressContainer.style.display = 'none';
+    savingsMessage.textContent = '';
+    savingsTip.textContent = '';
+}
 
         document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
 
