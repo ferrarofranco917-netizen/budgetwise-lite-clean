@@ -1417,7 +1417,7 @@ class BudgetWise {
         console.log(`📌 Appreso: "${keyword}" → ${category}`);
     }
 
-        suggestCategory(description) {
+            suggestCategory(description) {
         const lowerDesc = description.toLowerCase();
         
         // Cerca nelle regole apprese
@@ -1745,7 +1745,7 @@ class BudgetWise {
         };
         
         reader.readAsText(file);
-    }
+    
         return 'Altro'; // Default
     }
 
