@@ -410,8 +410,11 @@ inDays: 'In {days} days',
         document.getElementById('fixedVoiceStatus').textContent = this.t('micFixed');
         document.getElementById('voiceStatus').textContent = this.t('micVariable');
         
-        const helpText = document.querySelector('.section-card:nth-child(6) .help-text');
-        if (helpText) helpText.textContent = this.t('helpFixed');
+        // Traduci help spese fisse
+const helpFixed = document.getElementById('fixedHelp');
+if (helpFixed) {
+    helpFixed.textContent = this.t('helpFixed');
+}
         
         document.getElementById('chartNote').textContent = this.t('chartNote');
         
@@ -1561,6 +1564,7 @@ inDays: 'In {days} days',
 
 const app = new BudgetWise();
 window.app = app;
+
 
 
 
