@@ -30,6 +30,8 @@ class BudgetWise {
         // ========== TRADUZIONI ==========
         this.translations = {
             it: {
+                categoriesSectionTitle: '📂 Gestione categorie',
+manageCustomCategories: '➕ Gestisci categorie personalizzate',
                 budget: 'Budget giornaliero',
                 remaining: 'Rimanenza',
                 days: 'Giorni rimasti',
