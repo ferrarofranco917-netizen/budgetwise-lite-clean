@@ -1106,26 +1106,43 @@ class BudgetWise {
     }
 
     loadData() {
-        const saved = localStorage.getItem('budgetwise-data');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed.income !== undefined && !parsed.incomes) {
-                    parsed.incomes = [{
-                        desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
-                        amount: parsed.income,
-                        date: new Date().toISOString().split('T')[0],
-                        id: Date.now()
-                    }];
-                    delete parsed.income;
-                }
-                this.data = parsed;
-            } catch (e) {
-                console.warn('Errore nel caricamento dati, reset automatico');
-                this.resetAll();
+    const saved = localStorage.getItem('budgetwise-data');
+    if (saved) {
+        try {
+            const parsed = JSON.parse(saved);
+            
+            // Se ci sono entrate ma non c'è periodStart, lo impostiamo dalla prima entrata
+            if (parsed.incomes && parsed.incomes.length > 0 && !parsed.periodStart) {
+                const firstIncome = parsed.incomes.sort((a, b) => 
+                    new Date(a.date) - new Date(b.date)
+                )[0];
+                
+                const startDate = new Date(firstIncome.date);
+                const endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 30);
+                
+                parsed.periodStart = startDate.toISOString().split('T')[0];
+                parsed.periodEnd = endDate.toISOString().split('T')[0];
             }
+            
+            // Gestione retrocompatibilità
+            if (parsed.income !== undefined && !parsed.incomes) {
+                parsed.incomes = [{
+                    desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
+                    amount: parsed.income,
+                    date: new Date().toISOString().split('T')[0],
+                    id: Date.now()
+                }];
+                delete parsed.income;
+            }
+            
+            this.data = parsed;
+        } catch (e) {
+            console.warn('Errore nel caricamento dati, reset automatico');
+            this.resetAll();
         }
     }
+}
 
     backupData() {
         const dataStr = JSON.stringify(this.data, null, 2);
