@@ -113,15 +113,10 @@ class BudgetWise {
                 // Stati spese fisse
                 active: '🟢 Attivo',
                 expired: '🔴 Scaduto',
-                // In it (cerca la sezione it e aggiungi:)
-dueToday: 'Scade oggi',
-daysAgo: 'Scaduta da {days} giorni',
-inDays: 'Tra {days} giorni',
-
-// In en (cerca la sezione en e aggiungi:)
-dueToday: 'Due today',
-daysAgo: 'Expired {days} days ago',
-inDays: 'In {days} days',
+                dueToday: 'Scade oggi',
+                daysAgo: 'Scaduta da {days} giorni',
+                inDays: 'Tra {days} giorni',
+                
                 // Conferme
                 confirmReset: 'Sei sicuro di voler cancellare TUTTI i dati?',
                 
@@ -237,6 +232,9 @@ inDays: 'In {days} days',
                 // Fixed expense status
                 active: '🟢 Active',
                 expired: '🔴 Expired',
+                dueToday: 'Due today',
+                daysAgo: 'Expired {days} days ago',
+                inDays: 'In {days} days',
                 
                 // Confirmations
                 confirmReset: 'Are you sure you want to delete ALL data?',
@@ -411,10 +409,10 @@ inDays: 'In {days} days',
         document.getElementById('voiceStatus').textContent = this.t('micVariable');
         
         // Traduci help spese fisse
-const helpFixed = document.getElementById('fixedHelp');
-if (helpFixed) {
-    helpFixed.textContent = this.t('helpFixed');
-}
+        const helpFixed = document.getElementById('fixedHelp');
+        if (helpFixed) {
+            helpFixed.textContent = this.t('helpFixed');
+        }
         
         document.getElementById('chartNote').textContent = this.t('chartNote');
         
