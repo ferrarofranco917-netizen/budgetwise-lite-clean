@@ -348,7 +348,6 @@ class BudgetWise {
         const assistantNameText = document.getElementById('assistantNameText');
         if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
         
-        // NUOVA TRADUZIONE PER DATA ENTRATE
         const incomeDateLabel = document.getElementById('incomeDateLabel');
         if (incomeDateLabel) incomeDateLabel.textContent = this.t('incomeDateLabel');
         
@@ -376,23 +375,89 @@ class BudgetWise {
         document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
     }
 
+    // ========== CALCOLI CON CONTROLLI ==========
     calculateTotalIncome() {
-        return this.data.incomes.reduce((sum, inc) => sum + inc.amount, 0);
+        if (!this.data.incomes || !Array.isArray(this.data.incomes)) return 0;
+        return this.data.incomes.reduce((sum, inc) => sum + (inc.amount || 0), 0);
     }
 
-    // ========== ENTRATE CON DATA ==========
+    calculateTotalVariableExpenses() {
+        if (!this.data.variableExpenses || typeof this.data.variableExpenses !== 'object') return 0;
+        let total = 0;
+        Object.values(this.data.variableExpenses).forEach(day => {
+            if (Array.isArray(day)) {
+                day.forEach(exp => total += (exp.amount || 0));
+            }
+        });
+        return total;
+    }
+
+    calculateTotalFixedExpenses() {
+        if (!this.data.fixedExpenses || !Array.isArray(this.data.fixedExpenses)) return 0;
+        
+        const today = new Date();
+        const currentMonth = today.getMonth();
+        const currentYear = today.getFullYear();
+        
+        return this.data.fixedExpenses.reduce((sum, exp) => {
+            if (!exp || !exp.endDate || !exp.day) return sum;
+            
+            const endDate = new Date(exp.endDate);
+            if (endDate < today) return sum;
+            
+            const paymentDate = new Date(currentYear, currentMonth, exp.day);
+            if (paymentDate > today) return sum;
+            
+            return sum + (exp.amount || 0);
+        }, 0);
+    }
+
+    calculateRemaining() {
+        const totalIncome = this.calculateTotalIncome();
+        const totalFixed = this.calculateTotalFixedExpenses();
+        const savingsAmount = (totalIncome * (this.data.savingsPercent || 0)) / 100;
+        const budget = totalIncome - totalFixed - savingsAmount;
+        return budget - this.calculateTotalVariableExpenses();
+    }
+
+    calculateDailyBudget() {
+        const remaining = this.calculateRemaining();
+        const daysLeft = this.getDaysLeft();
+        return daysLeft > 0 ? remaining / daysLeft : 0;
+    }
+
+    getDaysLeft() {
+        const diff = new Date(this.data.periodEnd) - new Date();
+        return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    }
+
+    calculateSavingsProgress() {
+        if (!this.data.savingsGoal) return 0;
+        const saved = (this.calculateTotalIncome() * (this.data.savingsPercent || 0)) / 100;
+        return (saved / this.data.savingsGoal) * 100;
+    }
+
+    getNextPaymentDate(day) {
+        const today = new Date();
+        let next = new Date(today.getFullYear(), today.getMonth(), day);
+        if (next < today) next = new Date(today.getFullYear(), today.getMonth() + 1, day);
+        return next.toISOString().split('T')[0];
+    }
+
+    // ========== ENTRATE ==========
     addIncome() {
         const desc = document.getElementById('incomeDesc').value.trim();
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         const dateInput = document.getElementById('incomeDate').value;
         
-        // Se non c'è data, usa oggi
         const date = dateInput || new Date().toISOString().split('T')[0];
         
         if (!desc || !amount) {
             alert(this.t('fillFields'));
             return;
         }
+        
+        if (!Array.isArray(this.data.incomes)) this.data.incomes = [];
         
         this.data.incomes.push({
             desc,
@@ -405,19 +470,20 @@ class BudgetWise {
         this.updateUI();
         alert(this.t('incomeAdded'));
         
-        // Reset campi
         document.getElementById('incomeDesc').value = '';
         document.getElementById('incomeAmount').value = '';
         document.getElementById('incomeDate').value = '';
     }
 
     deleteIncome(id) {
+        if (!Array.isArray(this.data.incomes)) return;
         this.data.incomes = this.data.incomes.filter(inc => inc.id !== id);
         this.saveData();
         this.updateUI();
         alert(this.t('incomeDeleted'));
     }
 
+    // ========== SPESE FISSE ==========
     addFixedExpense() {
         const name = document.getElementById('fixedName').value.trim();
         const amount = parseFloat(document.getElementById('fixedAmount').value);
@@ -432,6 +498,8 @@ class BudgetWise {
             alert(this.t('invalidDay'));
             return;
         }
+
+        if (!Array.isArray(this.data.fixedExpenses)) this.data.fixedExpenses = [];
 
         this.data.fixedExpenses.push({ name, amount, day, endDate, id: Date.now() });
         this.saveData();
@@ -451,12 +519,14 @@ class BudgetWise {
     }
 
     deleteFixedExpense(id) {
+        if (!Array.isArray(this.data.fixedExpenses)) return;
         this.data.fixedExpenses = this.data.fixedExpenses.filter(exp => exp.id !== id);
         this.saveData();
         this.updateUI();
         alert(this.t('fixedDeleted'));
     }
 
+    // ========== SPESE VARIABILI ==========
     addVariableExpense() {
         const date = document.getElementById('expenseDate').value;
         const name = document.getElementById('expenseName').value.trim();
@@ -468,7 +538,11 @@ class BudgetWise {
             return;
         }
 
+        if (!this.data.variableExpenses || typeof this.data.variableExpenses !== 'object') {
+            this.data.variableExpenses = {};
+        }
         if (!this.data.variableExpenses[date]) this.data.variableExpenses[date] = [];
+
         this.data.variableExpenses[date].push({ name, amount, category, id: Date.now() });
 
         this.saveData();
@@ -486,19 +560,18 @@ class BudgetWise {
     }
 
     deleteVariableExpense(date, id) {
-        if (this.data.variableExpenses[date]) {
-            this.data.variableExpenses[date] = this.data.variableExpenses[date].filter(exp => exp.id !== id);
-            if (this.data.variableExpenses[date].length === 0) delete this.data.variableExpenses[date];
-            this.saveData();
-            this.updateUI();
-            this.updateChart();
-            alert(this.t('expenseDeleted'));
-        }
+        if (!this.data.variableExpenses || !this.data.variableExpenses[date]) return;
+        this.data.variableExpenses[date] = this.data.variableExpenses[date].filter(exp => exp.id !== id);
+        if (this.data.variableExpenses[date].length === 0) delete this.data.variableExpenses[date];
+        this.saveData();
+        this.updateUI();
+        this.updateChart();
+        alert(this.t('expenseDeleted'));
     }
 
     resetDay() {
         const date = document.getElementById('expenseDate').value;
-        if (this.data.variableExpenses[date]) {
+        if (this.data.variableExpenses && this.data.variableExpenses[date]) {
             delete this.data.variableExpenses[date];
             this.saveData();
             this.updateUI();
@@ -526,68 +599,6 @@ class BudgetWise {
         alert(this.t('savingsApplied'));
     }
 
-    calculateTotalVariableExpenses() {
-        let total = 0;
-        Object.values(this.data.variableExpenses).forEach(day => day.forEach(exp => total += exp.amount));
-        return total;
-    }
-
-    calculateTotalFixedExpenses() {
-    // Se non ci sono spese fisse, ritorna 0
-    if (!this.data.fixedExpenses || !Array.isArray(this.data.fixedExpenses)) {
-        return 0;
-    }
-    
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    
-    return this.data.fixedExpenses.reduce((sum, exp) => {
-        // Se l'oggetto spesa non è valido, saltalo
-        if (!exp || !exp.endDate || !exp.day) return sum;
-        
-        const endDate = new Date(exp.endDate);
-        if (endDate < today) return sum;
-        
-        const paymentDate = new Date(currentYear, currentMonth, exp.day);
-        if (paymentDate > today) return sum;
-        
-        return sum + (exp.amount || 0);
-    }, 0);
-}
-
-    calculateRemaining() {
-        const totalIncome = this.calculateTotalIncome();
-        const totalFixed = this.calculateTotalFixedExpenses();
-        const savingsAmount = (totalIncome * this.data.savingsPercent) / 100;
-        const budget = totalIncome - totalFixed - savingsAmount;
-        return budget - this.calculateTotalVariableExpenses();
-    }
-
-    calculateDailyBudget() {
-        const remaining = this.calculateRemaining();
-        const daysLeft = this.getDaysLeft();
-        return daysLeft > 0 ? remaining / daysLeft : 0;
-    }
-
-    getDaysLeft() {
-        const diff = new Date(this.data.periodEnd) - new Date();
-        return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-    }
-
-    calculateSavingsProgress() {
-        if (!this.data.savingsGoal) return 0;
-        const saved = (this.calculateTotalIncome() * this.data.savingsPercent) / 100;
-        return (saved / this.data.savingsGoal) * 100;
-    }
-
-    getNextPaymentDate(day) {
-        const today = new Date();
-        let next = new Date(today.getFullYear(), today.getMonth(), day);
-        if (next < today) next = new Date(today.getFullYear(), today.getMonth() + 1, day);
-        return next.toISOString().split('T')[0];
-    }
-
     getLast7DaysData() {
         const today = new Date();
         const data = [];
@@ -596,8 +607,8 @@ class BudgetWise {
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split('T')[0];
             let daySpent = 0;
-            if (this.data.variableExpenses[dateStr]) {
-                daySpent = this.data.variableExpenses[dateStr].reduce((sum, exp) => sum + exp.amount, 0);
+            if (this.data.variableExpenses && this.data.variableExpenses[dateStr] && Array.isArray(this.data.variableExpenses[dateStr])) {
+                daySpent = this.data.variableExpenses[dateStr].reduce((sum, exp) => sum + (exp.amount || 0), 0);
             }
             data.push(daySpent);
         }
@@ -714,15 +725,15 @@ class BudgetWise {
         this.updateFixedExpensesList();
         this.updateVariableExpensesList();
 
-        document.getElementById('savePercent').value = this.data.savingsPercent;
-        document.getElementById('saveGoal').value = this.data.savingsGoal;
-        document.getElementById('thresholdInput').value = this.data.threshold;
+        document.getElementById('savePercent').value = this.data.savingsPercent || 0;
+        document.getElementById('saveGoal').value = this.data.savingsGoal || 0;
+        document.getElementById('thresholdInput').value = this.data.threshold || 50;
 
         const progress = this.calculateSavingsProgress();
         const goal = this.data.savingsGoal;
         const percent = this.data.savingsPercent;
         const totalIncome = this.calculateTotalIncome();
-        const savedPerMonth = (totalIncome * percent) / 100;
+        const savedPerMonth = (totalIncome * (percent || 0)) / 100;
 
         const progressContainer = document.getElementById('progressContainer');
         const savingsMessage = document.getElementById('savingsMessage');
@@ -759,7 +770,7 @@ class BudgetWise {
             savingsTip.textContent = '';
         }
 
-        document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
+        document.getElementById('guideMessage').style.display = (!this.data.incomes || this.data.incomes.length === 0) ? 'block' : 'none';
 
         const last7Days = this.getLast7DaysData();
         const last7DaysBudget = this.getLast7DaysBudget();
@@ -774,16 +785,16 @@ class BudgetWise {
         const container = document.getElementById('incomeList');
         if (!container) return;
 
-        if (this.data.incomes.length === 0) {
+        if (!this.data.incomes || this.data.incomes.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
         } else {
             container.innerHTML = this.data.incomes.map(inc => `
                 <div class="expense-item">
                     <div class="expense-info">
-                        <span class="expense-name">${inc.desc}</span>
-                        <span class="expense-category">${inc.date}</span>
+                        <span class="expense-name">${inc.desc || '?'}</span>
+                        <span class="expense-category">${inc.date || ''}</span>
                     </div>
-                    <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount)}</span>
+                    <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount || 0)}</span>
                     <div class="expense-actions">
                         <button onclick="app.deleteIncome(${inc.id})">🗑️</button>
                     </div>
@@ -799,7 +810,7 @@ class BudgetWise {
 
     updateFixedExpensesList() {
         const container = document.getElementById('fixedExpensesList');
-        if (this.data.fixedExpenses.length === 0) {
+        if (!this.data.fixedExpenses || this.data.fixedExpenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noFixed')}</p>`;
             return;
         }
@@ -820,13 +831,13 @@ class BudgetWise {
             return `
                 <div class="expense-item fixed-expense-item ${statusClass}">
                     <div class="expense-info">
-                        <span class="expense-name">${exp.name}</span>
+                        <span class="expense-name">${exp.name || '?'}</span>
                         <span class="expense-category">
-                            📅 ${this.t('dayLabel')} ${exp.day} · ${this.t('endDateLabel')}: ${exp.endDate}
+                            📅 ${this.t('dayLabel')} ${exp.day || '?'} · ${this.t('endDateLabel')}: ${exp.endDate || '?'}
                             <span class="days-badge ${badgeClass}">${daysText}</span>
                         </span>
                     </div>
-                    <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                    <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
                         <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
                     </div>
@@ -838,7 +849,7 @@ class BudgetWise {
     updateVariableExpensesList() {
         const date = document.getElementById('expenseDate').value;
         const container = document.getElementById('variableExpensesList');
-        const expenses = this.data.variableExpenses[date] || [];
+        const expenses = (this.data.variableExpenses && this.data.variableExpenses[date]) || [];
         if (expenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noVariable')}</p>`;
             return;
@@ -846,10 +857,10 @@ class BudgetWise {
         container.innerHTML = expenses.map(exp => `
             <div class="expense-item">
                 <div class="expense-info">
-                    <span class="expense-name">${exp.name}</span>
-                    <span class="expense-category">${this.t('category' + exp.category)}</span>
+                    <span class="expense-name">${exp.name || '?'}</span>
+                    <span class="expense-category">${this.t('category' + (exp.category || 'Altro'))}</span>
                 </div>
-                <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                 <div class="expense-actions">
                     <button onclick="app.deleteVariableExpense('${date}', ${exp.id})">🗑️</button>
                 </div>
@@ -860,14 +871,24 @@ class BudgetWise {
     updateChart() {
         const categories = {};
         const categoryExpenses = {};
-        Object.values(this.data.variableExpenses).forEach(day => {
-            day.forEach(expense => {
-                const catName = this.t('category' + expense.category);
-                categories[catName] = (categories[catName] || 0) + expense.amount;
-                if (!categoryExpenses[catName]) categoryExpenses[catName] = [];
-                categoryExpenses[catName].push({ name: expense.name, amount: expense.amount, date: day });
+        
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.values(this.data.variableExpenses).forEach(day => {
+                if (Array.isArray(day)) {
+                    day.forEach(expense => {
+                        const catName = this.t('category' + (expense.category || 'Altro'));
+                        categories[catName] = (categories[catName] || 0) + (expense.amount || 0);
+                        if (!categoryExpenses[catName]) categoryExpenses[catName] = [];
+                        categoryExpenses[catName].push({ 
+                            name: expense.name || '?', 
+                            amount: expense.amount || 0, 
+                            date: day 
+                        });
+                    });
+                }
             });
-        });
+        }
+
         if (Object.keys(categories).length === 0) {
             document.getElementById('chartNote').style.display = 'block';
             document.getElementById('categoryDetail').style.display = 'none';
@@ -923,7 +944,7 @@ class BudgetWise {
         const comparisonEl = document.getElementById('detailComparison');
         const listEl = document.getElementById('detailExpensesList');
         if (!detailContainer) return;
-        const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+        const total = expenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
         const lastMonthTotal = total * 0.85;
         const difference = total - lastMonthTotal;
         const percentChange = ((difference / lastMonthTotal) * 100).toFixed(1);
@@ -939,8 +960,8 @@ class BudgetWise {
         } else {
             listEl.innerHTML = expenses.map(exp => `
                 <div class="detail-expense-item">
-                    <span class="expense-name">${exp.name}</span>
-                    <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                    <span class="expense-name">${exp.name || '?'}</span>
+                    <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                 </div>
             `).join('');
         }
@@ -948,7 +969,7 @@ class BudgetWise {
     }
 
     formatCurrency(amount) {
-        return amount.toFixed(2).replace('.', ',') + ' €';
+        return (amount || 0).toFixed(2).replace('.', ',') + ' €';
     }
 
     highlightField(fieldId) {
@@ -1013,12 +1034,16 @@ class BudgetWise {
         }
         if (q.includes('categoria') || q.includes('category') || q.includes('spendo di più') || q.includes('spend most')) {
             const categories = {};
-            Object.values(this.data.variableExpenses).forEach(day => {
-                day.forEach(exp => {
-                    const catName = this.t('category' + exp.category);
-                    categories[catName] = (categories[catName] || 0) + exp.amount;
+            if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+                Object.values(this.data.variableExpenses).forEach(day => {
+                    if (Array.isArray(day)) {
+                        day.forEach(exp => {
+                            const catName = this.t('category' + (exp.category || 'Altro'));
+                            categories[catName] = (categories[catName] || 0) + (exp.amount || 0);
+                        });
+                    }
                 });
-            });
+            }
             if (Object.keys(categories).length === 0) return this.t('noExpenses');
             const top = Object.entries(categories).sort((a,b) => b[1] - a[1])[0];
             return `📊 ${this.data.language === 'it' ? 'La categoria in cui spendi di più è' : 'The category where you spend the most is'} "${top[0]}" ${this.data.language === 'it' ? 'con' : 'with'} ${this.formatCurrency(top[1])}.`;
@@ -1078,17 +1103,22 @@ class BudgetWise {
     loadData() {
         const saved = localStorage.getItem('budgetwise-data');
         if (saved) {
-            const parsed = JSON.parse(saved);
-            if (parsed.income !== undefined && !parsed.incomes) {
-                parsed.incomes = [{
-                    desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
-                    amount: parsed.income,
-                    date: new Date().toISOString().split('T')[0],
-                    id: Date.now()
-                }];
-                delete parsed.income;
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed.income !== undefined && !parsed.incomes) {
+                    parsed.incomes = [{
+                        desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
+                        amount: parsed.income,
+                        date: new Date().toISOString().split('T')[0],
+                        id: Date.now()
+                    }];
+                    delete parsed.income;
+                }
+                this.data = parsed;
+            } catch (e) {
+                console.warn('Errore nel caricamento dati, reset automatico');
+                this.resetAll();
             }
-            this.data = parsed;
         }
     }
 
@@ -1144,26 +1174,32 @@ class BudgetWise {
 
     exportToCalendar() {
         let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
-        this.data.fixedExpenses.forEach(exp => {
-            if (new Date(exp.endDate) >= new Date()) {
-                ics += "BEGIN:VEVENT\n";
-                ics += `SUMMARY:💰 ${exp.name}\n`;
-                ics += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa' : 'Fixed expense'} ${this.formatCurrency(exp.amount)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day}\n`;
-                const nextDate = this.getNextPaymentDate(exp.day);
-                ics += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
-                ics += `RRULE:FREQ=MONTHLY;UNTIL=${exp.endDate.replace(/-/g, '')}\n`;
-                ics += "END:VEVENT\n";
-            }
-        });
-        Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
-            expenses.forEach(exp => {
-                ics += "BEGIN:VEVENT\n";
-                ics += `SUMMARY:🛒 ${exp.name}\n`;
-                ics += `DESCRIPTION:${exp.category} - ${this.formatCurrency(exp.amount)}\n`;
-                ics += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
-                ics += "END:VEVENT\n";
+        if (Array.isArray(this.data.fixedExpenses)) {
+            this.data.fixedExpenses.forEach(exp => {
+                if (exp && exp.endDate && new Date(exp.endDate) >= new Date()) {
+                    ics += "BEGIN:VEVENT\n";
+                    ics += `SUMMARY:💰 ${exp.name || 'Spesa'}\n`;
+                    ics += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa' : 'Fixed expense'} ${this.formatCurrency(exp.amount || 0)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day || '?'}\n`;
+                    const nextDate = this.getNextPaymentDate(exp.day || 1);
+                    ics += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
+                    ics += `RRULE:FREQ=MONTHLY;UNTIL=${(exp.endDate || '').replace(/-/g, '')}\n`;
+                    ics += "END:VEVENT\n";
+                }
             });
-        });
+        }
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
+                if (Array.isArray(expenses)) {
+                    expenses.forEach(exp => {
+                        ics += "BEGIN:VEVENT\n";
+                        ics += `SUMMARY:🛒 ${exp.name || 'Spesa'}\n`;
+                        ics += `DESCRIPTION:${exp.category || 'Altro'} - ${this.formatCurrency(exp.amount || 0)}\n`;
+                        ics += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
+                        ics += "END:VEVENT\n";
+                    });
+                }
+            });
+        }
         ics += "END:VCALENDAR";
         const blob = new Blob([ics], { type: 'text/calendar' });
         const url = URL.createObjectURL(blob);
@@ -1304,12 +1340,16 @@ class BudgetWise {
         const language = this.data.language;
         
         const categoryTotals = {};
-        Object.values(this.data.variableExpenses).forEach(day => {
-            day.forEach(exp => {
-                const cat = exp.category;
-                categoryTotals[cat] = (categoryTotals[cat] || 0) + exp.amount;
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.values(this.data.variableExpenses).forEach(day => {
+                if (Array.isArray(day)) {
+                    day.forEach(exp => {
+                        const cat = exp.category || 'Altro';
+                        categoryTotals[cat] = (categoryTotals[cat] || 0) + (exp.amount || 0);
+                    });
+                }
             });
-        });
+        }
 
         if (Object.keys(categoryTotals).length === 0) {
             document.getElementById('aiWidget').style.display = 'none';
