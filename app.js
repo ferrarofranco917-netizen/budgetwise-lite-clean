@@ -1431,7 +1431,115 @@ class BudgetWise {
     }
 
     // ========== REVISIONE IMPORT CSV ==========
-    showImportReview(importedExpenses) {
+    showImportReview(importedExpenses) {    // ========== MAPPATURA CAMPI CSV ==========
+    async showMappingDialog(file, delimiter) {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('csvMappingOverlay');
+            const headersRow = document.getElementById('csvMappingHeaders');
+            const previewBody = document.getElementById('csvMappingPreview');
+            const fieldsDiv = document.getElementById('csvMappingFields');
+            
+            // Leggi le prime righe del file
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim());
+                if (lines.length === 0) {
+                    resolve(null);
+                    return;
+                }
+                
+                const headers = lines[0].split(delimiter).map(h => h.trim());
+                const previewData = lines.slice(1, 6).map(line => 
+                    line.split(delimiter).map(cell => cell.trim())
+                );
+                
+                // Mostra overlay
+                overlay.style.display = 'flex';
+                
+                // Genera header tabella
+                headersRow.innerHTML = headers.map(h => `<th>${h || '?'}</th>`).join('');
+                
+                // Genera anteprima (mostra 5 righe)
+                previewBody.innerHTML = previewData.map(row => 
+                    `<tr>${row.map(cell => `<td class="preview-cell">${cell || ''}</td>`).join('')}</tr>`
+                ).join('');
+                
+                // Campi di mappatura
+                const fieldOptions = [
+                    { value: 'date', label: '📅 Data', required: true },
+                    { value: 'description', label: '📝 Descrizione', required: true },
+                    { value: 'amount', label: '💰 Importo', required: true },
+                    { value: 'category', label: '🏷️ Categoria (opzionale)' },
+                    { value: 'ignore', label: '❌ Ignora' }
+                ];
+                
+                fieldsDiv.innerHTML = headers.map((header, index) => `
+                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
+                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
+                        <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
+                            ${fieldOptions.map(opt => 
+                                `<option value="${opt.value}" ${opt.required && index < 3 ? 'selected' : ''}>${opt.label}</option>`
+                            ).join('')}
+                        </select>
+                    </div>
+                `).join('');
+                
+                // Gestisci conferma
+                const confirmBtn = document.getElementById('confirmMappingBtn');
+                const cancelBtn = document.getElementById('cancelMappingBtn');
+                
+                const onConfirm = () => {
+                    const mapping = {
+                        dateCol: -1,
+                        descCol: -1,
+                        amountCol: -1,
+                        categoryCol: -1
+                    };
+                    
+                    headers.forEach((_, index) => {
+                        const select = document.getElementById(`mapping-${index}`);
+                        if (select) {
+                            const value = select.value;
+                            if (value === 'date') mapping.dateCol = index;
+                            else if (value === 'description') mapping.descCol = index;
+                            else if (value === 'amount') mapping.amountCol = index;
+                            else if (value === 'category') mapping.categoryCol = index;
+                        }
+                    });
+                    
+                    // Verifica campi obbligatori
+                    if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
+                        alert('❌ Devi mappare Data, Descrizione e Importo!');
+                        return;
+                    }
+                    
+                    cleanup();
+                    resolve(mapping);
+                };
+                
+                const onCancel = () => {
+                    cleanup();
+                    resolve(null);
+                };
+                
+                const cleanup = () => {
+                    overlay.style.display = 'none';
+                    confirmBtn.removeEventListener('click', onConfirm);
+                    cancelBtn.removeEventListener('click', onCancel);
+                };
+                
+                confirmBtn.addEventListener('click', onConfirm);
+                cancelBtn.addEventListener('click', onCancel);
+            };
+            
+            reader.onerror = () => {
+                resolve(null);
+            };
+            
+            reader.readAsText(file);
+        });
+    }
         return new Promise((resolve) => {
             const overlay = document.getElementById('importReviewOverlay');
             const listEl = document.getElementById('importReviewList');
