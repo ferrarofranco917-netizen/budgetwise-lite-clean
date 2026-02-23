@@ -150,11 +150,6 @@ class BudgetWise {
                 csvPreview: 'Anteprima',
                 
                 // Gestione categorie
-                categoriesSectionTitle: '📂 Gestione categorie',
-                manageCustomCategories: '➕ Gestisci categorie personalizzate',
-                newCategoryLabel: 'Nuova categoria',
-                newCategoryPlaceholder: 'es. Viaggi',
-                close: 'Chiudi',
                 manageCategories: '📂 Gestisci categorie',
                 addCategory: '➕ Aggiungi categoria',
                 categoryName: 'Nome categoria',
@@ -168,7 +163,56 @@ class BudgetWise {
                 defaultCategories: 'Categorie predefinite',
                 customCategories: 'Le tue categorie',
                 noCustomCategories: 'Nessuna categoria personalizzata'
-            },
+,
+docTitle: '💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente',
+subtitle: 'Stipendio a stipendio — gestione intelligente con AI',
+add: 'Aggiungi',
+dateHint: 'gg/mm/aaaa',
+autoRecommended: 'Auto (consigliato)',
+ddmmyyyy: 'GG/MM/AAAA',
+mmddyyyy: 'MM/DD/AAAA',
+positiveBalance: 'Saldo positivo',
+negativeBalance: 'Attenzione: saldo negativo',
+vsYesterday0: 'rispetto a ieri: 0%',
+detailTotal: 'Totale: {total}',
+noExpensesShort: 'Nessuna spesa',
+voiceSpeak: 'Parlare...',
+voiceTap: 'Tocca per parlare',
+error: 'Errore',
+genericExpense: 'Spesa',
+voiceDetected: '✅ Rilevato: {desc} {amount}€',
+voiceFixedDetected: '✅ Spesa fissa rilevata: {name} {amount}€ giorno {day}',
+invalidFile: '❌ File non valido',
+fixedExpense: 'Spesa fissa',
+everyMonthOnDay: 'Ogni mese il giorno',
+featureInDev: '🔍 Funzionalità in sviluppo',
+csvTemplateDetected: '📌 Rilevato template CSV: "{name}".\nVuoi usarlo automaticamente?',
+csvFieldDate: '📅 Data',
+csvFieldDescription: '📝 Descrizione',
+csvFieldAmount: '💰 Importo',
+csvFieldCategory: '🏷️ Categoria',
+csvFieldIgnore: '❌ Ignora',
+csvSaveAsTemplate: '💾 Salva come template',
+csvTemplateNamePlaceholder: 'Nome template (es. Intesa, Unicredit...)',
+csvColumnN: 'Colonna {n}',
+empty: 'vuota',
+csvMappingRequired: '❌ Devi mappare Data, Descrizione e Importo!',
+csvEmpty: '❌ CSV vuoto',
+importCancelled: '⏸️ Import annullato',
+csvImportError: '❌ Errore durante l\'import CSV',
+fileReadError: '❌ Errore durante la lettura del file',
+importCompleted: '✅ Import completato!\n➕ Aggiunti: {added}{dupLine}',
+                duplicatesSkipped: '⚠️ Duplicati saltati: {dup}',
+onboardingSubtitle: 'Segui la guida passo-passo',
+you: 'Tu',
+adviceRed: '⚠️ Sei in rosso! Rivedi le spese.',
+adviceLowRemaining: '⚠️ Attenzione: ti rimangono solo {remaining} per i prossimi giorni.',
+adviceGood: '💪 Vai bene! Hai ancora {remaining} di margine.',
+aiSuggestionsTitle: '🤖 Suggerimenti AI',
+aiSmartBadge: 'intelligente',
+csvMappingTitle: '📋 Mappa le colonne del file CSV',
+csvMappingInstructionsHtml: '<strong>📌 Istruzioni:</strong> Associa ogni colonna del tuo file al campo corrispondente. Le righe con importo positivo saranno considerate <strong>entrate</strong>, quelle negative <strong>spese</strong>.',
+csvMappingFieldsTitle: '🎯 Associazione campi:'            },
             en: {
                 budget: 'Daily budget',
                 remaining: 'Remaining',
@@ -290,11 +334,6 @@ class BudgetWise {
                 csvPreview: 'Preview',
                 
                 // Gestione categorie
-                categoriesSectionTitle: '📂 Category management',
-                manageCustomCategories: '➕ Manage custom categories',
-                newCategoryLabel: 'New category',
-                newCategoryPlaceholder: 'e.g. Travel',
-                close: 'Close',
                 manageCategories: '📂 Manage categories',
                 addCategory: '➕ Add category',
                 categoryName: 'Category name',
@@ -308,7 +347,419 @@ class BudgetWise {
                 defaultCategories: 'Default categories',
                 customCategories: 'Your categories',
                 noCustomCategories: 'No custom categories'
+,
+docTitle: '💰 BudgetWise 2.0 - Smart Budget Manager',
+subtitle: 'Paycheck to paycheck — smart management with AI',
+add: 'Add',
+dateHint: 'mm/dd/yyyy',
+autoRecommended: 'Auto (recommended)',
+ddmmyyyy: 'DD/MM/YYYY',
+mmddyyyy: 'MM/DD/YYYY',
+positiveBalance: 'Positive balance',
+negativeBalance: 'Warning: negative balance',
+vsYesterday0: 'vs yesterday: 0%',
+detailTotal: 'Total: {total}',
+noExpensesShort: 'No expenses',
+voiceSpeak: 'Speak...',
+voiceTap: 'Tap to speak',
+error: 'Error',
+genericExpense: 'Expense',
+voiceDetected: '✅ Detected: {desc} €{amount}',
+voiceFixedDetected: '✅ Fixed expense detected: {name} €{amount} day {day}',
+invalidFile: '❌ Invalid file',
+fixedExpense: 'Fixed expense',
+everyMonthOnDay: 'Every month on day',
+featureInDev: '🔍 Feature in development',
+csvTemplateDetected: '📌 CSV template detected: "{name}".\nUse it automatically?',
+csvFieldDate: '📅 Date',
+csvFieldDescription: '📝 Description',
+csvFieldAmount: '💰 Amount',
+csvFieldCategory: '🏷️ Category',
+csvFieldIgnore: '❌ Ignore',
+csvSaveAsTemplate: '💾 Save as template',
+csvTemplateNamePlaceholder: 'Template name (e.g. Intesa, Unicredit...)',
+csvColumnN: 'Column {n}',
+empty: 'empty',
+csvMappingRequired: '❌ You must map Date, Description and Amount!',
+csvEmpty: '❌ Empty CSV',
+importCancelled: '⏸️ Import cancelled',
+csvImportError: '❌ Error during CSV import',
+fileReadError: '❌ Error reading the file',
+importCompleted: '✅ Import completed!\n➕ Added: {added}{dupLine}',
+                duplicatesSkipped: '⚠️ Duplicates skipped: {dup}',
+onboardingSubtitle: 'Follow the step-by-step guide',
+you: 'You',
+adviceRed: "⚠️ You're in the red! Review your expenses.",
+adviceLowRemaining: '⚠️ Warning: you only have {remaining} left for the coming days.',
+adviceGood: "💪 You're doing well! You still have {remaining} left.",
+aiSuggestionsTitle: '🤖 AI Suggestions',
+aiSmartBadge: 'smart',
+csvMappingTitle: '📋 Map CSV columns',
+csvMappingInstructionsHtml: '<strong>📌 Instructions:</strong> Map each CSV column to the right field. Positive amounts are treated as <strong>income</strong>, negative amounts as <strong>expenses</strong>.',
+csvMappingFieldsTitle: '🎯 Field mapping:'            },
+            es: {
+                budget: 'Presupuesto diario',
+                remaining: 'Restante',
+                days: 'Días restantes',
+                period: 'Período',
+                totalIncome: 'Ingresos totales',
+                startGuide: '👋 ¡Empieza añadiendo tus ingresos abajo!',
+                incomes: '🏦 Ingresos del período',
+                fixed: '📌 Gastos fijos mensuales',
+                variable: '🧾 Gastos variables',
+                chart: '📊 Distribución de gastos',
+                assistant: '🤖 Asistente financiero IA',
+                savings: '🎯 Objetivo de ahorro',
+                settings: '⚙️ Ajustes',
+                badge: 'múltiple',
+                addIncome: '➕ Añadir ingreso',
+                addFixed: '➕ Añadir gasto fijo',
+                addExpense: '➕ Añadir gasto',
+                resetDay: '🗑️ Borrar gastos del día',
+                applySavings: 'Aplicar ahorro',
+                backup: '💾 Descargar copia',
+                restore: '📂 Restaurar',
+                resetAll: '⚠️ Reinicio total',
+                export: '📅 Exportar a Calendar',
+                send: 'Enviar',
+                incomeDesc: 'Descripción (p. ej. Salario)',
+                incomeAmount: 'Importe €',
+                incomeDateLabel: 'Fecha',
+                fixedName: 'Nombre (p. ej. Hipoteca)',
+                fixedAmount: 'Importe €',
+                fixedDay: 'Día (p. ej. 27)',
+                expenseName: '¿Qué compraste?',
+                expenseAmount: '€',
+                chatPlaceholder: 'p. ej. ¿Cuánto puedo ahorrar este mes?',
+                dateLabel: 'Selecciona fecha:',
+                dayLabel: 'Día del mes',
+                endDateLabel: 'Fecha de vencimiento',
+                percentLabel: 'Porcentaje de ingresos (%)',
+                goalLabel: 'Objetivo (€)',
+                thresholdLabel: '🔔 Umbral de aviso (€)',
+                languageLabel: '🌍 Idioma',
+                backupLabel: '📅 Copia de datos',
+                micFixed: '🎤 Toca y dilo en una frase',
+                micVariable: '🎤 Toca para hablar',
+                helpFixed: '⏰ Se contabiliza automáticamente cada mes hasta el vencimiento',
+                chartNote: 'Añade gastos para ver el gráfico',
+                noIncome: 'Sin ingresos',
+                noFixed: 'Sin gastos fijos',
+                noVariable: 'Sin gastos en este día',
+                welcomeMessage: '¡Hola! Soy tu asistente financiero. ¡Pregúntame lo que quieras sobre tu presupuesto!',
+                suggestion1: '💶 Ahorrar 100€',
+                suggestion2: '🔮 Simular aumento',
+                suggestion3: '🎯 Objetivo',
+                suggestion4: '📊 Categoría top',
+                assistantName: 'Asistente',
+                incomeAdded: '✅ ¡Ingreso añadido!',
+                incomeDeleted: '🗑️ Ingreso eliminado',
+                fixedAdded: '✅ ¡Gasto fijo añadido!',
+                fixedDeleted: '🗑️ Gasto eliminado',
+                expenseAdded: '✅ ¡Gasto añadido!',
+                expenseDeleted: '🗑️ Gasto eliminado',
+                dayReset: '🗑️ Gastos del día borrados',
+                savingsApplied: '💰 ¡Ahorro aplicado!',
+                backupDownloaded: '💾 ¡Copia descargada!',
+                dataRestored: '📂 ¡Datos restaurados!',
+                resetCompleted: '🔄 Reinicio completado',
+                calendarExported: '📅 ¡Calendario exportado!',
+                fillFields: '⚠️ Rellena todos los campos',
+                invalidDay: '⚠️ Día no válido (1-31)',
+                thresholdExceeded: '⚠️ ¡Atención! Has superado el umbral de ',
+                active: '🟢 Activo',
+                expired: '🔴 Vencido',
+                dueToday: 'Vence hoy',
+                daysAgo: 'Vencido hace {days} días',
+                inDays: 'En {days} días',
+                confirmReset: '¿Seguro que quieres borrar TODOS los datos?',
+                noGoal: 'Aún no has establecido un objetivo de ahorro. Ve a 🎯 y configúralo.',
+                noExpenses: 'Aún no tienes gastos registrados. Añade algunos para ver el análisis.',
+                footerText: 'BudgetWise 2.0 — Gestión inteligente de tus finanzas',
+                footerFeatures: '✨ Asistente IA • Reconocimiento de voz • Tema oscuro',
+                fixedVoiceButton: '🎤 Añadir gasto fijo con voz',
+                variableVoiceButton: '🎤 Añadir con voz',
+                categoryAlimentari: '🍎 Alimentación',
+                categoryTrasporti: '🚗 Transporte',
+                categorySvago: '🎮 Ocio',
+                categorySalute: '💊 Salud',
+                categoryAbbigliamento: '👕 Ropa',
+                categoryAltro: '📦 Otros',
+                onboardingWelcome: '👋 Bienvenido a BudgetWise',
+                onboardingStep1: 'Añade tu primer ingreso abajo.',
+                onboardingStep2: '📌 Añade un gasto fijo mensual (p. ej. alquiler, servicios).',
+                onboardingStep3: '🧾 Registra un gasto variable como la compra.',
+                onboardingStep4: '📊 Revisa tu presupuesto diario en la tarjeta superior.',
+                onboardingStep5: '🤖 Pregunta al asistente IA o prueba el micrófono.',
+                onboardingStep6: '📥 También puedes importar movimientos bancarios en CSV.',
+                onboardingNext: 'Siguiente →',
+                onboardingSkip: 'Saltar',
+                importReview: '📋 Revisión de importación',
+                importConfirm: '✅ Confirmar',
+                importCancel: '✕ Cancelar',
+                importCategory: 'Categoría',
+                importLearn: '📌 La app recordará esta elección',
+                csvTitle: '📥 Importar movimientos bancarios',
+                csvSubtitle: 'Descarga tu extracto en formato CSV',
+                csvChooseFile: 'Elegir archivo',
+                csvNoFile: 'Ningún archivo seleccionado',
+                csvImportBtn: '📥 Importar CSV',
+                csvDateFormat: 'Formato de fecha',
+                csvSeparator: 'Separador',
+                csvComma: 'Coma (,)',
+                csvSemicolon: 'Punto y coma (;)',
+                csvTab: 'Tabulación',
+                csvPreview: 'Vista previa',
+                categoriesSectionTitle: '📂 Gestión de categorías',
+                manageCustomCategories: '➕ Gestionar categorías personalizadas',
+                newCategoryLabel: 'Nueva categoría',
+                newCategoryPlaceholder: 'p. ej. Viajes',
+                close: 'Cerrar',
+                manageCategories: '📂 Gestionar categorías',
+                addCategory: '➕ Añadir categoría',
+                categoryName: 'Nombre de la categoría',
+                saveCategory: 'Guardar',
+                deleteCategory: '🗑️ Eliminar',
+                confirmDeleteCategory: '¿Seguro que quieres eliminar la categoría "{name}"?',
+                categoryAlreadyExists: 'La categoría ya existe',
+                categoryAdded: '✅ ¡Categoría añadida!',
+                categoryDeleted: '🗑️ Categoría eliminada',
+                categoryUpdated: '✏️ Categoría actualizada',
+                defaultCategories: 'Categorías predeterminadas',
+                customCategories: 'Tus categorías',
+                noCustomCategories: 'Sin categorías personalizadas',
+                docTitle: '💰 BudgetWise 2.0 - Gestor de presupuesto inteligente',
+                subtitle: 'De nómina a nómina — gestión inteligente con IA',
+                add: 'Añadir',
+                dateHint: 'dd/mm/aaaa',
+                autoRecommended: 'Auto (recomendado)',
+                ddmmyyyy: 'DD/MM/AAAA',
+                mmddyyyy: 'MM/DD/AAAA',
+                positiveBalance: 'Saldo positivo',
+                negativeBalance: 'Atención: saldo negativo',
+                vsYesterday0: 'vs ayer: 0%',
+                detailTotal: 'Total: {total}',
+                noExpensesShort: 'Sin gastos',
+                voiceSpeak: 'Habla...',
+                voiceTap: 'Toca para hablar',
+                error: 'Error',
+                genericExpense: 'Gasto',
+                voiceDetected: '✅ Detectado: {desc} €{amount}',
+                voiceFixedDetected: '✅ Gasto fijo detectado: {name} €{amount} día {day}',
+                invalidFile: '❌ Archivo no válido',
+                fixedExpense: 'Gasto fijo',
+                everyMonthOnDay: 'Cada mes el día',
+                featureInDev: '🔍 Función en desarrollo',
+                csvTemplateDetected: '📌 Plantilla CSV detectada: "{name}".\\n¿Usarla automáticamente?',
+                csvFieldDate: '📅 Fecha',
+                csvFieldDescription: '📝 Descripción',
+                csvFieldAmount: '💰 Importe',
+                csvFieldCategory: '🏷️ Categoría',
+                csvFieldIgnore: '❌ Ignorar',
+                csvSaveAsTemplate: '💾 Guardar como plantilla',
+                csvTemplateNamePlaceholder: 'Nombre de plantilla (p. ej. Intesa, Unicredit...)',
+                csvColumnN: 'Columna {n}',
+                empty: 'vacía',
+                csvMappingRequired: '❌ Debes asignar Fecha, Descripción e Importe.',
+                csvEmpty: '❌ CSV vacío',
+                importCancelled: '⏸️ Importación cancelada',
+                csvImportError: '❌ Error durante la importación CSV',
+                fileReadError: '❌ Error al leer el archivo',
+                duplicatesSkipped: '⚠️ Duplicados omitidos: {dup}',
+                importCompleted: '✅ Importación completada!\\n➕ Añadidos: {added}{dupLine}',
+                onboardingSubtitle: 'Sigue la guía paso a paso',
+                you: 'Tú',
+                adviceRed: '⚠️ ¡Estás en negativo! Revisa tus gastos.',
+                adviceLowRemaining: '⚠️ Atención: solo te quedan {remaining} para los próximos días.',
+                adviceGood: '💪 ¡Vas bien! Aún te quedan {remaining}.',
+                aiSuggestionsTitle: '🤖 Sugerencias IA',
+                aiSmartBadge: 'inteligente',
+                csvMappingTitle: '📋 Mapear columnas CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Instrucciones:</strong> Asocia cada columna del CSV con su campo. Importes positivos = <strong>ingresos</strong>, negativos = <strong>gastos</strong>.',
+                csvMappingFieldsTitle: '🎯 Asignación de campos:'
+            },
+            fr: {
+                budget: 'Budget journalier',
+                remaining: 'Reste',
+                days: 'Jours restants',
+                period: 'Période',
+                totalIncome: 'Total des revenus',
+                startGuide: '👋 Commence en ajoutant tes revenus ci-dessous !',
+                incomes: '🏦 Revenus de la période',
+                fixed: '📌 Dépenses fixes mensuelles',
+                variable: '🧾 Dépenses variables',
+                chart: '📊 Répartition des dépenses',
+                assistant: '🤖 Assistant financier IA',
+                savings: '🎯 Objectif d’épargne',
+                settings: '⚙️ Paramètres',
+                badge: 'multiple',
+                addIncome: '➕ Ajouter un revenu',
+                addFixed: '➕ Ajouter une dépense fixe',
+                addExpense: '➕ Ajouter une dépense',
+                resetDay: '🗑️ Supprimer les dépenses du jour',
+                applySavings: 'Appliquer l’épargne',
+                backup: '💾 Télécharger la sauvegarde',
+                restore: '📂 Restaurer',
+                resetAll: '⚠️ Réinitialisation complète',
+                export: '📅 Exporter vers Calendar',
+                send: 'Envoyer',
+                incomeDesc: 'Description (ex. Salaire)',
+                incomeAmount: 'Montant €',
+                incomeDateLabel: 'Date',
+                fixedName: 'Nom (ex. Crédit)',
+                fixedAmount: 'Montant €',
+                fixedDay: 'Jour (ex. 27)',
+                expenseName: 'Qu’as-tu acheté ?',
+                expenseAmount: '€',
+                chatPlaceholder: 'Ex. Combien puis-je économiser ce mois-ci ?',
+                dateLabel: 'Choisir une date :',
+                dayLabel: 'Jour du mois',
+                endDateLabel: 'Date d’échéance',
+                percentLabel: 'Pourcentage des revenus (%)',
+                goalLabel: 'Objectif (€)',
+                thresholdLabel: '🔔 Seuil d’alerte (€)',
+                languageLabel: '🌍 Langue',
+                backupLabel: '📅 Sauvegarde des données',
+                micFixed: '🎤 Appuie et dis tout en une phrase',
+                micVariable: '🎤 Appuie pour parler',
+                helpFixed: '⏰ Comptabilisée automatiquement chaque mois jusqu’à l’échéance',
+                chartNote: 'Ajoute des dépenses pour voir le graphique',
+                noIncome: 'Aucun revenu',
+                noFixed: 'Aucune dépense fixe',
+                noVariable: 'Aucune dépense ce jour',
+                welcomeMessage: 'Salut ! Je suis ton assistant financier. Demande-moi n’importe quoi sur ton budget !',
+                suggestion1: '💶 Économiser 100€',
+                suggestion2: '🔮 Simuler une hausse',
+                suggestion3: '🎯 Objectif',
+                suggestion4: '📊 Catégorie top',
+                assistantName: 'Assistant',
+                incomeAdded: '✅ Revenu ajouté !',
+                incomeDeleted: '🗑️ Revenu supprimé',
+                fixedAdded: '✅ Dépense fixe ajoutée !',
+                fixedDeleted: '🗑️ Dépense supprimée',
+                expenseAdded: '✅ Dépense ajoutée !',
+                expenseDeleted: '🗑️ Dépense supprimée',
+                dayReset: '🗑️ Dépenses du jour supprimées',
+                savingsApplied: '💰 Épargne appliquée !',
+                backupDownloaded: '💾 Sauvegarde téléchargée !',
+                dataRestored: '📂 Données restaurées !',
+                resetCompleted: '🔄 Réinitialisation terminée',
+                calendarExported: '📅 Calendrier exporté !',
+                fillFields: '⚠️ Remplis tous les champs',
+                invalidDay: '⚠️ Jour invalide (1-31)',
+                thresholdExceeded: '⚠️ Attention ! Tu as dépassé le seuil de ',
+                active: '🟢 Actif',
+                expired: '🔴 Expiré',
+                dueToday: 'Échéance aujourd’hui',
+                daysAgo: 'Expiré il y a {days} jours',
+                inDays: 'Dans {days} jours',
+                confirmReset: 'Es-tu sûr de vouloir supprimer TOUTES les données ?',
+                noGoal: 'Tu n’as pas encore défini d’objectif d’épargne. Va sur 🎯 et configure-le.',
+                noExpenses: 'Tu n’as encore aucune dépense. Ajoute-en pour voir l’analyse.',
+                footerText: 'BudgetWise 2.0 — Gestion intelligente de tes finances',
+                footerFeatures: '✨ Assistant IA • Reconnaissance vocale • Thème sombre',
+                fixedVoiceButton: '🎤 Ajouter une dépense fixe par voix',
+                variableVoiceButton: '🎤 Ajouter par voix',
+                categoryAlimentari: '🍎 Alimentation',
+                categoryTrasporti: '🚗 Transport',
+                categorySvago: '🎮 Loisirs',
+                categorySalute: '💊 Santé',
+                categoryAbbigliamento: '👕 Vêtements',
+                categoryAltro: '📦 Autre',
+                onboardingWelcome: '👋 Bienvenue sur BudgetWise',
+                onboardingStep1: 'Ajoute ton premier revenu ci-dessous.',
+                onboardingStep2: '📌 Ajoute une dépense fixe mensuelle (ex. loyer, factures).',
+                onboardingStep3: '🧾 Enregistre une dépense variable comme les courses.',
+                onboardingStep4: '📊 Consulte ton budget journalier dans la carte du haut.',
+                onboardingStep5: '🤖 Demande à l’assistant IA ou teste le micro.',
+                onboardingStep6: '📥 Tu peux aussi importer un CSV bancaire.',
+                onboardingNext: 'Suivant →',
+                onboardingSkip: 'Passer',
+                importReview: '📋 Revue d’importation',
+                importConfirm: '✅ Confirmer',
+                importCancel: '✕ Annuler',
+                importCategory: 'Catégorie',
+                importLearn: '📌 L’app se souviendra de ce choix',
+                csvTitle: '📥 Importer des opérations bancaires',
+                csvSubtitle: 'Télécharge ton relevé en CSV',
+                csvChooseFile: 'Choisir un fichier',
+                csvNoFile: 'Aucun fichier sélectionné',
+                csvImportBtn: '📥 Importer CSV',
+                csvDateFormat: 'Format de date',
+                csvSeparator: 'Séparateur',
+                csvComma: 'Virgule (,)',
+                csvSemicolon: 'Point-virgule (;)',
+                csvTab: 'Tabulation',
+                csvPreview: 'Aperçu',
+                categoriesSectionTitle: '📂 Gestion des catégories',
+                manageCustomCategories: '➕ Gérer les catégories personnalisées',
+                newCategoryLabel: 'Nouvelle catégorie',
+                newCategoryPlaceholder: 'ex. Voyages',
+                close: 'Fermer',
+                manageCategories: '📂 Gérer les catégories',
+                addCategory: '➕ Ajouter une catégorie',
+                categoryName: 'Nom de la catégorie',
+                saveCategory: 'Enregistrer',
+                deleteCategory: '🗑️ Supprimer',
+                confirmDeleteCategory: 'Supprimer la catégorie « {name} » ?',
+                categoryAlreadyExists: 'La catégorie existe déjà',
+                categoryAdded: '✅ Catégorie ajoutée !',
+                categoryDeleted: '🗑️ Catégorie supprimée',
+                categoryUpdated: '✏️ Catégorie mise à jour',
+                defaultCategories: 'Catégories par défaut',
+                customCategories: 'Tes catégories',
+                noCustomCategories: 'Aucune catégorie personnalisée',
+                docTitle: '💰 BudgetWise 2.0 - Gestionnaire de budget intelligent',
+                subtitle: 'De paie en paie — gestion intelligente avec IA',
+                add: 'Ajouter',
+                dateHint: 'jj/mm/aaaa',
+                autoRecommended: 'Auto (recommandé)',
+                ddmmyyyy: 'JJ/MM/AAAA',
+                mmddyyyy: 'MM/JJ/AAAA',
+                positiveBalance: 'Solde positif',
+                negativeBalance: 'Attention : solde négatif',
+                vsYesterday0: 'vs hier : 0%',
+                detailTotal: 'Total : {total}',
+                noExpensesShort: 'Aucune dépense',
+                voiceSpeak: 'Parle...',
+                voiceTap: 'Appuie pour parler',
+                error: 'Erreur',
+                genericExpense: 'Dépense',
+                voiceDetected: '✅ Détecté : {desc} €{amount}',
+                voiceFixedDetected: '✅ Dépense fixe détectée : {name} €{amount} jour {day}',
+                invalidFile: '❌ Fichier invalide',
+                fixedExpense: 'Dépense fixe',
+                everyMonthOnDay: 'Chaque mois le jour',
+                featureInDev: '🔍 Fonction en développement',
+                csvTemplateDetected: '📌 Modèle CSV détecté : « {name} ».\\nL’utiliser automatiquement ?',
+                csvFieldDate: '📅 Date',
+                csvFieldDescription: '📝 Description',
+                csvFieldAmount: '💰 Montant',
+                csvFieldCategory: '🏷️ Catégorie',
+                csvFieldIgnore: '❌ Ignorer',
+                csvSaveAsTemplate: '💾 Enregistrer comme modèle',
+                csvTemplateNamePlaceholder: 'Nom du modèle (ex. Intesa, Unicredit...)',
+                csvColumnN: 'Colonne {n}',
+                empty: 'vide',
+                csvMappingRequired: '❌ Tu dois mapper Date, Description et Montant.',
+                csvEmpty: '❌ CSV vide',
+                importCancelled: '⏸️ Import annulé',
+                csvImportError: '❌ Erreur pendant l’import CSV',
+                fileReadError: '❌ Erreur de lecture du fichier',
+                duplicatesSkipped: '⚠️ Doublons ignorés : {dup}',
+                importCompleted: '✅ Import terminé !\\n➕ Ajoutés : {added}{dupLine}',
+                onboardingSubtitle: 'Suis le guide pas à pas',
+                you: 'Toi',
+                adviceRed: '⚠️ Tu es dans le rouge ! Revois tes dépenses.',
+                adviceLowRemaining: '⚠️ Attention : il ne te reste que {remaining} pour les prochains jours.',
+                adviceGood: '💪 Ça va ! Il te reste encore {remaining}.',
+                aiSuggestionsTitle: '🤖 Suggestions IA',
+                aiSmartBadge: 'intelligent',
+                csvMappingTitle: '📋 Mapper les colonnes CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Instructions :</strong> Associe chaque colonne du CSV au bon champ. Montants positifs = <strong>revenus</strong>, négatifs = <strong>dépenses</strong>.',
+                csvMappingFieldsTitle: '🎯 Association des champs :'
             }
+
         };
         
         this.init();
@@ -337,16 +788,25 @@ class BudgetWise {
         return end.toISOString().split('T')[0];
     }
 
-    t(key) {
-        return this.translations[this.data.language][key] || key;
+    t(key, vars) {
+        const lang = this.data.language || "it";
+        const dict = this.translations[lang] || this.translations.it || {};
+        let str = dict[key] ?? (this.translations.en ? (this.translations.en[key] ?? key) : key);
+        if (vars && typeof vars === "object") {
+            for (const [k, v] of Object.entries(vars)) {
+                str = String(str).replaceAll(`{${k}}`, String(v));
+            }
+        }
+        return str;
     }
 
     applyLanguage() {
         console.log('🌐 Cambio lingua a:', this.data.language);
         document.getElementById('languageSelect').value = this.data.language;
-        document.querySelector('.subtitle').textContent = this.data.language === 'it' 
-            ? 'Stipendio a stipendio — gestione intelligente con AI'
-            : 'Paycheck to paycheck — smart management with AI';
+        const subtitleEl = document.querySelector('.subtitle');
+        if (subtitleEl) subtitleEl.textContent = this.t('subtitle');
+        document.documentElement.lang = (this.data.language || 'it');
+        document.title = this.t('docTitle');
         
         const summaryLabels = document.querySelectorAll('.summary-label');
         if (summaryLabels.length >= 3) {
@@ -362,43 +822,13 @@ class BudgetWise {
             else if (text.includes('📌')) h2.innerHTML = this.t('fixed');
             else if (text.includes('🧾')) h2.innerHTML = this.t('variable');
             else if (text.includes('📊')) h2.innerHTML = this.t('chart');
+            else if (text.includes('Suggerimenti')) h2.innerHTML = this.t('aiSuggestionsTitle');
             else if (text.includes('🤖')) h2.innerHTML = this.t('assistant');
             else if (text.includes('🎯')) h2.innerHTML = this.t('savings');
             else if (text.includes('⚙️')) h2.innerHTML = this.t('settings');
-            else if (text.includes('📂')) h2.innerHTML = this.t('categoriesSectionTitle');
         });
         
-        
-        // Gestione categorie (se presenti)
-        const manageBtn = document.getElementById('manageCategoriesBtn');
-        if (manageBtn) manageBtn.innerHTML = this.t('manageCustomCategories');
-
-        const catTitle = document.getElementById('categoryManagerTitle');
-        if (catTitle) catTitle.textContent = this.t('manageCategories');
-
-        const defHead = document.getElementById('defaultCategoriesHeading');
-        if (defHead) defHead.textContent = this.t('defaultCategories');
-
-        const custHead = document.getElementById('customCategoriesHeading');
-        if (custHead) custHead.textContent = this.t('customCategories');
-
-        const newCatLabel = document.getElementById('newCategoryLabel');
-        if (newCatLabel) newCatLabel.textContent = this.t('newCategoryLabel');
-
-        const newCatInput = document.getElementById('newCategoryName');
-        if (newCatInput) newCatInput.placeholder = this.t('newCategoryPlaceholder');
-
-        const addCatBtn = document.getElementById('saveCategoryBtn');
-        if (addCatBtn) addCatBtn.textContent = this.data.language === 'it' ? 'Aggiungi' : 'Add';
-
-        const closeCatBtn = document.getElementById('closeCategoryManager');
-        if (closeCatBtn) closeCatBtn.textContent = this.t('close');
-
-        // Aggiorna select categorie e liste (traduzione label)
-        this.updateCategorySelects();
-        this.refreshCategoryList();
-
-const badge = document.querySelector('.badge');
+        const badge = document.querySelector('.badge');
         if (badge) badge.textContent = this.t('badge');
         
         document.getElementById('addIncomeBtn').innerHTML = this.t('addIncome');
@@ -506,10 +936,10 @@ const badge = document.querySelector('.badge');
         }
         
         const dateHintFixed = document.getElementById('dateHintFixed');
-        if (dateHintFixed) dateHintFixed.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+        if (dateHintFixed) dateHintFixed.textContent = this.t('dateHint');
 
         const dateHintVariable = document.getElementById('dateHintVariable');
-        if (dateHintVariable) dateHintVariable.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+        if (dateHintVariable) dateHintVariable.textContent = this.t('dateHint');
         
         // Traduzioni sezione Import CSV
         const csvTitle = document.getElementById('csvTitle');
@@ -539,12 +969,7 @@ const badge = document.querySelector('.badge');
         const delimiterSelect = document.getElementById('csvDelimiter');
         if (delimiterSelect) {
             const options = delimiterSelect.options;
-            // [0]=AUTO, [1]=DD/MM, [2]=MM/DD
-            if (options.length >= 3) {
-                options[0].text = this.data.language === 'it' ? 'Auto (consigliato)' : 'Auto (recommended)';
-                options[1].text = this.data.language === 'it' ? 'GG/MM/AAAA' : 'DD/MM/YYYY';
-                options[2].text = this.data.language === 'it' ? 'MM/DD/AAAA' : 'MM/DD/YYYY';
-            } else if (options.length >= 2) {
+            if (options.length >= 2) {
                 options[0].text = this.data.language === 'it' ? 'GG/MM/AAAA' : 'DD/MM/YYYY';
                 options[1].text = this.data.language === 'it' ? 'MM/DD/AAAA' : 'MM/DD/YYYY';
             }
@@ -553,13 +978,7 @@ const badge = document.querySelector('.badge');
         const separatorSelect = document.getElementById('csvSeparator');
         if (separatorSelect) {
             const options = separatorSelect.options;
-            // [0]=AUTO, [1]=comma, [2]=semicolon, [3]=tab
-            if (options.length >= 4) {
-                options[0].text = this.data.language === 'it' ? 'Auto (consigliato)' : 'Auto (recommended)';
-                options[1].text = this.t('csvComma');
-                options[2].text = this.t('csvSemicolon');
-                options[3].text = this.t('csvTab');
-            } else if (options.length >= 3) {
+            if (options.length >= 3) {
                 options[0].text = this.t('csvComma');
                 options[1].text = this.t('csvSemicolon');
                 options[2].text = this.t('csvTab');
@@ -568,7 +987,22 @@ const badge = document.querySelector('.badge');
 
         const csvPreviewTitle = document.getElementById('csvPreviewTitle');
         if (csvPreviewTitle) csvPreviewTitle.textContent = this.t('csvPreview');
-        
+
+        const aiWidgetTitle = document.getElementById('aiWidgetTitle');
+        if (aiWidgetTitle) aiWidgetTitle.textContent = this.t('aiSuggestionsTitle');
+        const aiWidgetBadge = document.getElementById('aiWidgetBadge');
+        if (aiWidgetBadge) aiWidgetBadge.textContent = this.t('aiSmartBadge');
+        const closeDetailBtn2 = document.getElementById('closeDetailBtn');
+        if (closeDetailBtn2) closeDetailBtn2.textContent = this.t('close');
+        const importReviewTitle = document.getElementById('importReviewTitle');
+        if (importReviewTitle) importReviewTitle.textContent = this.t('importReview');
+        const csvMappingTitle = document.getElementById('csvMappingTitle');
+        if (csvMappingTitle) csvMappingTitle.textContent = this.t('csvMappingTitle');
+        const csvMappingInstructions = document.getElementById('csvMappingInstructions');
+        if (csvMappingInstructions) csvMappingInstructions.innerHTML = this.t('csvMappingInstructionsHtml');
+        const csvMappingFieldsTitle = document.getElementById('csvMappingFieldsTitle');
+        if (csvMappingFieldsTitle) csvMappingFieldsTitle.textContent = this.t('csvMappingFieldsTitle');
+
         this.updatePeriodInfo();
     }
 
@@ -949,12 +1383,10 @@ const badge = document.querySelector('.badge');
         const remaining = this.calculateRemaining();
         if (remainingStatus) {
             remainingStatus.textContent = remaining >= 0 ? '✅' : '⚠️';
-            remainingStatus.title = remaining >= 0 
-                ? (this.data.language === 'it' ? 'Saldo positivo' : 'Positive balance')
-                : (this.data.language === 'it' ? 'Attenzione: saldo negativo' : 'Warning: negative balance');
+            remainingStatus.title = remaining >= 0 ? this.t('positiveBalance') : this.t('negativeBalance');
         }
         if (remainingTrend) {
-            remainingTrend.textContent = this.data.language === 'it' ? 'rispetto a ieri: 0%' : 'vs yesterday: 0%';
+            remainingTrend.textContent = this.t('vsYesterday0');
         }
 
         this.updatePeriodInfo();
@@ -1127,7 +1559,7 @@ const badge = document.querySelector('.badge');
                 <div class="expense-item">
                     <div class="expense-info">
                         <span class="expense-name">${exp.name || '?'}</span>
-                        <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${this.esc(this.getCategoryLabel(catDisplay))}</span>
+                        <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${catDisplay}</span>
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
@@ -1233,10 +1665,10 @@ const badge = document.querySelector('.badge');
             ? `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'in più' : 'in meno'} rispetto al mese scorso`
             : `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'more' : 'less'} than last month`;
         titleEl.textContent = categoryName;
-        totalEl.textContent = this.data.language === 'it' ? `Totale: ${this.formatCurrency(total)}` : `Total: ${this.formatCurrency(total)}`;
+        totalEl.textContent = this.t('detailTotal', { total: this.formatCurrency(total) });
         comparisonEl.textContent = comparisonText;
         if (expenses.length === 0) {
-            listEl.innerHTML = `<p class="chart-note">${this.data.language === 'it' ? 'Nessuna spesa' : 'No expenses'}</p>`;
+            listEl.innerHTML = `<p class="chart-note">${this.t('noExpensesShort')}</p>`;
         } else {
             listEl.innerHTML = expenses.map(exp => `
                 <div class="detail-expense-item">
@@ -1249,7 +1681,15 @@ const badge = document.querySelector('.badge');
     }
 
     formatCurrency(amount) {
-        return (amount || 0).toFixed(2).replace('.', ',') + ' €';
+        const value = Number(amount || 0);
+        const lang = this.data.language || 'it';
+        const localeMap = { it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR' };
+        const locale = localeMap[lang] || 'it-IT';
+        try {
+            return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(value);
+        } catch {
+            return `${value.toFixed(2)} €`;
+        }
     }
 
     highlightField(fieldId) {
@@ -1288,22 +1728,7 @@ const badge = document.querySelector('.badge');
         const container = document.getElementById('chatMessages');
         const div = document.createElement('div');
         div.className = `chat-message ${sender}`;
-
-        const senderSpan = document.createElement('span');
-        senderSpan.className = 'message-sender';
-        senderSpan.textContent = sender === 'bot'
-            ? '🤖 ' + this.t('assistantName') + ':'
-            : '👤 ' + (this.data.language === 'it' ? 'Tu' : 'You') + ':';
-
-        const textSpan = document.createElement('span');
-        textSpan.className = 'message-text';
-        // XSS-safe: never inject user content as HTML
-        textSpan.textContent = String(text ?? '');
-
-        div.appendChild(senderSpan);
-        div.appendChild(document.createTextNode(' '));
-        div.appendChild(textSpan);
-
+        div.innerHTML = `<span class="message-sender">${sender === 'bot' ? '🤖 ' + this.t('assistantName') : '👤 ' + (this.data.language === 'it' ? 'Tu' : 'You')}:</span> <span class="message-text">${text}</span>`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
@@ -1359,15 +1784,11 @@ const badge = document.querySelector('.badge');
         const remaining = this.calculateRemaining();
         const dailyBudget = this.calculateDailyBudget();
         if (remaining < 0) {
-            return this.data.language === 'it' ? "⚠️ Sei in rosso! Rivedi le spese." : "⚠️ You're in the red! Review your expenses.";
+            return this.t("adviceRed");
         } else if (remaining < dailyBudget * 7) {
-            return this.data.language === 'it'
-                ? `⚠️ Attenzione: ti rimangono solo ${this.formatCurrency(remaining)} per i prossimi giorni.`
-                : `⚠️ Warning: you only have ${this.formatCurrency(remaining)} left for the coming days.`;
+            return this.t("adviceLowRemaining", { remaining: this.formatCurrency(remaining) });
         } else {
-            return this.data.language === 'it'
-                ? `💪 Vai bene! Hai ancora ${this.formatCurrency(remaining)} di margine.`
-                : `💪 You're doing well! You still have ${this.formatCurrency(remaining)} left.`;
+            return this.t("adviceGood", { remaining: this.formatCurrency(remaining) });
         }
     }
 
@@ -1457,7 +1878,7 @@ const badge = document.querySelector('.badge');
                 this.applyLanguage();
                 alert(this.t('dataRestored'));
             } catch {
-                alert('❌ File non valido');
+                alert(this.t('invalidFile'));
             }
         };
         reader.readAsText(file);
@@ -1495,7 +1916,7 @@ const badge = document.querySelector('.badge');
                 if (exp && exp.endDate && new Date(exp.endDate) >= new Date()) {
                     ics += "BEGIN:VEVENT\n";
                     ics += `SUMMARY:💰 ${exp.name || 'Spesa'}\n`;
-                    ics += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa' : 'Fixed expense'} ${this.formatCurrency(exp.amount || 0)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day || '?'}\n`;
+                    ics += `DESCRIPTION:${this.t('fixedExpense')} ${this.formatCurrency(exp.amount || 0)} - ${this.t('everyMonthOnDay')} ${exp.day || '?'}\n`;
                     const nextDate = this.getNextPaymentDate(exp.day || 1);
                     ics += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
                     ics += `RRULE:FREQ=MONTHLY;UNTIL=${(exp.endDate || '').replace(/-/g, '')}\n`;
@@ -1552,218 +1973,12 @@ const badge = document.querySelector('.badge');
         return 'Altro'; // Default
     }
 
-    // ========== CSV IMPORT HELPERS (AUTO + TEMPLATE + DEDUP) ==========
-    normalizeCsvDescription(desc) {
-        return (desc || '')
-            .toLowerCase()
-            .replace(/[\u2019']/g, "'")
-            .replace(/[^\p{L}\p{N}\s]/gu, ' ')
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-
-    toAmountNumber(amountStr) {
-        if (!amountStr) return NaN;
-        // gestisce: 1.234,56  |  1,234.56  |  1234,56  |  1234.56  |  € 1.234,56
-        let s = String(amountStr).trim();
-
-        // rimuove simboli valuta e testi
-        s = s.replace(/[^0-9,\.\-]/g, '');
-
-        // se contiene sia . che , prova a capire il separatore decimale
-        const hasDot = s.includes('.');
-        const hasComma = s.includes(',');
-        if (hasDot && hasComma) {
-            // se ultima virgola è dopo l'ultimo punto → virgola decimale (it)
-            if (s.lastIndexOf(',') > s.lastIndexOf('.')) {
-                s = s.replace(/\./g, '').replace(',', '.');
-            } else {
-                // punto decimale (en)
-                s = s.replace(/,/g, '');
-            }
-        } else if (hasComma && !hasDot) {
-            s = s.replace(',', '.');
-        }
-        const n = parseFloat(s);
-        return Number.isFinite(n) ? n : NaN;
-    }
-
-    computeImportKey(type, dateISO, amountAbs, description) {
-        const a = (Math.round((amountAbs || 0) * 100) / 100).toFixed(2);
-        const d = this.normalizeCsvDescription(description);
-        return `${type}|${dateISO}|${a}|${d}`;
-    }
-
-    buildExistingImportKeys() {
-        const keys = new Set();
-
-        // Entrate
-        if (Array.isArray(this.data.incomes)) {
-            for (const inc of this.data.incomes) {
-                if (!inc) continue;
-                const k = this.computeImportKey('income', inc.date, Math.abs(Number(inc.amount) || 0), inc.desc || inc.name || '');
-                keys.add(k);
-            }
-        }
-
-        // Spese variabili
-        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
-            for (const [date, arr] of Object.entries(this.data.variableExpenses)) {
-                if (!Array.isArray(arr)) continue;
-                for (const exp of arr) {
-                    if (!exp) continue;
-                    const k = this.computeImportKey('expense', date, Math.abs(Number(exp.amount) || 0), exp.name || exp.desc || '');
-                    keys.add(k);
-                }
-            }
-        }
-
-        return keys;
-    }
-
-    detectCsvDelimiter(sampleText) {
-        // prova , ; \t scegliendo quello con numero colonne medio più alto
-        const candidates = [',', ';', '\t'];
-        const lines = String(sampleText || '').split(/\r?\n/).filter(l => l.trim()).slice(0, 25);
-        if (lines.length === 0) return ';';
-
-        let best = { delim: ';', score: -1 };
-
-        for (const delim of candidates) {
-            const counts = lines.map(l => l.split(delim).length);
-            const avg = counts.reduce((a,b)=>a+b,0) / counts.length;
-            const variance = counts.reduce((a,c)=>a+Math.pow(c-avg,2),0) / counts.length;
-            // preferisci più colonne e stabilità (bassa varianza)
-            const score = avg - (variance * 0.05);
-            if (score > best.score) best = { delim, score };
-        }
-        return best.delim;
-    }
-
-    detectHeaderIndex(lines, delimiter) {
-        // cerca tra le prime 30 righe quella che "sembra" un header o comunque quella con più colonne stabili
-        const maxScan = Math.min(lines.length, 30);
-        const keywords = ['data','date','descr','descrizione','causale','importo','amount','dare','avere','categoria','category'];
-
-        let bestIdx = 0;
-        let bestScore = -1;
-
-        for (let i = 0; i < maxScan; i++) {
-            const raw = lines[i];
-            if (!raw || !raw.trim()) continue;
-            const cells = raw.split(delimiter).map(c => c.trim());
-            const colCount = cells.length;
-
-            // scarta righe troppo corte
-            if (colCount < 3) continue;
-
-            const joined = cells.join(' ').toLowerCase();
-            const kwHits = keywords.reduce((acc,k)=>acc + (joined.includes(k) ? 1 : 0), 0);
-
-            // header tende a contenere parole, non solo numeri
-            const nonNumericCells = cells.filter(c => c && !/^[-+]?\d+(?:[\.,]\d+)?$/.test(c)).length;
-
-            // penalizza righe "estratto conto" introduttive
-            const looksLikeIntro = joined.includes('estratto') || joined.includes('account') || joined.includes('saldo');
-
-            const score = (colCount * 2) + (kwHits * 10) + nonNumericCells - (looksLikeIntro ? 15 : 0);
-
-            if (score > bestScore) {
-                bestScore = score;
-                bestIdx = i;
-            }
-        }
-        return bestIdx;
-    }
-
-    guessDateFormatFromSample(dateStr) {
-        const s = (dateStr || '').trim();
-        const parts = s.split(/[\/\-\.]/).filter(Boolean);
-        if (parts.length !== 3) return 'DD/MM/YYYY';
-
-        const p1 = parseInt(parts[0], 10);
-        const p2 = parseInt(parts[1], 10);
-
-        if (Number.isFinite(p1) && Number.isFinite(p2)) {
-            if (p1 > 12 && p2 <= 12) return 'DD/MM/YYYY';
-            if (p2 > 12 && p1 <= 12) return 'MM/DD/YYYY';
-        }
-        return 'DD/MM/YYYY';
-    }
-
-    csvHeadersSignature(headers, delimiter) {
-        return `${delimiter}::${(headers || []).map(h => String(h).trim().toLowerCase()).join('|')}`;
-    }
-
-    getCsvTemplates() {
-        if (!this.data.csvTemplates) this.data.csvTemplates = [];
-        if (!Array.isArray(this.data.csvTemplates)) this.data.csvTemplates = [];
-        return this.data.csvTemplates;
-    }
-
-    findTemplateBySignature(signature) {
-        const templates = this.getCsvTemplates();
-        return templates.find(t => t && t.signature === signature) || null;
-    }
-
-    saveCsvTemplate({ name, signature, delimiter, dateFormat, mapping }) {
-        const templates = this.getCsvTemplates();
-        const safeName = (name || '').trim() || 'Template CSV';
-
-        // se esiste già, aggiorna
-        const existing = templates.find(t => t && t.signature === signature);
-        const payload = {
-            id: existing?.id || (Date.now() + Math.floor(Math.random()*1000)),
-            name: safeName,
-            signature,
-            delimiter,
-            dateFormat,
-            mapping,
-            updatedAt: new Date().toISOString()
-        };
-
-        if (existing) {
-            const idx = templates.indexOf(existing);
-            templates[idx] = payload;
-        } else {
-            templates.push(payload);
-        }
-        this.data.csvTemplates = templates;
-        this.saveData();
-    }
-
     // ========== GESTIONE CATEGORIE PERSONALIZZATE ==========
     getAllCategories() {
         return [...this.defaultCategories, ...this.customCategories];
     }
     
-    
-    // Etichette categoria (traduzione solo per categorie predefinite)
-    getCategoryLabel(category) {
-        const cat = String(category || '').trim();
-        if (this.data.language !== 'en') return cat;
-        const map = {
-            'Alimentari': 'Food',
-            'Trasporti': 'Transport',
-            'Svago': 'Leisure',
-            'Salute': 'Health',
-            'Abbigliamento': 'Clothing',
-            'Altro': 'Other'
-        };
-        return map[cat] || cat;
-    }
-
-    // Escape base per testo inserito dall’utente (evita HTML injection in template string)
-    esc(text) {
-        return String(text ?? '')
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-
-saveCustomCategories() {
+    saveCustomCategories() {
         localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
     }
     
@@ -1784,10 +1999,9 @@ saveCustomCategories() {
         const customList = document.getElementById('customCategoriesList');
         
         if (defaultList) {
-            defaultList.innerHTML = this.defaultCategories.map(cat => {
-                const label = this.getCategoryLabel(cat);
-                return `<div class="category-item default"><span>${this.esc(label)}</span></div>`;
-            }).join('');
+            defaultList.innerHTML = this.defaultCategories.map(cat => 
+                `<div class="category-item default"><span>${cat}</span></div>`
+            ).join('');
         }
         
         if (customList) {
@@ -1796,7 +2010,7 @@ saveCustomCategories() {
             } else {
                 customList.innerHTML = this.customCategories.map((cat, index) => `
                     <div class="category-item custom">
-                        <span>${this.esc(cat)}</span>
+                        <span>${cat}</span>
                         <div>
                             <button class="edit-category-btn" data-index="${index}">✏️</button>
                             <button class="delete-category-btn" data-index="${index}">🗑️</button>
@@ -1872,7 +2086,7 @@ saveCustomCategories() {
     updateAllCategorySelects() {
         const categories = this.getAllCategories();
         const optionsHtml = categories.map(cat => 
-            `<option value="${cat}">${this.getCategoryEmoji(cat)} ${this.esc(this.getCategoryLabel(cat))}</option>`
+            `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
         ).join('');
         
         const mainSelect = document.getElementById('expenseCategory');
@@ -1908,7 +2122,7 @@ saveCustomCategories() {
             
             const categories = this.getAllCategories();
             const options = categories.map(cat => 
-                `<option value="${cat}">${this.getCategoryEmoji(cat)} ${this.esc(this.getCategoryLabel(cat))}</option>`
+                `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
             ).join('');
             
             listEl.innerHTML = importedExpenses.map((exp, index) => `
@@ -1974,333 +2188,219 @@ saveCustomCategories() {
     }
 
     // ========== MAPPATURA CAMPI CSV ==========
-    
-    // ========== MAPPATURA CAMPI CSV (AUTO + TEMPLATE) ==========
-    async showMappingDialog(file, delimiter, headerIndex = 0, dateFormat = 'DD/MM/YYYY', signature = '') {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const csvText = e.target.result;
-                    const lines = String(csvText).split(/\r?\n/).filter(line => line.trim());
-                    if (lines.length === 0) return resolve(null);
-
-                    // ricalcola headerIndex se fuori range
-                    const hi = Math.min(Math.max(headerIndex || 0, 0), Math.max(lines.length - 1, 0));
-                    const headers = lines[hi].split(delimiter).map(h => h.trim());
-                    const previewData = lines.slice(hi + 1, hi + 6).map(line =>
-                        line.split(delimiter).map(cell => cell.trim())
-                    );
-
-                    const tpl = signature ? this.findTemplateBySignature(signature) : null;
-                    if (tpl && tpl.mapping) {
-                        const ok = confirm(`📌 Rilevato template CSV: "${tpl.name}".\nVuoi usarlo automaticamente?`);
-                        if (ok) return resolve(tpl.mapping);
-                    }
-
-                    const mapping = await this.showMappingDialogFromText(headers, previewData, { delimiter, dateFormat, signature });
-                    resolve(mapping);
-                } catch (err) {
-                    console.error('Errore showMappingDialog:', err);
-                    resolve(null);
-                }
-            };
-            reader.onerror = () => resolve(null);
-            reader.readAsText(file);
-        });
-    }
-
-    async showMappingDialogFromText(headers, previewData, opts = {}) {
+    async showMappingDialog(file, delimiter) {
         return new Promise((resolve) => {
             const overlay = document.getElementById('csvMappingOverlay');
             const headersRow = document.getElementById('csvMappingHeaders');
             const previewBody = document.getElementById('csvMappingPreview');
             const fieldsDiv = document.getElementById('csvMappingFields');
-
+            
             if (!overlay || !headersRow || !previewBody || !fieldsDiv) {
                 console.error('Elementi mappatura non trovati');
                 resolve(null);
                 return;
             }
-
-            overlay.style.display = 'flex';
-
-            headersRow.innerHTML = headers.map(h => `<th>${h || '?'}</th>`).join('');
-
-            previewBody.innerHTML = previewData.map(row =>
-                `<tr>${row.map(cell => `<td class="preview-cell">${cell || ''}</td>`).join('')}</tr>`
-            ).join('');
-
-            const fieldOptions = [
-                { value: 'date', label: '📅 Data' },
-                { value: 'description', label: '📝 Descrizione' },
-                { value: 'amount', label: '💰 Importo' },
-                { value: 'category', label: '🏷️ Categoria' },
-                { value: 'ignore', label: '❌ Ignora' }
-            ];
-
-            // UI template salva/aggiorna
-            fieldsDiv.innerHTML = `
-                <div style="display:flex; align-items:center; gap:12px; padding:12px; border-radius:16px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); margin-bottom:16px;">
-                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer;">
-                        <input id="saveCsvTemplateChk" type="checkbox" style="transform: scale(1.1);" />
-                        <span style="font-weight:600;">💾 Salva come template</span>
-                    </label>
-                    <input id="csvTemplateName" type="text" placeholder="Nome template (es. Intesa, Unicredit...)" style="flex:1; padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.25); color:var(--text);" />
-                    <span style="font-size:.9rem; opacity:.8;">(opzionale)</span>
-                </div>
-                ${headers.map((header, index) => `
-                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px; margin-bottom:10px;">
-                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const text = e.target.result;
+                const lines = text.split('\n').filter(line => line.trim());
+                if (lines.length === 0) {
+                    resolve(null);
+                    return;
+                }
+                
+                const headers = lines[0].split(delimiter).map(h => h.trim());
+                const previewData = lines.slice(1, 6).map(line => 
+                    line.split(delimiter).map(cell => cell.trim())
+                );
+                
+                overlay.style.display = 'flex';
+                
+                headersRow.innerHTML = headers.map(h => `<th>${h || '?'}</th>`).join('');
+                
+                previewBody.innerHTML = previewData.map(row => 
+                    `<tr>${row.map(cell => `<td class="preview-cell">${cell || ''}</td>`).join('')}</tr>`
+                ).join('');
+                
+                const fieldOptions = [
+                    { value: 'date', label: this.t('csvFieldDate') },
+                    { value: 'description', label: this.t('csvFieldDescription') },
+                    { value: 'amount', label: this.t('csvFieldAmount') },
+                    { value: 'category', label: this.t('csvFieldCategory') },
+                    { value: 'ignore', label: this.t('csvFieldIgnore') }
+                ];
+                
+                fieldsDiv.innerHTML = headers.map((header, index) => `
+                    <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
+                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">${this.t("csvColumnN", { n: (index + 1) })}: "${header || this.t("empty")}"</span>
                         <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
                             ${fieldOptions.map(opt => {
                                 let selected = '';
-                                const h = String(header || '').toLowerCase();
-                                // pre-selezione smart basata sul nome colonna
-                                if (opt.value === 'date' && (h.includes('data') || h.includes('date'))) selected = 'selected';
-                                else if (opt.value === 'description' && (h.includes('descr') || h.includes('causale') || h.includes('dettag'))) selected = 'selected';
-                                else if (opt.value === 'amount' && (h.includes('importo') || h.includes('amount') || h.includes('valore'))) selected = 'selected';
-                                else if (opt.value === 'category' && (h.includes('cat') || h.includes('categoria'))) selected = 'selected';
-                                // fallback: prime 3 colonne
-                                if (!selected) {
-                                    if (opt.value === 'date' && index === 0) selected = 'selected';
-                                    else if (opt.value === 'description' && index === 1) selected = 'selected';
-                                    else if (opt.value === 'amount' && index === 2) selected = 'selected';
-                                }
+                                if (opt.value === 'date' && index === 0) selected = 'selected';
+                                else if (opt.value === 'description' && index === 1) selected = 'selected';
+                                else if (opt.value === 'amount' && index === 2) selected = 'selected';
                                 return `<option value="${opt.value}" ${selected}>${opt.label}</option>`;
                             }).join('')}
                         </select>
                     </div>
-                `).join('')}
-            `;
-
-            const confirmBtn = document.getElementById('confirmMappingBtn');
-            const cancelBtn = document.getElementById('cancelMappingBtn');
-
-            const onConfirm = () => {
-                const mapping = { dateCol: -1, descCol: -1, amountCol: -1, categoryCol: -1 };
-
-                headers.forEach((_, index) => {
-                    const select = document.getElementById(`mapping-${index}`);
-                    if (!select) return;
-                    const value = select.value;
-                    if (value === 'date') mapping.dateCol = index;
-                    else if (value === 'description') mapping.descCol = index;
-                    else if (value === 'amount') mapping.amountCol = index;
-                    else if (value === 'category') mapping.categoryCol = index;
-                });
-
-                if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
-                    alert('❌ Devi mappare Data, Descrizione e Importo!');
-                    return;
-                }
-
-                // salva template se richiesto
-                const chk = document.getElementById('saveCsvTemplateChk');
-                if (chk && chk.checked) {
-                    const nameEl = document.getElementById('csvTemplateName');
-                    const name = nameEl ? nameEl.value : '';
-                    const signature = opts.signature || this.csvHeadersSignature(headers, opts.delimiter || ';');
-                    this.saveCsvTemplate({
-                        name,
-                        signature,
-                        delimiter: opts.delimiter || ';',
-                        dateFormat: opts.dateFormat || 'DD/MM/YYYY',
-                        mapping
+                `).join('');
+                
+                const confirmBtn = document.getElementById('confirmMappingBtn');
+                const cancelBtn = document.getElementById('cancelMappingBtn');
+                
+                const onConfirm = () => {
+                    const mapping = {
+                        dateCol: -1,
+                        descCol: -1,
+                        amountCol: -1,
+                        categoryCol: -1
+                    };
+                    
+                    headers.forEach((_, index) => {
+                        const select = document.getElementById(`mapping-${index}`);
+                        if (select) {
+                            const value = select.value;
+                            if (value === 'date') mapping.dateCol = index;
+                            else if (value === 'description') mapping.descCol = index;
+                            else if (value === 'amount') mapping.amountCol = index;
+                            else if (value === 'category') mapping.categoryCol = index;
+                        }
                     });
-                }
-
-                overlay.style.display = 'none';
-                resolve(mapping);
-            };
-
-            const onCancel = () => {
-                overlay.style.display = 'none';
-                resolve(null);
-            };
-
-            confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-            cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-
-            document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
-            document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
-        });
-    }
-
-    
-    // ========== IMPORT CSV CON MAPPATURA ==========
-    
-    // ========== IMPORT CSV CON MAPPATURA (AUTO + TEMPLATE + DEDUP) ==========
-    async parseCSV(file, delimiter, dateFormat) {
-        console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
-
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            try {
-                const csvText = e.target.result;
-
-                // 1) AUTO delimiter
-                let usedDelimiter = delimiter;
-                if (!usedDelimiter || usedDelimiter === 'AUTO') {
-                    usedDelimiter = this.detectCsvDelimiter(csvText);
-                    console.log('🧠 Delimiter auto-detect:', usedDelimiter);
-                }
-
-                // 2) lines + header detect
-                const linesAll = String(csvText).split(/\r?\n/).filter(line => line.trim());
-                if (linesAll.length === 0) {
-                    alert('❌ CSV vuoto');
-                    return;
-                }
-
-                const headerIndex = this.detectHeaderIndex(linesAll, usedDelimiter);
-                const headers = linesAll[headerIndex].split(usedDelimiter).map(h => h.trim());
-                const signature = this.csvHeadersSignature(headers, usedDelimiter);
-
-                // 3) AUTO dateFormat (prende un sample dalla colonna data dopo mapping, ma qui facciamo una guess iniziale)
-                let usedDateFormat = dateFormat;
-                if (!usedDateFormat || usedDateFormat === 'AUTO') {
-                    // prova a pescare una data dalla prima riga dati
-                    const sampleLine = linesAll[headerIndex + 1] || '';
-                    const sampleCells = sampleLine.split(usedDelimiter).map(c => c.trim());
-                    const sampleDate = sampleCells[0] || '';
-                    usedDateFormat = this.guessDateFormatFromSample(sampleDate);
-                    console.log('🧠 DateFormat auto-guess:', usedDateFormat);
-                }
-
-                // 4) mapping (con template se presente)
-                const mapping = await this.showMappingDialog(file, usedDelimiter, headerIndex, usedDateFormat, signature);
-                if (!mapping) {
-                    alert('⏸️ Import annullato');
-                    return;
-                }
-
-                // 5) importa + dedup
-                const existingKeys = this.buildExistingImportKeys();
-                let skippedDuplicates = 0;
-
-                const dataLines = linesAll.slice(headerIndex + 1);
-                const importedExpenses = [];
-                const incomesToAdd = [];
-
-                for (let i = 0; i < dataLines.length; i++) {
-                    const line = dataLines[i].trim();
-                    if (!line) continue;
-
-                    const parts = line.split(usedDelimiter);
-                    if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol, mapping.categoryCol)) continue;
-
-                    let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
-                    let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
-                    let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
-                    let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
-
-                    if (!dateStr || !description || !amountStr) continue;
-
-                    // normalizza data in ISO YYYY-MM-DD
-                    const p = dateStr.split(/[\/\-\.]/).filter(Boolean);
-                    if (p.length === 3) {
-                        if (usedDateFormat === 'DD/MM/YYYY') {
-                            const [d, m, y] = p;
-                            if (d && m && y) dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                            else continue;
-                        } else if (usedDateFormat === 'MM/DD/YYYY') {
-                            const [m, d, y] = p;
-                            if (m && d && y) dateStr = `${y}-${String(m).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-                            else continue;
-                        }
-                    } else {
-                        // se già ISO lo lasciamo, altrimenti skip
-                        if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) continue;
-                    }
-
-                    let amount = this.toAmountNumber(amountStr);
-                    if (isNaN(amount)) continue;
-
-                    if (!category) category = this.suggestCategory(description);
-
-                    if (amount > 0) {
-                        const key = this.computeImportKey('income', dateStr, Math.abs(amount), description);
-                        if (existingKeys.has(key)) { skippedDuplicates++; continue; }
-                        existingKeys.add(key);
-
-                        incomesToAdd.push({
-                            desc: description,
-                            amount: amount,
-                            date: dateStr,
-                            id: Date.now() + i
-                        });
-                    } else {
-                        const absAmount = Math.abs(amount);
-                        const key = this.computeImportKey('expense', dateStr, absAmount, description);
-                        if (existingKeys.has(key)) { skippedDuplicates++; continue; }
-                        existingKeys.add(key);
-
-                        importedExpenses.push({
-                            name: description,
-                            amount: absAmount,
-                            date: dateStr,
-                            category: category || 'Altro',
-                            id: Date.now() + i
-                        });
-                    }
-                }
-
-                // aggiungi entrate
-                if (incomesToAdd.length) {
-                    if (!this.data.incomes) this.data.incomes = [];
-                    this.data.incomes.push(...incomesToAdd);
-                }
-
-                // review spese e inserimento
-                let importedCount = 0;
-
-                if (importedExpenses.length > 0) {
-                    const reviewed = await this.showImportReview(importedExpenses);
-                    if (reviewed.length > 0) {
-                        for (const exp of reviewed) {
-                            // dedup anche post-review (per sicurezza)
-                            const key = this.computeImportKey('expense', exp.date, Math.abs(exp.amount), exp.name);
-                            if (this.buildExistingImportKeys().has(key)) { skippedDuplicates++; continue; }
-
-                            if (!this.data.variableExpenses) this.data.variableExpenses = {};
-                            if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
-                            this.data.variableExpenses[exp.date].push({
-                                name: exp.name,
-                                amount: exp.amount,
-                                category: exp.category,
-                                id: exp.id
-                            });
-                            importedCount++;
-                        }
-                    } else {
-                        alert('⏸️ Import annullato');
+                    
+                    if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
+                        alert(this.t('csvMappingRequired'));
                         return;
                     }
+                    
+                    overlay.style.display = 'none';
+                    resolve(mapping);
+                };
+                
+                const onCancel = () => {
+                    overlay.style.display = 'none';
+                    resolve(null);
+                };
+                
+                confirmBtn.replaceWith(confirmBtn.cloneNode(true));
+                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+                
+                document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
+                document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
+            };
+            
+            reader.onerror = () => {
+                resolve(null);
+            };
+            
+            reader.readAsText(file);
+        });
+    }
+    
+    // ========== IMPORT CSV CON MAPPATURA ==========
+    async parseCSV(file, delimiter, dateFormat) {
+        console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
+        
+        const mapping = await this.showMappingDialog(file, delimiter);
+        if (!mapping) {
+            alert(this.t('importCancelled'));
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            const text = e.target.result;
+            const lines = text.split('\n').filter(line => line.trim()).slice(1);
+            const importedExpenses = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                const parts = line.split(delimiter);
+                if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol)) continue;
+                
+                let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
+                let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
+                let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
+                let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
+                
+                if (!dateStr || !description || !amountStr) continue;
+                
+                if (dateFormat === 'DD/MM/YYYY') {
+                    const parts = dateStr.split(/[\/\-]/);
+                    if (parts.length === 3) {
+                        const [d, m, y] = parts;
+                        if (d && m && y) dateStr = `${y}-${m}-${d}`;
+                        else continue;
+                    } else continue;
+                } else if (dateFormat === 'MM/DD/YYYY') {
+                    const parts = dateStr.split(/[\/\-]/);
+                    if (parts.length === 3) {
+                        const [m, d, y] = parts;
+                        if (m && d && y) dateStr = `${y}-${m}-${d}`;
+                        else continue;
+                    } else continue;
                 }
-
+                
+                let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
+                if (isNaN(amount)) continue;
+                
+                if (!category) category = this.suggestCategory(description);
+                
+                if (amount > 0) {
+                    if (!this.data.incomes) this.data.incomes = [];
+                    this.data.incomes.push({
+                        desc: description,
+                        amount: amount,
+                        date: dateStr,
+                        id: Date.now() + i
+                    });
+                } else {
+                    amount = Math.abs(amount);
+                    importedExpenses.push({
+                        name: description,
+                        amount: amount,
+                        date: dateStr,
+                        category: category || 'Altro',
+                        id: Date.now() + i
+                    });
+                }
+            }
+            
+            if (importedExpenses.length > 0) {
+                const reviewed = await this.showImportReview(importedExpenses);
+                if (reviewed.length > 0) {
+                    for (const exp of reviewed) {
+                        if (!this.data.variableExpenses) this.data.variableExpenses = {};
+                        if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
+                        this.data.variableExpenses[exp.date].push({
+                            name: exp.name,
+                            amount: exp.amount,
+                            category: exp.category,
+                            id: exp.id
+                        });
+                    }
+                    this.saveData();
+                    this.updateUI();
+                    this.updateChart();
+                    alert(`✅ Importate ${reviewed.length} spese!`);
+                } else {
+                    alert(this.t('importCancelled'));
+                }
+            } else {
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
-
-                const totalAdded = (incomesToAdd.length) + importedCount;
-                const dupMsg = skippedDuplicates > 0 ? `\n⚠️ Duplicati saltati: ${skippedDuplicates}` : '';
-                alert(`✅ Import completato!\n➕ Aggiunti: ${totalAdded}${dupMsg}`);
-
-            } catch (err) {
-                console.error('❌ Errore import CSV:', err);
-                alert('❌ Errore durante l\'import CSV');
+                alert('✅ File importato con successo!');
             }
         };
-
         reader.onerror = () => {
             console.error('❌ Errore lettura file');
-            alert('❌ Errore durante la lettura del file');
+            alert(this.t('fileReadError'));
         };
-
         reader.readAsText(file);
     }
-
 
     // ========== ONBOARDING GUIDATO ==========
     startOnboarding() {
@@ -2356,7 +2456,7 @@ saveCustomCategories() {
         card.innerHTML = `
             <div style="font-size: 3.5rem; margin-bottom: 10px;">✨</div>
             <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
-            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.t('onboardingSubtitle')}</p>
             
             <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
                 <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
@@ -2468,7 +2568,8 @@ saveCustomCategories() {
     startVoiceInput(type = 'variable') {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.lang = this.data.language === 'it' ? 'it-IT' : 'en-US';
+        const localeMap = { it: 'it-IT', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
+        recognition.lang = localeMap[this.data.language] || 'it-IT';
         recognition.interimResults = true;
 
         let button, statusElement;
@@ -2486,7 +2587,7 @@ saveCustomCategories() {
         if (!button) return;
 
         button.classList.add('listening');
-        statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Parlare...' : 'Speak...');
+        statusElement.textContent = '🎤 ' + this.t('voiceSpeak');
 
         recognition.onresult = (event) => {
             const result = event.results[event.results.length - 1];
@@ -2494,7 +2595,7 @@ saveCustomCategories() {
             if (result.isFinal) {
                 if (type === 'fixed') this.processFixedVoiceCommand(transcript);
                 else this.processVoiceCommand(transcript);
-                statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+                statusElement.textContent = '🎤 ' + this.t('voiceTap');
             } else {
                 statusElement.textContent = `🔊 ${transcript}...`;
             }
@@ -2502,9 +2603,9 @@ saveCustomCategories() {
 
         recognition.onerror = () => {
             button.classList.remove('listening');
-            statusElement.textContent = '❌ ' + (this.data.language === 'it' ? 'Errore' : 'Error');
+            statusElement.textContent = '❌ ' + this.t('error');
             setTimeout(() => {
-                statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+                statusElement.textContent = '🎤 ' + this.t('voiceTap');
             }, 2000);
         };
 
@@ -2517,7 +2618,7 @@ saveCustomCategories() {
         setTimeout(() => {
             recognition.stop();
             button.classList.remove('listening');
-            statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+            statusElement.textContent = '🎤 ' + this.t('voiceTap');
         }, timeoutDuration);
     }
 
@@ -2528,9 +2629,7 @@ saveCustomCategories() {
             let description = transcript.replace(amountMatch[0], '').replace(/euro|€|euros/gi, '').trim();
             document.getElementById('expenseName').value = description || (this.data.language === 'it' ? 'Spesa' : 'Expense');
             document.getElementById('expenseAmount').value = amount;
-            alert(this.data.language === 'it' 
-                ? `✅ Rilevato: ${description || 'Spesa'} €${amount}`
-                : `✅ Detected: ${description || 'Expense'} €${amount}`);
+            alert(this.t('voiceDetected', { desc: (description || this.t('genericExpense')), amount: amount }));
         }
     }
 
@@ -2564,9 +2663,7 @@ saveCustomCategories() {
         document.getElementById('fixedAmount').value = amount;
         document.getElementById('fixedDay').value = day;
         document.getElementById('fixedEndDate').value = endDate;
-        alert(this.data.language === 'it'
-            ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
-            : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
+        alert(this.t('voiceFixedDetected', { name, amount: amount, day }));
     }
 
     // ========== AI WIDGET ==========
@@ -2706,8 +2803,7 @@ saveCustomCategories() {
             else {
                 this.showToast(
                     this.data.language === 'it'
-                        ? '🔍 Funzionalità in sviluppo'
-                        : '🔍 Feature in development',
+                        ? this.t('featureInDev'),
                     'info'
                 );
             }
