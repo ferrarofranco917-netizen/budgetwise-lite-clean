@@ -1002,7 +1002,33 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
         if (csvMappingInstructions) csvMappingInstructions.innerHTML = this.t('csvMappingInstructionsHtml');
         const csvMappingFieldsTitle = document.getElementById('csvMappingFieldsTitle');
         if (csvMappingFieldsTitle) csvMappingFieldsTitle.textContent = this.t('csvMappingFieldsTitle');
+// ====== Traduzioni Gestione Categorie (sezione + modale) ======
+const categoriesSectionTitle = document.getElementById('categoriesSectionTitle');
+if (categoriesSectionTitle) categoriesSectionTitle.textContent = this.t('categoriesSectionTitle');
 
+const manageCustomCategoriesText = document.getElementById('manageCustomCategoriesText');
+if (manageCustomCategoriesText) manageCustomCategoriesText.textContent = this.t('manageCustomCategories');
+
+const manageCategoriesTitle = document.getElementById('manageCategoriesTitle');
+if (manageCategoriesTitle) manageCategoriesTitle.textContent = this.t('manageCategories');
+
+const defaultCategoriesTitle = document.getElementById('defaultCategoriesTitle');
+if (defaultCategoriesTitle) defaultCategoriesTitle.textContent = this.t('defaultCategories');
+
+const customCategoriesTitle = document.getElementById('customCategoriesTitle');
+if (customCategoriesTitle) customCategoriesTitle.textContent = this.t('customCategories');
+
+const newCategoryLabel = document.getElementById('newCategoryLabel');
+if (newCategoryLabel) newCategoryLabel.textContent = this.t('newCategoryLabel');
+
+const newCategoryName = document.getElementById('newCategoryName');
+if (newCategoryName) newCategoryName.placeholder = this.t('newCategoryPlaceholder');
+
+const addCategoryBtnText = document.getElementById('addCategoryBtnText');
+if (addCategoryBtnText) addCategoryBtnText.textContent = this.t('add');
+
+const closeCategoryManagerText = document.getElementById('closeCategoryManagerText');
+if (closeCategoryManagerText) closeCategoryManagerText.textContent = this.t('close');
         this.updatePeriodInfo();
     }
 
