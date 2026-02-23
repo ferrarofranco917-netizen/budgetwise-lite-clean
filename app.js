@@ -1,3 +1,4 @@
+console.log("BudgetWise Build v2026.02.23-1");
 // ============================================
 // BUDGETWISE 2.0 - VERSIONE STABILE COMPLETA
 // ============================================
