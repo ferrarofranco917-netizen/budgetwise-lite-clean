@@ -402,8 +402,20 @@
     </script>
 
     <script src="app.js"></script>
+    <!-- REVISIONE IMPORT CSV -->
+<div id="importReviewOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+        <h3 style="margin-bottom: 20px; color: var(--text-primary);">📋 Revisione spese importate</h3>
+        <div id="importReviewList" style="margin-bottom: 20px;"></div>
+        <div class="button-group" style="display: flex; gap: 10px; justify-content: flex-end;">
+            <button id="confirmImportBtn" class="btn-primary" style="padding: 12px 24px;">✅ Conferma</button>
+            <button id="cancelImportBtn" class="btn-secondary" style="padding: 12px 24px;">✕ Annulla</button>
+        </div>
+    </div>
+</div>
 </body>
 </html>
+
 
 
 
