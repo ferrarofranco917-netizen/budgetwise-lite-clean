@@ -90,33 +90,39 @@
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-        <!-- ==================== ENTRATE MULTIPLE ==================== -->
-        <div class="section-card">
-            <div class="section-header">
-                <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
-                <span class="badge" id="badge">multiplo</span>
+       <!-- ==================== ENTRATE MULTIPLE CON DATA ==================== -->
+<div class="section-card">
+    <div class="section-header">
+        <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
+        <span class="badge" id="badge">multiplo</span>
+    </div>
+    <div class="section-content">
+        <!-- Lista entrate -->
+        <div id="incomeList" class="expenses-list">
+            <p class="chart-note">Nessuna entrata</p>
+        </div>
+        
+        <!-- Form inserimento con DATA -->
+        <div class="input-group-row">
+            <div class="input-with-mic" style="flex: 2;">
+                <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
             </div>
-            <div class="section-content">
-                <!-- Lista entrate -->
-                <div id="incomeList" class="expenses-list">
-                    <p class="chart-note">Nessuna entrata</p>
-                </div>
-                
-                <!-- Form inserimento -->
-                <div class="input-group-row">
-                    <div class="input-with-mic" style="flex: 2;">
-                        <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
-                    </div>
-                    <div class="input-with-mic" style="flex: 1;">
-                        <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
-                    </div>
-                </div>
-                
-                <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
-                <p class="help-text">📊 <span id="totalIncomeLabel">Totale entrate</span>: <span id="totalIncomeDisplay">0,00 €</span></p>
+            <div class="input-with-mic" style="flex: 1;">
+                <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
             </div>
         </div>
-
+        <div class="input-group-row">
+            <div style="flex: 1;">
+                <label for="incomeDate" id="incomeDateLabel">Data</label>
+                <input type="date" id="incomeDate" class="date-input" value="">
+            </div>
+        </div>
+        
+        <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
+        <p class="help-text">📊 <span id="totalIncomeLabel">Totale entrate</span>: <span id="totalIncomeDisplay">0,00 €</span></p>
+    </div>
+</div>
+        
         <!-- ==================== SPESE FISSE ==================== -->
         <div class="section-card">
             <h2 id="fixedTitle">📌 Spese fisse mensili</h2>
@@ -353,6 +359,7 @@
     <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
