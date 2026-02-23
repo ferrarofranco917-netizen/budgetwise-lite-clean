@@ -212,7 +212,15 @@ aiSuggestionsTitle: '🤖 Suggerimenti AI',
 aiSmartBadge: 'intelligente',
 csvMappingTitle: '📋 Mappa le colonne del file CSV',
 csvMappingInstructionsHtml: '<strong>📌 Istruzioni:</strong> Associa ogni colonna del tuo file al campo corrispondente. Le righe con importo positivo saranno considerate <strong>entrate</strong>, quelle negative <strong>spese</strong>.',
-csvMappingFieldsTitle: '🎯 Associazione campi:'            },
+csvMappingFieldsTitle: '🎯 Associazione campi:'
+                categoriesSectionTitle: '📂 Gestione categorie',
+                manageCustomCategories: '➕ Gestisci categorie personalizzate',
+                newCategoryLabel: 'Nuova categoria',
+                newCategoryPlaceholder: 'es. Viaggi',
+                defaultCategoriesTitle: 'Categorie predefinite',
+                yourCategoriesTitle: 'Le tue categorie',
+                close: 'Chiudi',
+            },
             en: {
                 budget: 'Daily budget',
                 remaining: 'Remaining',
@@ -396,7 +404,15 @@ aiSuggestionsTitle: '🤖 AI Suggestions',
 aiSmartBadge: 'smart',
 csvMappingTitle: '📋 Map CSV columns',
 csvMappingInstructionsHtml: '<strong>📌 Instructions:</strong> Map each CSV column to the right field. Positive amounts are treated as <strong>income</strong>, negative amounts as <strong>expenses</strong>.',
-csvMappingFieldsTitle: '🎯 Field mapping:'            },
+csvMappingFieldsTitle: '🎯 Field mapping:'
+                categoriesSectionTitle: '📂 Category management',
+                manageCustomCategories: '➕ Manage custom categories',
+                newCategoryLabel: 'New category',
+                newCategoryPlaceholder: 'e.g. Travel',
+                defaultCategoriesTitle: 'Default categories',
+                yourCategoriesTitle: 'Your categories',
+                close: 'Close',
+            },
             es: {
                 budget: 'Presupuesto diario',
                 remaining: 'Restante',
@@ -1002,33 +1018,45 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
         if (csvMappingInstructions) csvMappingInstructions.innerHTML = this.t('csvMappingInstructionsHtml');
         const csvMappingFieldsTitle = document.getElementById('csvMappingFieldsTitle');
         if (csvMappingFieldsTitle) csvMappingFieldsTitle.textContent = this.t('csvMappingFieldsTitle');
-// ====== Traduzioni Gestione Categorie (sezione + modale) ======
-const categoriesSectionTitle = document.getElementById('categoriesSectionTitle');
-if (categoriesSectionTitle) categoriesSectionTitle.textContent = this.t('categoriesSectionTitle');
 
-const manageCustomCategoriesText = document.getElementById('manageCustomCategoriesText');
-if (manageCustomCategoriesText) manageCustomCategoriesText.textContent = this.t('manageCustomCategories');
+        
+        // Gestione categorie (sezione + modale)
+        const catSectionTitle = Array.from(document.querySelectorAll('h2')).find(h => h.textContent.includes('📂'));
+        if (catSectionTitle) catSectionTitle.textContent = this.t('categoriesSectionTitle');
 
-const manageCategoriesTitle = document.getElementById('manageCategoriesTitle');
-if (manageCategoriesTitle) manageCategoriesTitle.textContent = this.t('manageCategories');
+        const manageBtn = document.getElementById('manageCategoriesBtn');
+        if (manageBtn) manageBtn.textContent = this.t('manageCustomCategories');
 
-const defaultCategoriesTitle = document.getElementById('defaultCategoriesTitle');
-if (defaultCategoriesTitle) defaultCategoriesTitle.textContent = this.t('defaultCategories');
+        const catOverlay = document.getElementById('categoryManagerOverlay');
+        if (catOverlay) {
+            const h3 = catOverlay.querySelector('h3');
+            if (h3) h3.textContent = this.t('manageCategories');
 
-const customCategoriesTitle = document.getElementById('customCategoriesTitle');
-if (customCategoriesTitle) customCategoriesTitle.textContent = this.t('customCategories');
+            const h4s = catOverlay.querySelectorAll('h4');
+            if (h4s.length >= 2) {
+                h4s[0].textContent = this.t('defaultCategoriesTitle');
+                h4s[1].textContent = this.t('yourCategoriesTitle');
+            }
 
-const newCategoryLabel = document.getElementById('newCategoryLabel');
-if (newCategoryLabel) newCategoryLabel.textContent = this.t('newCategoryLabel');
+            const newCatLabel = catOverlay.querySelector('label[for="newCategoryName"]');
+            if (newCatLabel) newCatLabel.textContent = this.t('newCategoryLabel');
 
-const newCategoryName = document.getElementById('newCategoryName');
-if (newCategoryName) newCategoryName.placeholder = this.t('newCategoryPlaceholder');
+            const newCatInput = document.getElementById('newCategoryName');
+            if (newCatInput) newCatInput.placeholder = this.t('newCategoryPlaceholder');
 
-const addCategoryBtnText = document.getElementById('addCategoryBtnText');
-if (addCategoryBtnText) addCategoryBtnText.textContent = this.t('add');
+            const saveCatBtn = document.getElementById('saveCategoryBtn');
+            if (saveCatBtn) saveCatBtn.textContent = this.t('add');
 
-const closeCategoryManagerText = document.getElementById('closeCategoryManagerText');
-if (closeCategoryManagerText) closeCategoryManagerText.textContent = this.t('close');
+            const closeCatBtn = document.getElementById('closeCategoryManager');
+            if (closeCatBtn) closeCatBtn.textContent = this.t('close');
+        }
+
+        // Rirender liste per tradurre i placeholder "Nessuna ..."
+        this.updateIncomeList();
+        this.updateFixedExpensesList();
+        this.updateVariableExpensesList();
+        this.updateChart();
+
         this.updatePeriodInfo();
     }
 
@@ -1371,14 +1399,13 @@ if (closeCategoryManagerText) closeCategoryManagerText.textContent = this.t('clo
             this.saveData();
         });
         document.getElementById('languageSelect').addEventListener('change', (e) => {
-    this.data.language = e.target.value;
-    this.saveData();
-
-    // Applica traduzioni UI + rigenera liste/messaggi (es. "Nessuna entrata")
-    this.applyLanguage();
-    this.updateUI();
-    this.updateChart();
-});
+            this.data.language = e.target.value;
+            this.saveData();
+            // Applica traduzioni UI + rigenera liste/messaggi (es. "Nessuna entrata")
+            this.applyLanguage();
+            this.updateUI();
+            this.updateChart();
+        });
         const closeDetailBtn = document.getElementById('closeDetailBtn');
         if (closeDetailBtn) {
             closeDetailBtn.addEventListener('click', () => {
