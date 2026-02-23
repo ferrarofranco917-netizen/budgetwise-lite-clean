@@ -1980,6 +1980,59 @@ class BudgetWise {
             });
         });
     }
+    // FIX: Collega il pulsante Importa CSV (aggiunto il 23/02/2026)
+document.addEventListener('DOMContentLoaded', function() {
+    // Aspetta che l'app sia inizializzata
+    setTimeout(function() {
+        const btn = document.getElementById('importCsvBtn');
+        if (btn && window.app) {
+            console.log('🔧 Applico fix al pulsante Importa CSV');
+            
+            // Rimuovi eventuali listener vecchi clonando e sostituendo
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            
+            // Aggiungi il nuovo listener
+            newBtn.addEventListener('click', function() {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file';
+                fileInput.accept = '.csv,.txt';
+                fileInput.style.display = 'none';
+                
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    
+                    // Leggi i valori dalla UI
+                    const delimiterSelect = document.querySelector('select[name="delimiter"]') || 
+                                           document.querySelector('select:has(option[value=","])');
+                    const dateFormatSelect = document.querySelector('select[name="dateFormat"]') ||
+                                            document.querySelector('select:has(option[value="DD/MM/YYYY"])');
+                    
+                    const delimiter = delimiterSelect ? delimiterSelect.value : ',';
+                    const dateFormat = dateFormatSelect ? dateFormatSelect.value : 'DD/MM/YYYY';
+                    
+                    // Chiama parseCSV dal prototipo
+                    const proto = Object.getPrototypeOf(window.app);
+                    if (proto && typeof proto.parseCSV === 'function') {
+                        proto.parseCSV.call(window.app, file, delimiter, dateFormat);
+                        console.log('✅ File importato:', file.name);
+                    }
+                });
+                
+                document.body.appendChild(fileInput);
+                fileInput.click();
+                setTimeout(() => document.body.removeChild(fileInput), 1000);
+            });
+            
+            console.log('✅ Fix import CSV applicato permanentemente');
+        } else {
+            console.log('⏳ Pulsante non ancora disponibile, riprovo...');
+            // Se non trova il pulsante, riprova dopo 2 secondi
+            setTimeout(arguments.callee, 2000);
+        }
+    }, 1000);
+});
 }
 
 // ============================================
