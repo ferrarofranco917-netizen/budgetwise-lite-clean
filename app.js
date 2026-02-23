@@ -533,16 +533,28 @@ class BudgetWise {
     }
 
     calculateTotalFixedExpenses() {
-        const today = new Date();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-        return this.data.fixedExpenses.reduce((sum, exp) => {
-            if (new Date(exp.endDate) < today) return sum;
-            const paymentDate = new Date(currentYear, currentMonth, exp.day);
-            if (paymentDate > today) return sum;
-            return sum + exp.amount;
-        }, 0);
+    // Se non ci sono spese fisse, ritorna 0
+    if (!this.data.fixedExpenses || !Array.isArray(this.data.fixedExpenses)) {
+        return 0;
     }
+    
+    const today = new Date();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
+    
+    return this.data.fixedExpenses.reduce((sum, exp) => {
+        // Se l'oggetto spesa non è valido, saltalo
+        if (!exp || !exp.endDate || !exp.day) return sum;
+        
+        const endDate = new Date(exp.endDate);
+        if (endDate < today) return sum;
+        
+        const paymentDate = new Date(currentYear, currentMonth, exp.day);
+        if (paymentDate > today) return sum;
+        
+        return sum + (exp.amount || 0);
+    }, 0);
+}
 
     calculateRemaining() {
         const totalIncome = this.calculateTotalIncome();
