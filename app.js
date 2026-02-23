@@ -23,7 +23,14 @@ class BudgetWise {
         this.categoryRules = JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {};
         
         // ========== CATEGORIE PERSONALIZZATE ==========
-        this.defaultCategories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
+        this.defaultCategories = [
+  'food',
+  'transport',
+  'leisure',
+  'health',
+  'clothing',
+  'other'
+];
         const savedCustom = JSON.parse(localStorage.getItem('budgetwise-custom-categories')) || [];
         this.customCategories = savedCustom.filter(cat => !this.defaultCategories.includes(cat));
         
