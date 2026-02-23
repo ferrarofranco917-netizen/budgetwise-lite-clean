@@ -1659,6 +1659,134 @@ class BudgetWise {
     }
             // ========== MAPPATURA CAMPI CSV ==========
 async function showMappingDialog(file, delimiter, dateFormat) {
+        // ========== IMPORT CSV MODIFICATO ==========
+    async parseCSV(file, delimiter, dateFormat) {
+        console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
+        
+        // Mostra dialog di mappatura con anteprima
+        const mapping = await this.showMappingDialog(file, delimiter);
+        if (!mapping) {
+            alert('⏸️ Import annullato');
+            return;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = async (e) => {
+            const text = e.target.result;
+            const lines = text.split('\n').filter(line => line.trim());
+            
+            // Salta intestazione
+            const dataLines = lines.slice(1);
+            
+            const importedExpenses = [];
+            
+            for (let i = 0; i < dataLines.length; i++) {
+                const line = dataLines[i].trim();
+                if (!line) continue;
+                
+                const parts = line.split(delimiter);
+                if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol)) continue;
+                
+                // Estrai campi in base alla mappatura
+                let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
+                let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
+                let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
+                let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
+                
+                if (!dateStr || !description || !amountStr) continue;
+                
+                // Converti data
+                if (dateFormat === 'DD/MM/YYYY') {
+                    const [day, month, year] = dateStr.split(/[\/\-]/);
+                    if (day && month && year) {
+                        dateStr = `${year}-${month}-${day}`;
+                    } else {
+                        continue;
+                    }
+                } else if (dateFormat === 'MM/DD/YYYY') {
+                    const [month, day, year] = dateStr.split(/[\/\-]/);
+                    if (month && day && year) {
+                        dateStr = `${year}-${month}-${day}`;
+                    } else {
+                        continue;
+                    }
+                }
+                
+                // Pulisci e converti importo
+                let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
+                if (isNaN(amount)) continue;
+                
+                // Se non c'è categoria, usa suggerimento
+                if (!category) {
+                    category = this.suggestCategory(description);
+                }
+                
+                if (amount > 0) {
+                    // Entrata
+                    if (!this.data.incomes) this.data.incomes = [];
+                    this.data.incomes.push({
+                        desc: description,
+                        amount: amount,
+                        date: dateStr,
+                        id: Date.now() + i
+                    });
+                } else {
+                    // Spesa
+                    amount = Math.abs(amount);
+                    importedExpenses.push({
+                        name: description,
+                        amount: amount,
+                        date: dateStr,
+                        category: category || 'Altro',
+                        id: Date.now() + i
+                    });
+                }
+            }
+            
+            // Mostra revisione per le spese
+            if (importedExpenses.length > 0) {
+                const reviewedExpenses = await this.showImportReview(importedExpenses);
+                
+                if (reviewedExpenses.length > 0) {
+                    for (const exp of reviewedExpenses) {
+                        if (!this.data.variableExpenses) this.data.variableExpenses = {};
+                        if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
+                        
+                        this.data.variableExpenses[exp.date].push({
+                            name: exp.name,
+                            amount: exp.amount,
+                            category: exp.category,
+                            id: exp.id
+                        });
+                    }
+                    
+                    this.saveData();
+                    this.updateUI();
+                    this.updateChart();
+                    
+                    console.log('✅ Import CSV completato con revisione');
+                    alert(`✅ Importate ${reviewedExpenses.length} spese!`);
+                } else {
+                    alert('⏸️ Import annullato');
+                }
+            } else {
+                this.saveData();
+                this.updateUI();
+                this.updateChart();
+                
+                console.log('✅ Import CSV completato (solo entrate)');
+                alert('✅ File importato con successo!');
+            }
+        };
+        
+        reader.onerror = () => {
+            console.error('❌ Errore lettura file');
+            alert('❌ Errore durante la lettura del file');
+        };
+        
+        reader.readAsText(file);
+    }
     return new Promise((resolve) => {
         const overlay = document.getElementById('csvMappingOverlay');
         const headersRow = document.getElementById('csvMappingHeaders');
