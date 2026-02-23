@@ -109,7 +109,7 @@ manageCustomCategories: '➕ Gestisci categorie personalizzate',
                 confirmReset: 'Sei sicuro di voler cancellare TUTTI i dati?',
                 noGoal: 'Non hai ancora impostato un obiettivo di risparmio. Vai nella sezione 🎯 e impostalo!',
                 noExpenses: 'Non hai ancora spese registrate. Aggiungine qualcuna per avere un\'analisi!',
-                footerText: 'BudgetWise 2.0 — Gestione intelligente delle tue finanze',
+                footerText: ' 2.0 — Gestione intelligente delle tue finanze',
                 footerFeatures: '✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro',
                 fixedVoiceButton: '🎤 Inserisci spesa fissa con voce',
                 variableVoiceButton: '🎤 Inserisci con voce',
@@ -121,7 +121,7 @@ manageCustomCategories: '➕ Gestisci categorie personalizzate',
                 categoryAltro: '📦 Altro',
                 
                 // Onboarding
-                onboardingWelcome: '👋 Benvenuto in BudgetWise',
+                onboardingWelcome: '👋 Benvenuto in ',
                 onboardingStep1: 'Inserisci il tuo primo stipendio o entrata qui sotto.',
                 onboardingStep2: '📌 Aggiungi una spesa fissa mensile (es. affitto, bollette).',
                 onboardingStep3: '🧾 Registra una spesa variabile come la spesa alimentare.',
@@ -1378,6 +1378,78 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
         document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
         document.getElementById('expenseDate').valueAsDate = new Date();
         document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
+        // ==================== FIRST RUN / DEMO DATA ====================
+isFirstRun() {
+    // Primo avvio se non esiste un flag "seen"
+    return localStorage.getItem('budgetwise-first-run-seen') !== 'true';
+}
+
+markFirstRunSeen() {
+    localStorage.setItem('budgetwise-first-run-seen', 'true');
+}
+
+getDemoData() {
+    const today = new Date();
+    const iso = (d) => d.toISOString().split('T')[0];
+
+    // periodo: da oggi a +30
+    const start = new Date(today);
+    const end = new Date(today);
+    end.setDate(end.getDate() + 30);
+
+    // una settimana di spese demo
+    const makeDay = (offset, items) => {
+        const d = new Date(today);
+        d.setDate(d.getDate() - offset);
+        return [iso(d), items];
+    };
+
+    const demoVariable = {};
+    const days = [
+        makeDay(0, [{ name: 'Spesa supermercato', amount: 23.40, category: 'Alimentari', id: Date.now() + 1 }]),
+        makeDay(1, [{ name: 'Benzina', amount: 35.00, category: 'Trasporti', id: Date.now() + 2 }]),
+        makeDay(2, [{ name: 'Farmacia', amount: 12.90, category: 'Salute', id: Date.now() + 3 }]),
+        makeDay(3, [{ name: 'Pizza', amount: 18.00, category: 'Svago', id: Date.now() + 4 }]),
+        makeDay(4, [{ name: 'Maglietta', amount: 19.99, category: 'Abbigliamento', id: Date.now() + 5 }]),
+        makeDay(5, [{ name: 'Caffè', amount: 2.20, category: 'Altro', id: Date.now() + 6 }]),
+        makeDay(0, [{ name: 'Spesa supermercato', amount: 23.40, category: 'Casa', id: ... }])
+makeDay(3, [{ name: 'Asilo', amount: 120, category: 'Bambini', id: ... }])
+makeDay(5, [{ name: 'Pranzo lavoro', amount: 14, category: 'Lavoro', id: ... }])
+    ];
+    days.forEach(([d, items]) => (demoVariable[d] = items));
+
+    return {
+        incomes: [
+            { desc: 'Stipendio', amount: 2000, date: iso(today), id: Date.now() + 100 }
+        ],
+        fixedExpenses: [
+            { name: 'Affitto', amount: 650, day: 5, endDate: iso(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate())), id: Date.now() + 200 },
+            { name: 'Telefono', amount: 15, day: 12, endDate: iso(new Date(today.getFullYear() + 5, today.getMonth(), today.getDate())), id: Date.now() + 201 }
+        ],
+        variableExpenses: demoVariable,
+        savingsPercent: 10,
+        savingsGoal: 1500,
+        threshold: 50,
+        language: this.data.language || 'it',
+        periodStart: iso(start),
+        periodEnd: iso(end)
+    };
+}
+
+loadDemoData() {
+    // Assicura categorie demo (Casa, Bambini, Lavoro)
+    this.ensureDemoCategories();
+
+    // Carica dati demo
+    this.data = this.getDemoData();
+    this.saveData();
+    this.updateUI();
+    this.updateChart();
+    this.applyLanguage();
+
+    localStorage.setItem('budgetwise-demo-loaded', 'true');
+    this.showToast(this.data.language === 'it' ? '✨ Dati demo caricati!' : '✨ Demo data loaded!', 'success');
+}
         document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
         document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
         document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
@@ -1646,7 +1718,7 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
         const categoryExpenses = {};
         
         if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
-            Object.values(this.data.variableExpenses).forEach(day => {
+            Object.entries(...).forEach(day => {
                 if (Array.isArray(day)) {
                     day.forEach(expense => {
                         const cat = expense.category || 'Altro';
@@ -1909,6 +1981,17 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
                 }
                 
                 this.data = parsed;
+                // Normalizzazione campi mancanti
+this.data.incomes = Array.isArray(this.data.incomes) ? this.data.incomes : [];
+this.data.fixedExpenses = Array.isArray(this.data.fixedExpenses) ? this.data.fixedExpenses : [];
+this.data.variableExpenses = (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') ? this.data.variableExpenses : {};
+this.data.savingsPercent = Number(this.data.savingsPercent || 0);
+this.data.savingsGoal = Number(this.data.savingsGoal || 0);
+this.data.threshold = Number(this.data.threshold || 50);
+this.data.language = this.data.language || 'it';
+
+if (!this.data.periodStart) this.data.periodStart = this.getDefaultPeriodStart();
+if (!this.data.periodEnd) this.data.periodEnd = this.getDefaultPeriodEnd();
             } catch (e) {
                 console.warn('Errore nel caricamento dati, reset automatico');
                 this.resetAll();
@@ -1947,7 +2030,10 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
 
     resetAll() {
         if (confirm(this.t('confirmReset'))) {
-            localStorage.clear();
+           // Reset SOLO dati finanziari, senza distruggere tema/categorie/rules
+localStorage.removeItem('budgetwise-data');
+localStorage.removeItem('budgetwise-onboarding-completed');
+// opzionale: se vuoi far rivedere onboarding dopo reset, non toccare first-run-seen
             const today = new Date();
             const end = new Date(today);
             end.setDate(today.getDate() + 28);
@@ -2042,7 +2128,23 @@ csvMappingFieldsTitle: '🎯 Field mapping:'            },
     saveCustomCategories() {
         localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
     }
-    
+    ensureDemoCategories() {
+    const demoCats = ['Casa', 'Bambini', 'Lavoro'];
+
+    let changed = false;
+
+    demoCats.forEach(cat => {
+        if (!this.getAllCategories().includes(cat)) {
+            this.customCategories.push(cat);
+            changed = true;
+        }
+    });
+
+    if (changed) {
+        this.saveCustomCategories();
+        this.updateAllCategorySelects();
+    }
+}
     showCategoryManager() {
         const overlay = document.getElementById('categoryManagerOverlay');
         if (!overlay) return;
@@ -2486,6 +2588,8 @@ getCategoryEmoji(category) {
     startOnboarding() {
         if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
 
+// Se NON è first run, non rompere le scatole
+if (!this.isFirstRun()) return;
         const steps = [
             { text: this.t('onboardingStep1'), highlight: "#addIncomeBtn" },
             { text: this.t('onboardingStep2'), highlight: "#addFixedBtn" },
@@ -2542,10 +2646,48 @@ getCategoryEmoji(category) {
                 <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
             </div>
             
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-                <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
-                <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
-            </div>
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px;">
+    <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">
+        ${this.t('onboardingNext')}
+    </button>
+    <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">
+        ✕ ${this.t('onboardingSkip')}
+    </button>
+    // Demo / Empty actions
+const demoBtn = document.getElementById('onboarding-demo');
+if (demoBtn) {
+    demoBtn.addEventListener('click', () => {
+        this.loadDemoData();
+        // chiudi onboarding
+        localStorage.setItem('budgetwise-onboarding-completed', 'true');
+        this.markFirstRunSeen();
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 250);
+        document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
+    });
+}
+
+const emptyBtn = document.getElementById('onboarding-empty');
+if (emptyBtn) {
+    emptyBtn.addEventListener('click', () => {
+        // chiudi onboarding, lasciando app vuota
+        localStorage.setItem('budgetwise-onboarding-completed', 'true');
+        this.markFirstRunSeen();
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 250);
+        document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
+    });
+}
+</div>
+
+<div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom: 14px;">
+    <button id="onboarding-demo" class="btn-secondary" style="padding: 12px 20px; border-radius: 50px; min-width: 180px;">
+        ✨ Carica dati demo
+    </button>
+    <button id="onboarding-empty" class="btn-text" style="padding: 12px 14px;">
+        Inizia vuoto
+    </button>
+</div>
             
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                 <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
@@ -2605,6 +2747,7 @@ getCategoryEmoji(category) {
                 showStep();
             } else {
                 localStorage.setItem('budgetwise-onboarding-completed', 'true');
+                this.markFirstRunSeen();
                 overlay.style.opacity = '0';
                 setTimeout(() => overlay.remove(), 300);
                 document.querySelectorAll('.onboarding-highlight').forEach(el => {
