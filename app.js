@@ -976,7 +976,7 @@ inDays: 'In {days} days',
                 <div class="expense-info">
                     <span class="expense-name">${exp.name}</span>
                     <span class="expense-category">
-                        📅 Giorno ${exp.day} · Scad. ${exp.endDate}
+                        📅 ${this.t('dayLabel')} ${exp.day} · ${this.t('endDateLabel')}: ${exp.endDate}
                         <span class="days-badge ${badgeClass}">${daysText}</span>
                     </span>
                 </div>
@@ -1564,6 +1564,7 @@ inDays: 'In {days} days',
 
 const app = new BudgetWise();
 window.app = app;
+
 
 
 
