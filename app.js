@@ -1,5 +1,5 @@
 // ============================================
-// BUDGETWISE 2.0 - VERSIONE STABILE COMPLETA
+// BUDGETWISE 2.0 - VERSIONE COMPLETA CON IMPORT CSV E CATEGORIZZAZIONE
 // ============================================
 
 class BudgetWise {
@@ -18,6 +18,7 @@ class BudgetWise {
         
         this.chart = null;
         this.categoryExpenses = {};
+        this.userCorrections = {}; // Per apprendimento categorizzazioni
         
         // ========== TRADUZIONI ==========
         this.translations = {
@@ -108,7 +109,14 @@ class BudgetWise {
                 categorySvago: '🎮 Svago',
                 categorySalute: '💊 Salute',
                 categoryAbbigliamento: '👕 Abbigliamento',
-                categoryAltro: '📦 Altro'
+                categoryAltro: '📦 Altro',
+                importCsv: '📤 Importa movimenti bancari',
+                csvFormat: 'Formato data',
+                csvDelimiter: 'Separatore',
+                selectFile: 'Seleziona un file CSV',
+                mapColumns: 'Mappa le colonne',
+                confirmImport: 'Conferma import',
+                imported: 'Importate {count} transazioni'
             },
             en: {
                 budget: 'Daily budget',
@@ -197,7 +205,14 @@ class BudgetWise {
                 categorySvago: '🎮 Leisure',
                 categorySalute: '💊 Health',
                 categoryAbbigliamento: '👕 Clothing',
-                categoryAltro: '📦 Other'
+                categoryAltro: '📦 Other',
+                importCsv: '📤 Import bank transactions',
+                csvFormat: 'Date format',
+                csvDelimiter: 'Delimiter',
+                selectFile: 'Select a CSV file',
+                mapColumns: 'Map columns',
+                confirmImport: 'Confirm import',
+                imported: 'Imported {count} transactions'
             }
         };
         
@@ -206,12 +221,14 @@ class BudgetWise {
 
     init() {
         this.loadData();
+        this.loadUserCorrections();
         this.setupEventListeners();
         this.applyTheme();
         this.updateUI();
         this.updateChart();
         this.setupVoice();
         this.applyLanguage();
+        this.setupInputTips();
     }
 
     getDefaultPeriodStart() {
@@ -458,7 +475,6 @@ class BudgetWise {
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         const dateInput = document.getElementById('incomeDate').value;
         
-        // Se non c'è data, usa oggi
         const date = dateInput || new Date().toISOString().split('T')[0];
         
         if (!desc || !amount) {
@@ -466,16 +482,13 @@ class BudgetWise {
             return;
         }
         
-        // Se è la PRIMA entrata, imposta il periodo
         if (!Array.isArray(this.data.incomes) || this.data.incomes.length === 0) {
             const startDate = new Date(date);
             const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 30); // 30 giorni di periodo
+            endDate.setDate(startDate.getDate() + 30);
             
             this.data.periodStart = startDate.toISOString().split('T')[0];
             this.data.periodEnd = endDate.toISOString().split('T')[0];
-            
-            console.log('📅 Nuovo periodo impostato da', this.data.periodStart, 'a', this.data.periodEnd);
         }
         
         if (!Array.isArray(this.data.incomes)) this.data.incomes = [];
@@ -721,6 +734,7 @@ class BudgetWise {
             });
         }
         this.setupAiActions();
+        this.setupCsvImport();
     }
 
     updateUI() {
@@ -800,16 +814,8 @@ class BudgetWise {
         this.drawSparkline('remainingSparkline', last7Days, remainingColor);
 
         this.generateAiSuggestion();
-        setupEventListeners() {
-    // ... tutto il codice esistente ...
-    
-    // Setup import CSV
-    this.setupCsvImport();
-}
     }
 
-    // ========== FUNZIONI DI VISUALIZZAZIONE LISTE ==========
-    
     updateIncomeList() {
         const container = document.getElementById('incomeList');
         if (!container) return;
@@ -831,7 +837,6 @@ class BudgetWise {
             `).join('');
         }
 
-        // Event listener per i pulsanti di eliminazione entrate
         document.querySelectorAll('.delete-income-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -890,7 +895,6 @@ class BudgetWise {
             `;
         }).join('');
 
-        // Event listener per i pulsanti di eliminazione spese fisse
         document.querySelectorAll('.delete-fixed-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -914,7 +918,10 @@ class BudgetWise {
             <div class="expense-item">
                 <div class="expense-info">
                     <span class="expense-name">${exp.name || '?'}</span>
-                    <span class="expense-category">${this.t('category' + (exp.category || 'Altro'))}</span>
+                    <span class="expense-category">
+                        ${this.t('category' + (exp.category || 'Altro'))}
+                        <button class="fix-category-btn" data-id="${exp.id}" data-date="${date}" data-name="${exp.name}">✏️</button>
+                    </span>
                 </div>
                 <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                 <div class="expense-actions">
@@ -923,7 +930,6 @@ class BudgetWise {
             </div>
         `).join('');
 
-        // Event listener per i pulsanti di eliminazione spese variabili
         document.querySelectorAll('.delete-variable-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -932,6 +938,41 @@ class BudgetWise {
                 this.deleteVariableExpense(date, id);
             });
         });
+
+        document.querySelectorAll('.fix-category-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(e.currentTarget.dataset.id);
+                const date = e.currentTarget.dataset.date;
+                const name = e.currentTarget.dataset.name;
+                this.showCategoryCorrector(id, date, name);
+            });
+        });
+    }
+
+    showCategoryCorrector(id, date, name) {
+        const categories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Casa', 'Tecnologia', 'Altro'];
+        
+        const selectHtml = categories.map(cat => 
+            `<option value="${cat}">${this.t('category' + cat)}</option>`
+        ).join('');
+        
+        const newCategory = prompt(
+            `Correggi categoria per "${name}":\nScegli: ${categories.join(', ')}`,
+            'Altro'
+        );
+        
+        if (newCategory && categories.includes(newCategory)) {
+            const expense = this.data.variableExpenses[date]?.find(e => e.id === id);
+            if (expense) {
+                expense.category = newCategory;
+                this.learnFromUser(name, newCategory);
+                this.saveData();
+                this.updateUI();
+                this.updateChart();
+                this.showToast(`✅ Categoria aggiornata a ${newCategory}`);
+            }
+        }
     }
 
     updateChart() {
@@ -970,7 +1011,7 @@ class BudgetWise {
                 labels: Object.keys(categories),
                 datasets: [{
                     data: Object.values(categories),
-                    backgroundColor: ['#6366f1', '#818cf8', '#10b981', '#34d399', '#f59e0b', '#ef4444'],
+                    backgroundColor: ['#6366f1', '#818cf8', '#10b981', '#34d399', '#f59e0b', '#ef4444', '#ff9e00', '#7209b7'],
                     borderColor: 'transparent'
                 }]
             },
@@ -1172,7 +1213,6 @@ class BudgetWise {
             try {
                 const parsed = JSON.parse(saved);
                 
-                // Se ci sono entrate ma non c'è periodStart, lo impostiamo dalla prima entrata
                 if (parsed.incomes && parsed.incomes.length > 0 && !parsed.periodStart) {
                     const firstIncome = parsed.incomes.sort((a, b) => 
                         new Date(a.date) - new Date(b.date)
@@ -1186,7 +1226,6 @@ class BudgetWise {
                     parsed.periodEnd = endDate.toISOString().split('T')[0];
                 }
                 
-                // Gestione retrocompatibilità
                 if (parsed.income !== undefined && !parsed.incomes) {
                     parsed.incomes = [{
                         desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
@@ -1202,6 +1241,13 @@ class BudgetWise {
                 console.warn('Errore nel caricamento dati, reset automatico');
                 this.resetAll();
             }
+        }
+    }
+
+    loadUserCorrections() {
+        const saved = localStorage.getItem('budgetwise-corrections');
+        if (saved) {
+            this.userCorrections = JSON.parse(saved);
         }
     }
 
@@ -1420,214 +1466,326 @@ class BudgetWise {
             ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
             : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
     }
-// ========== HIGHLIGHT ==========
-highlightField(fieldId) {
-    // ... codice esistente ...
-}
 
-// ========== CHAT ASSISTANT ==========
-handleChatInput() {
-    // ... codice esistente ...
-}
-
-// ========== IMPORT CSV ==========
-setupCsvImport() {
-    const fileInput = document.getElementById('csvFileInput');
-    const importBtn = document.getElementById('importCsvBtn');
-    
-    importBtn.addEventListener('click', () => {
-        const file = fileInput.files[0];
-        if (!file) {
-            alert('Seleziona un file CSV');
-            return;
-        }
+    // ========== IMPORT CSV ==========
+    setupCsvImport() {
+        const fileInput = document.getElementById('csvFileInput');
+        const importBtn = document.getElementById('importCsvBtn');
         
-        const delimiter = document.getElementById('csvDelimiter').value;
-        const dateFormat = document.getElementById('csvDateFormat').value;
+        if (!fileInput || !importBtn) return;
         
-        this.parseCSV(file, delimiter, dateFormat);
-    });
-}
-
-parseCSV(file, delimiter, dateFormat) {
-    const reader = new FileReader();
-    
-    reader.onload = (e) => {
-        const text = e.target.result;
-        const lines = text.split('\n').filter(line => line.trim());
-        const headers = lines[0].split(delimiter).map(h => h.trim());
-        
-        // Mostra anteprima
-        this.showCSVPreview(headers, lines.slice(1, 6), delimiter);
-        
-        // Chiedi mappatura colonne
-        this.showColumnMapper(headers, lines.slice(1), delimiter, dateFormat);
-    };
-    
-    reader.readAsText(file);
-}
-
-showCSVPreview(headers, sampleLines, delimiter) {
-    const previewDiv = document.getElementById('csvPreview');
-    
-    let html = '<table><thead><tr>';
-    headers.forEach(h => html += `<th>${h}</th>`);
-    html += '</tr></thead><tbody>';
-    
-    sampleLines.forEach(line => {
-        const cells = line.split(delimiter);
-        html += '<tr>';
-        cells.forEach(cell => html += `<td>${cell.substring(0, 30)}</td>`);
-        html += '</tr>';
-    });
-    
-    html += '</tbody></table>';
-    previewDiv.innerHTML = html;
-    previewDiv.style.display = 'block';
-}
-
-showColumnMapper(headers, lines, delimiter, dateFormat) {
-    const mapperHtml = `
-        <div class="column-mapper">
-            <h4>Mappa le colonne</h4>
-            <div class="mapper-row">
-                <label>Data:</label>
-                <select id="mapDate">
-                    <option value="">- Seleziona -</option>
-                    ${headers.map(h => `<option value="${h}">${h}</option>`).join('')}
-                </select>
-            </div>
-            <div class="mapper-row">
-                <label>Descrizione:</label>
-                <select id="mapDesc">
-                    <option value="">- Seleziona -</option>
-                    ${headers.map(h => `<option value="${h}">${h}</option>`).join('')}
-                </select>
-            </div>
-            <div class="mapper-row">
-                <label>Importo:</label>
-                <select id="mapAmount">
-                    <option value="">- Seleziona -</option>
-                    ${headers.map(h => `<option value="${h}">${h}</option>`).join('')}
-                </select>
-            </div>
-            <button class="btn-primary" id="confirmImport">Conferma import</button>
-        </div>
-    `;
-    
-    document.getElementById('csvPreview').innerHTML += mapperHtml;
-    
-    document.getElementById('confirmImport').addEventListener('click', () => {
-        const dateCol = document.getElementById('mapDate').value;
-        const descCol = document.getElementById('mapDesc').value;
-        const amountCol = document.getElementById('mapAmount').value;
-        
-        this.processImport(lines, headers, dateCol, descCol, amountCol, delimiter, dateFormat);
-    });
-}
-
-processImport(lines, headers, dateCol, descCol, amountCol, delimiter, dateFormat) {
-    const dateIndex = headers.indexOf(dateCol);
-    const descIndex = headers.indexOf(descCol);
-    const amountIndex = headers.indexOf(amountCol);
-    
-    let imported = 0;
-    
-    lines.forEach(line => {
-        if (!line.trim()) return;
-        
-        const cells = line.split(delimiter);
-        if (cells.length < Math.max(dateIndex, descIndex, amountIndex)) return;
-        
-        const rawDate = cells[dateIndex];
-        const desc = cells[descIndex];
-        const rawAmount = cells[amountIndex].replace(',', '.');
-        
-        // Converti data
-        let date = this.parseDate(rawDate, dateFormat);
-        if (!date) return;
-        
-        // Converti importo
-        let amount = Math.abs(parseFloat(rawAmount));
-        if (isNaN(amount) || amount === 0) return;
-        
-        // Determina se è entrata o uscita
-        const isPositive = parseFloat(rawAmount) > 0;
-        
-        if (isPositive) {
-            // È un'entrata
-            this.data.incomes.push({
-                desc: desc.substring(0, 50),
-                amount: amount,
-                date: date,
-                id: Date.now() + imported,
-                imported: true
-            });
-        } else {
-            // È una spesa variabile
-            const today = date;
-            if (!this.data.variableExpenses[today]) {
-                this.data.variableExpenses[today] = [];
+        importBtn.addEventListener('click', () => {
+            const file = fileInput.files[0];
+            if (!file) {
+                alert(this.t('selectFile'));
+                return;
             }
-            this.data.variableExpenses[today].push({
-                name: desc.substring(0, 50),
-                amount: amount,
-                category: 'Altro',
-                id: Date.now() + imported,
-                imported: true
-            });
+            
+            const delimiter = document.getElementById('csvDelimiter').value;
+            const dateFormat = document.getElementById('csvDateFormat').value;
+            
+            this.parseCSV(file, delimiter, dateFormat);
+        });
+    }
+
+    parseCSV(file, delimiter, dateFormat) {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            const text = e.target.result;
+            const lines = text.split('\n').filter(line => line.trim());
+            const headers = lines[0].split(delimiter).map(h => h.trim().replace(/^"|"$/g, ''));
+            
+            this.showCSVPreview(headers, lines.slice(1, 6), delimiter);
+            this.showColumnMapper(headers, lines.slice(1), delimiter, dateFormat);
+        };
+        
+        reader.readAsText(file);
+    }
+
+    showCSVPreview(headers, sampleLines, delimiter) {
+        const previewDiv = document.getElementById('csvPreview');
+        if (!previewDiv) return;
+        
+        let html = '<table><thead><tr>';
+        headers.forEach(h => html += `<th>${h}</th>`);
+        html += '</tr></thead><tbody>';
+        
+        sampleLines.forEach(line => {
+            if (!line.trim()) return;
+            const cells = line.split(delimiter).map(c => c.replace(/^"|"$/g, ''));
+            html += '<tr>';
+            cells.forEach(cell => html += `<td>${cell.substring(0, 30)}</td>`);
+            html += '</tr>';
+        });
+        
+        html += '</tbody></table>';
+        previewDiv.innerHTML = html;
+        previewDiv.style.display = 'block';
+    }
+
+    showColumnMapper(headers, lines, delimiter, dateFormat) {
+        const previewDiv = document.getElementById('csvPreview');
+        if (!previewDiv) return;
+        
+        const mapperHtml = `
+            <div class="column-mapper">
+                <h4>${this.t('mapColumns')}</h4>
+                <div class="mapper-row">
+                    <label>${this.t('dateLabel')}</label>
+                    <select id="mapDate">
+                        <option value="">- ${this.t('selectFile')} -</option>
+                        ${headers.map((h, i) => `<option value="${i}">${h}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="mapper-row">
+                    <label>${this.t('incomeDesc')}</label>
+                    <select id="mapDesc">
+                        <option value="">- ${this.t('selectFile')} -</option>
+                        ${headers.map((h, i) => `<option value="${i}">${h}</option>`).join('')}
+                    </select>
+                </div>
+                <div class="mapper-row">
+                    <label>${this.t('incomeAmount')}</label>
+                    <select id="mapAmount">
+                        <option value="">- ${this.t('selectFile')} -</option>
+                        ${headers.map((h, i) => `<option value="${i}">${h}</option>`).join('')}
+                    </select>
+                </div>
+                <button class="btn-primary" id="confirmImport">${this.t('confirmImport')}</button>
+            </div>
+        `;
+        
+        previewDiv.innerHTML += mapperHtml;
+        
+        document.getElementById('confirmImport').addEventListener('click', () => {
+            const dateCol = parseInt(document.getElementById('mapDate').value);
+            const descCol = parseInt(document.getElementById('mapDesc').value);
+            const amountCol = parseInt(document.getElementById('mapAmount').value);
+            
+            if (isNaN(dateCol) || isNaN(descCol) || isNaN(amountCol)) {
+                alert('Seleziona tutte le colonne');
+                return;
+            }
+            
+            this.processImport(lines, dateCol, descCol, amountCol, delimiter, dateFormat);
+        });
+    }
+
+    processImport(lines, dateCol, descCol, amountCol, delimiter, dateFormat) {
+        let imported = 0;
+        
+        lines.forEach(line => {
+            if (!line.trim()) return;
+            
+            const cells = line.split(delimiter).map(c => c.replace(/^"|"$/g, ''));
+            if (cells.length <= Math.max(dateCol, descCol, amountCol)) return;
+            
+            const rawDate = cells[dateCol];
+            const desc = cells[descCol];
+            const rawAmount = cells[amountCol].replace(/[^\d\.,\-]/g, '').replace(',', '.');
+            
+            let date = this.parseDate(rawDate, dateFormat);
+            if (!date) return;
+            
+            let amount = Math.abs(parseFloat(rawAmount));
+            if (isNaN(amount) || amount === 0) return;
+            
+            const isPositive = !rawAmount.includes('-') && !rawAmount.startsWith('(');
+            
+            if (isPositive) {
+                this.data.incomes.push({
+                    desc: desc.substring(0, 50),
+                    amount: amount,
+                    date: date,
+                    id: Date.now() + imported,
+                    imported: true
+                });
+            } else {
+                const suggestedCategory = this.smartCategorize(desc);
+                
+                if (!this.data.variableExpenses[date]) {
+                    this.data.variableExpenses[date] = [];
+                }
+                this.data.variableExpenses[date].push({
+                    name: desc.substring(0, 50),
+                    amount: amount,
+                    category: suggestedCategory,
+                    id: Date.now() + imported,
+                    imported: true
+                });
+            }
+            
+            imported++;
+        });
+        
+        if (imported > 0) {
+            this.saveData();
+            this.updateUI();
+            this.updateChart();
+            this.showToast(this.t('imported').replace('{count}', imported));
+        }
+    }
+
+    parseDate(dateStr, format) {
+        if (!dateStr) return null;
+        
+        dateStr = dateStr.trim().replace(/[\/\-]/g, '/');
+        let day, month, year;
+        
+        const parts = dateStr.split('/');
+        if (parts.length !== 3) return null;
+        
+        switch(format) {
+            case 'DD/MM/YYYY':
+                [day, month, year] = parts;
+                break;
+            case 'MM/DD/YYYY':
+                [month, day, year] = parts;
+                break;
+            case 'YYYY-MM-DD':
+                [year, month, day] = parts;
+                break;
+            default:
+                return null;
         }
         
-        imported++;
-    });
-    
-    this.saveData();
-    this.updateUI();
-    this.updateChart();
-    this.showToast(`✅ Importate ${imported} transazioni`);
-}
-parseDate(dateStr, format) {
-    if (!dateStr) return null;
-    
-    // Rimuovi spazi e caratteri strani
-    dateStr = dateStr.trim();
-    
-    let day, month, year;
-    
-    switch(format) {
-        case 'DD/MM/YYYY':
-            [day, month, year] = dateStr.split(/[\/\-]/);
-            break;
-        case 'MM/DD/YYYY':
-            [month, day, year] = dateStr.split(/[\/\-]/);
-            break;
-        case 'YYYY-MM-DD':
-            [year, month, day] = dateStr.split('-');
-            break;
-        default:
-            return null;
+        day = parseInt(day);
+        month = parseInt(month);
+        year = parseInt(year);
+        
+        if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+        
+        if (year < 100) {
+            year = year < 50 ? 2000 + year : 1900 + year;
+        }
+        
+        return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
     }
+
+    // ========== CATEGORIZZAZIONE AUTOMATICA ==========
     
-    if (!day || !month || !year) return null;
-    
-    // Assicura che siano numeri
-    day = parseInt(day);
-    month = parseInt(month);
-    year = parseInt(year);
-    
-    if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-    
-    // Gestisci anni a 2 cifre
-    if (year < 100) {
-        year = year < 50 ? 2000 + year : 1900 + year;
+    categoryRules = {
+        'Alimentari': [
+            'supermercato', 'carrefour', 'esselunga', 'conad', 'coop', 'pam', 
+            'lidl', 'aldi', 'alimentari', 'pane', 'pasta', 'latte', 'pizza',
+            'cibo', 'spesa', 'market', 'grocery', 'food', 'supermarket',
+            'alimentazione', 'cibi', 'bevande', 'acqua', 'vino', 'birra'
+        ],
+        'Trasporti': [
+            'benzina', 'esso', 'q8', 'tamoil', 'enilive', 'autostrada', 
+            'telepass', 'parcheggio', 'taxi', 'uber', 'bus', 'treno', 
+            'metropolitana', 'biglietto', 'abbonamento', 'gas', 'fuel',
+            'trasporti', 'trasporto', 'viaggio', 'aereo', 'noleggio'
+        ],
+        'Svago': [
+            'cinema', 'netflix', 'spotify', 'disney', 'amazon prime', 
+            'ristorante', 'pizza', 'bar', 'caffè', 'pub', 'birreria',
+            'teatro', 'concerto', 'bowling', 'giochi', 'hobby', 'divertimento',
+            'svago', 'tempo libero', 'vacanza', 'weekend', 'festa'
+        ],
+        'Salute': [
+            'farmacia', 'medico', 'dentista', 'parafarmacia', 'sanitaria',
+            'ospedale', 'clinica', 'analisi', 'visita', 'medicinale',
+            'farmaco', 'terapia', 'salute', 'health', 'pharmacy',
+            'benessere', 'psicologo', 'oculista'
+        ],
+        'Abbigliamento': [
+            'zara', 'hm', 'decathlon', 'nike', 'adidas', 'abbigliamento',
+            'vestiti', 'scarpe', 'maglietta', 'jeans', 'giacca', 'pantaloni',
+            'moda', 'clothing', 'shoes', 'fashion', 'intimo', 'calzature'
+        ],
+        'Casa': [
+            'enel', 'edison', 'acea', 'a2a', 'telecom', 'tim', 'vodafone',
+            'wind', 'tre', 'internet', 'luce', 'gas', 'acqua', 'affitto',
+            'mutuo', 'condominio', 'bolletta', 'utility', 'bill', 'rent',
+            'casa', 'appartamento', 'manutenzione', 'idraulico', 'elettricista'
+        ],
+        'Tecnologia': [
+            'amazon', 'ebay', 'mediaworld', 'unieuro', 'saturn', 'apple',
+            'telefono', 'cellulare', 'computer', 'tablet', 'accessori',
+            'tech', 'electronics', 'gadget', 'informatica', 'software',
+            'app', 'abbonamento digitale', 'streaming'
+        ]
+    };
+
+    categorizeTransaction(description) {
+        if (!description) return 'Altro';
+        
+        const desc = description.toLowerCase().trim();
+        
+        for (const [category, keywords] of Object.entries(this.categoryRules)) {
+            for (const keyword of keywords) {
+                if (desc.includes(keyword.toLowerCase())) {
+                    return category;
+                }
+            }
+        }
+        
+        return 'Altro';
     }
-    
-    return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-}
-// ========== AI WIDGET ==========
-generateAiSuggestion() {
-    // ... codice esistente ...
-}
+
+    categorizeTransactionWithScore(description) {
+        if (!description) return 'Altro';
+        
+        const desc = description.toLowerCase().trim();
+        let bestCategory = 'Altro';
+        let bestScore = 0;
+        
+        for (const [category, keywords] of Object.entries(this.categoryRules)) {
+            let score = 0;
+            
+            for (const keyword of keywords) {
+                if (desc.includes(keyword.toLowerCase())) {
+                    score += keyword.length;
+                }
+            }
+            
+            if (score > bestScore) {
+                bestScore = score;
+                bestCategory = category;
+            }
+        }
+        
+        return bestCategory;
+    }
+
+    learnFromUser(description, correctedCategory) {
+        const key = description.toLowerCase().trim();
+        
+        if (!this.userCorrections[key]) {
+            this.userCorrections[key] = {};
+        }
+        
+        this.userCorrections[key][correctedCategory] = 
+            (this.userCorrections[key][correctedCategory] || 0) + 1;
+        
+        localStorage.setItem('budgetwise-corrections', JSON.stringify(this.userCorrections));
+    }
+
+    smartCategorize(description) {
+        if (!description) return 'Altro';
+        
+        const key = description.toLowerCase().trim();
+        
+        if (this.userCorrections && this.userCorrections[key]) {
+            const corrections = this.userCorrections[key];
+            let bestCategory = 'Altro';
+            let maxCount = 0;
+            
+            for (const [category, count] of Object.entries(corrections)) {
+                if (count > maxCount) {
+                    maxCount = count;
+                    bestCategory = category;
+                }
+            }
+            
+            return bestCategory;
+        }
+        
+        return this.categorizeTransactionWithScore(description);
+    }
+
     // ========== AI WIDGET ==========
     generateAiSuggestion() {
         const suggestions = [];
@@ -1646,7 +1804,8 @@ generateAiSuggestion() {
         }
 
         if (Object.keys(categoryTotals).length === 0) {
-            document.getElementById('aiWidget').style.display = 'none';
+            const widget = document.getElementById('aiWidget');
+            if (widget) widget.style.display = 'none';
             return;
         }
 
@@ -1694,7 +1853,8 @@ generateAiSuggestion() {
             const randomIndex = Math.floor(Math.random() * suggestions.length);
             this.showAiSuggestion(suggestions[randomIndex]);
         } else {
-            document.getElementById('aiWidget').style.display = 'none';
+            const widget = document.getElementById('aiWidget');
+            if (widget) widget.style.display = 'none';
         }
     }
 
@@ -1703,6 +1863,8 @@ generateAiSuggestion() {
         const messageEl = document.getElementById('aiMessage');
         const actionEl = document.getElementById('aiAction');
         const actionBtn = document.getElementById('applyAiSuggestion');
+        
+        if (!widget || !messageEl || !actionEl || !actionBtn) return;
         
         messageEl.textContent = suggestion.message;
         actionBtn.textContent = suggestion.action;
@@ -1716,26 +1878,15 @@ generateAiSuggestion() {
     }
 
     setupAiActions() {
-        document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-            const type = e.target.dataset.type;
-            const amount = parseFloat(e.target.dataset.amount);
-            
-            if (type === 'reduce' && amount > 0) {
-                const currentGoal = this.data.savingsGoal || 0;
-                document.getElementById('saveGoal').value = currentGoal + amount;
-                this.showToast(
-                    this.data.language === 'it'
-                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                    'success'
-                );
-            } 
-            else if (type === 'transport') {
-                const message = this.data.language === 'it'
-                    ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
-                    : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
+        const actionBtn = document.getElementById('applyAiSuggestion');
+        const dismissBtn = document.getElementById('dismissAiSuggestion');
+        
+        if (actionBtn) {
+            actionBtn.addEventListener('click', (e) => {
+                const type = e.target.dataset.type;
+                const amount = parseFloat(e.target.dataset.amount);
                 
-                if (confirm(message)) {
+                if (type === 'reduce' && amount > 0) {
                     const currentGoal = this.data.savingsGoal || 0;
                     document.getElementById('saveGoal').value = currentGoal + amount;
                     this.showToast(
@@ -1744,41 +1895,89 @@ generateAiSuggestion() {
                             : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
                         'success'
                     );
+                } 
+                else if (type === 'transport' || type === 'leisure') {
+                    const message = this.data.language === 'it'
+                        ? `🎯 Vuoi aumentare l'obiettivo di ${this.formatCurrency(amount)}?`
+                        : `🎯 Do you want to increase your goal by ${this.formatCurrency(amount)}?`;
+                    
+                    if (confirm(message)) {
+                        const currentGoal = this.data.savingsGoal || 0;
+                        document.getElementById('saveGoal').value = currentGoal + amount;
+                        this.showToast(
+                            this.data.language === 'it'
+                                ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                                : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                            'success'
+                        );
+                    }
                 }
-            }
-            else if (type === 'leisure') {
-                const message = this.data.language === 'it'
-                    ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
-                    : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
-                
-                if (confirm(message)) {
-                    const currentGoal = this.data.savingsGoal || 0;
-                    document.getElementById('saveGoal').value = currentGoal + amount;
+                else {
                     this.showToast(
                         this.data.language === 'it'
-                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                        'success'
+                            ? '🔍 Funzionalità in sviluppo'
+                            : '🔍 Feature in development',
+                        'info'
                     );
                 }
-            }
-            else {
-                this.showToast(
-                    this.data.language === 'it'
-                        ? '🔍 Funzionalità in sviluppo'
-                        : '🔍 Feature in development',
-                    'info'
-                );
-            }
-            
-            document.getElementById('aiAction').style.display = 'none';
-            setTimeout(() => {
-                document.getElementById('aiWidget').style.display = 'none';
-            }, 2000);
-        });
+                
+                document.getElementById('aiAction').style.display = 'none';
+                setTimeout(() => {
+                    document.getElementById('aiWidget').style.display = 'none';
+                }, 2000);
+            });
+        }
 
-        document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
-            document.getElementById('aiWidget').style.display = 'none';
+        if (dismissBtn) {
+            dismissBtn.addEventListener('click', () => {
+                document.getElementById('aiWidget').style.display = 'none';
+            });
+        }
+    }
+
+    setupInputTips() {
+        const inputs = document.querySelectorAll('input[data-tip-it], input[data-tip-en]');
+        
+        inputs.forEach(input => {
+            let wrapper = input.parentElement;
+            if (!wrapper.classList.contains('input-wrapper')) {
+                wrapper = document.createElement('div');
+                wrapper.className = 'input-wrapper';
+                input.parentNode.insertBefore(wrapper, input);
+                wrapper.appendChild(input);
+            }
+            
+            let tipTimeout;
+            let tipElement = null;
+            
+            input.addEventListener('focus', () => {
+                if (tipElement) tipElement.remove();
+                
+                tipElement = document.createElement('div');
+                tipElement.className = 'input-tip';
+                
+                const tipText = this.data.language === 'it' 
+                    ? input.dataset.tipIt 
+                    : input.dataset.tipEn;
+                
+                if (tipText) {
+                    tipElement.textContent = tipText;
+                    wrapper.appendChild(tipElement);
+                }
+            });
+            
+            input.addEventListener('blur', () => {
+                tipTimeout = setTimeout(() => {
+                    if (tipElement) {
+                        tipElement.remove();
+                        tipElement = null;
+                    }
+                }, 200);
+            });
+            
+            input.addEventListener('mouseenter', () => {
+                clearTimeout(tipTimeout);
+            });
         });
     }
 }
