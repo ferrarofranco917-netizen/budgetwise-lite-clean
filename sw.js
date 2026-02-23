@@ -1,13 +1,14 @@
-const CACHE_NAME = 'budgetwise-v9'; // CAMBIA NUMERO
+// Service Worker per BudgetWise - v3
+const CACHE_NAME = 'budgetwise-v3';
 const urlsToCache = [
-    '/',
-    '/index.html',
-    '/style.css',
-    '/app.js',
-    '/manifest.json',
-    'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js',
-    '/icon-192.png',
-    '/icon-512.png'
+    '/budgetwise-lite-cleanv2/',
+    '/budgetwise-lite-cleanv2/index.html',
+    '/budgetwise-lite-cleanv2/style.css',
+    '/budgetwise-lite-cleanv2/app.js',
+    '/budgetwise-lite-cleanv2/manifest.json',
+    '/budgetwise-lite-cleanv2/icon-192.png',
+    '/budgetwise-lite-cleanv2/icon-512.png',
+    'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js'
 ];
 
 // Installazione
@@ -69,14 +70,3 @@ self.addEventListener('fetch', event => {
             })
     );
 });
-
-navigator.serviceWorker.getRegistrations().then(function(registrations) {
-    for(let registration of registrations) {
-        registration.unregister();
-    }
-});
-location.reload(true);
-
-
-
-
