@@ -212,7 +212,47 @@
                 <button class="btn-danger" id="resetDayBtn">🗑️ Cancella spese del giorno</button>
             </div>
         </div>
+<!-- ============================================ -->
+<!-- IMPORT CSV - Aggiunto il 23/02/2026 -->
+<!-- ============================================ -->
+<div class="section-card">
+    <h2>📥 Importa movimenti bancari</h2>
+    <div class="section-content">
+        <p class="subtitle" style="margin-bottom: 15px;">
+            Scarica l'estratto conto dalla tua banca in formato CSV
+        </p>
+        
+        <div class="input-group">
+            <label for="csvFile">Scegli il file</label>
+            <input type="file" id="csvFile" accept=".csv,.txt" style="display: none;">
+            <div class="file-name" id="csvFileName">Nessun file selezionato</div>
+            <button class="btn-secondary" id="importCsvBtn">📥 Importa CSV</button>
+        </div>
 
+        <div class="input-group-row">
+            <div class="input-group half">
+                <label for="csvDelimiter">Formatato data</label>
+                <select id="csvDelimiter">
+                    <option value="DD/MM/YYYY">GG/MM/AAAA</option>
+                    <option value="MM/DD/YYYY">MM/DD/AAAA</option>
+                </select>
+            </div>
+            <div class="input-group half">
+                <label for="csvSeparator">Separatore</label>
+                <select id="csvSeparator">
+                    <option value=",">Virgola (,)</option>
+                    <option value=";">Punto e virgola (;)</option>
+                    <option value="\t">Tabulazione</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="csvPreview" class="csv-preview" style="display: none; margin-top: 20px;">
+            <h3>Anteprima</h3>
+            <div id="previewContent"></div>
+        </div>
+    </div>
+</div>
         <!-- ==================== GRAFICO ==================== -->
         <div class="section-card">
             <h2 id="chartTitle">📊 Distribuzione spese</h2>
@@ -364,6 +404,7 @@
     <script src="app.js"></script>
 </body>
 </html>
+
 
 
 
