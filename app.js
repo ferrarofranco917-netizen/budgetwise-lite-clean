@@ -19,6 +19,9 @@ class BudgetWise {
         this.chart = null;
         this.categoryExpenses = {};
         
+        // ========== REGOLE CATEGORIE APPRESE ==========
+        this.categoryRules = JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {};
+        
         // ========== TRADUZIONI ==========
         this.translations = {
             it: {
@@ -119,7 +122,14 @@ class BudgetWise {
                 onboardingStep5: '🤖 Chiedi consigli all\'assistente AI o prova il microfono.',
                 onboardingStep6: '📥 Puoi anche importare movimenti bancari in formato CSV.',
                 onboardingNext: 'Avanti →',
-                onboardingSkip: 'Salta'
+                onboardingSkip: 'Salta',
+                
+                // Import review
+                importReview: '📋 Revisione spese importate',
+                importConfirm: '✅ Conferma',
+                importCancel: '✕ Annulla',
+                importCategory: 'Categoria',
+                importLearn: '📌 L\'app ricorderà questa scelta'
             },
             en: {
                 budget: 'Daily budget',
@@ -219,16 +229,29 @@ class BudgetWise {
                 onboardingStep5: '🤖 Ask the AI assistant or try voice input.',
                 onboardingStep6: '📥 You can also import bank statements in CSV format.',
                 onboardingNext: 'Next →',
-                onboardingSkip: 'Skip'
+                onboardingSkip: 'Skip',
+                
+                // Import review
+                importReview: '📋 Import Review',
+                importConfirm: '✅ Confirm',
+                importCancel: '✕ Cancel',
+                importCategory: 'Category',
+                importLearn: '📌 The app will remember this choice'
             }
         };
         
         this.init();
     }
 
+    init() {
+        this.loadData();
+        this.setupEventListeners();
+        this.applyTheme();
+        this.updateUI();
+        this.updateChart();
         this.setupVoice();
         this.applyLanguage();
-        this.startOnboarding(); // <-- ONBOARDING ATTIVATO
+        this.startOnboarding();
     }
 
     getDefaultPeriodStart() {
@@ -1308,18 +1331,124 @@ class BudgetWise {
         alert(this.t('calendarExported'));
     }
 
-    // ========== IMPORT CSV ==========
-    parseCSV(file, delimiter, dateFormat) {
+    // ========== IMPARARE CATEGORIE ==========
+    learnCategory(description, category) {
+        if (!description || !category) return;
+        
+        // Estrai parola chiave (prima parola della descrizione)
+        const keyword = description.toLowerCase().split(' ')[0].replace(/[^a-z0-9]/gi, '');
+        if (keyword.length < 3) return; // Ignora parole troppo corte
+        
+        this.categoryRules[keyword] = category;
+        localStorage.setItem('budgetwise-category-rules', JSON.stringify(this.categoryRules));
+        console.log(`📌 Appreso: "${keyword}" → ${category}`);
+    }
+
+    suggestCategory(description) {
+        const lowerDesc = description.toLowerCase();
+        
+        // Cerca nelle regole apprese
+        for (const [keyword, category] of Object.entries(this.categoryRules)) {
+            if (lowerDesc.includes(keyword)) {
+                return category;
+            }
+        }
+        
+        return 'Altro'; // Default
+    }
+
+    // ========== REVISIONE IMPORT CSV ==========
+    showImportReview(importedExpenses) {
+        return new Promise((resolve) => {
+            const overlay = document.getElementById('importReviewOverlay');
+            const listEl = document.getElementById('importReviewList');
+            
+            if (!overlay || !listEl) {
+                resolve(importedExpenses);
+                return;
+            }
+            
+            // Genera HTML per ogni spesa
+            listEl.innerHTML = importedExpenses.map((exp, index) => {
+                const categories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
+                const options = categories.map(cat => 
+                    `<option value="${cat}" ${exp.category === cat ? 'selected' : ''}>${this.t('category' + cat)}</option>`
+                ).join('');
+                
+                return `
+                    <div class="review-item" data-index="${index}">
+                        <div class="review-info">
+                            <span class="review-date">${exp.date}</span>
+                            <span class="review-name">${exp.name}</span>
+                            <span class="review-amount">${this.formatCurrency(exp.amount)}</span>
+                        </div>
+                        <div class="review-category">
+                            <select class="review-select" data-index="${index}">
+                                ${options}
+                            </select>
+                            <small class="review-hint">${this.t('importLearn')}</small>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Mostra overlay
+            overlay.style.display = 'flex';
+            
+            // Gestisci conferma
+            const confirmBtn = document.getElementById('confirmImportBtn');
+            const cancelBtn = document.getElementById('cancelImportBtn');
+            
+            const onConfirm = () => {
+                // Raccogli le categorie modificate
+                const selects = document.querySelectorAll('.review-select');
+                selects.forEach(select => {
+                    const index = select.dataset.index;
+                    const newCategory = select.value;
+                    const oldCategory = importedExpenses[index].category;
+                    
+                    importedExpenses[index].category = newCategory;
+                    
+                    // Se l'utente ha cambiato categoria, impara la regola
+                    if (newCategory !== oldCategory) {
+                        this.learnCategory(importedExpenses[index].name, newCategory);
+                    }
+                });
+                
+                cleanup();
+                resolve(importedExpenses);
+            };
+            
+            const onCancel = () => {
+                cleanup();
+                resolve([]); // Annulla import
+            };
+            
+            const cleanup = () => {
+                overlay.style.display = 'none';
+                confirmBtn.removeEventListener('click', onConfirm);
+                cancelBtn.removeEventListener('click', onCancel);
+            };
+            
+            confirmBtn.addEventListener('click', onConfirm);
+            cancelBtn.addEventListener('click', onCancel);
+        });
+    }
+
+    // ========== IMPORT CSV MODIFICATO ==========
+    async parseCSV(file, delimiter, dateFormat) {
         console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
         
         const reader = new FileReader();
         
-        reader.onload = (e) => {
+        reader.onload = async (e) => {
             const text = e.target.result;
             const lines = text.split('\n');
             
             // Salta l'intestazione se presente
             const startIndex = lines[0].toLowerCase().includes('data') ? 1 : 0;
+            
+            const importedExpenses = [];
             
             for (let i = startIndex; i < lines.length; i++) {
                 const line = lines[i].trim();
@@ -1347,9 +1476,12 @@ class BudgetWise {
                 let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
                 if (isNaN(amount)) continue;
                 
+                // Suggerisci categoria in base alle regole apprese
+                let category = this.suggestCategory(description);
+                
                 // Determina se è entrata o spesa in base al segno
                 if (amount > 0) {
-                    // Potrebbe essere un'entrata
+                    // Entrata - non categorizziamo le entrate
                     if (!this.data.incomes) this.data.incomes = [];
                     this.data.incomes.push({
                         desc: description,
@@ -1358,30 +1490,54 @@ class BudgetWise {
                         id: Date.now() + i
                     });
                 } else {
-                    // È una spesa (importo negativo)
+                    // Spesa (importo negativo)
                     amount = Math.abs(amount);
                     
-                    // Assegna una categoria di default
-                    const category = 'Altro';
-                    
-                    if (!this.data.variableExpenses) this.data.variableExpenses = {};
-                    if (!this.data.variableExpenses[dateStr]) this.data.variableExpenses[dateStr] = [];
-                    
-                    this.data.variableExpenses[dateStr].push({
+                    importedExpenses.push({
                         name: description,
                         amount: amount,
+                        date: dateStr,
                         category: category,
                         id: Date.now() + i
                     });
                 }
             }
             
-            this.saveData();
-            this.updateUI();
-            this.updateChart();
-            
-            console.log('✅ Import CSV completato');
-            alert('✅ File importato con successo!');
+            // Se ci sono spese importate, mostra revisione
+            if (importedExpenses.length > 0) {
+                const reviewedExpenses = await this.showImportReview(importedExpenses);
+                
+                if (reviewedExpenses.length > 0) {
+                    // Aggiungi le spese revisionate
+                    for (const exp of reviewedExpenses) {
+                        if (!this.data.variableExpenses) this.data.variableExpenses = {};
+                        if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
+                        
+                        this.data.variableExpenses[exp.date].push({
+                            name: exp.name,
+                            amount: exp.amount,
+                            category: exp.category,
+                            id: exp.id
+                        });
+                    }
+                    
+                    this.saveData();
+                    this.updateUI();
+                    this.updateChart();
+                    
+                    console.log('✅ Import CSV completato con revisione');
+                    alert(`✅ Importate ${reviewedExpenses.length} spese!`);
+                } else {
+                    alert('⏸️ Import annullato');
+                }
+            } else {
+                this.saveData();
+                this.updateUI();
+                this.updateChart();
+                
+                console.log('✅ Import CSV completato (solo entrate)');
+                alert('✅ File importato con successo!');
+            }
         };
         
         reader.onerror = () => {
