@@ -805,3 +805,49 @@ input:focus, select:focus {
     height: 100%;
     display: block;
 }
+/* Timeline spese fisse */
+.fixed-expense-item {
+    transition: all 0.2s;
+    border-left-width: 6px !important;
+}
+
+.fixed-expense-item.future {
+    border-left-color: #2dc653 !important; /* verde */
+    background: rgba(45, 198, 83, 0.05);
+}
+
+.fixed-expense-item.warning {
+    border-left-color: #ff9e00 !important; /* giallo */
+    background: rgba(255, 158, 0, 0.05);
+}
+
+.fixed-expense-item.expired {
+    border-left-color: #ef233c !important; /* rosso */
+    background: rgba(239, 35, 60, 0.05);
+    opacity: 0.8;
+}
+
+/* Badge per i giorni rimasti */
+.days-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.days-badge.future {
+    background: #2dc653;
+    color: white;
+}
+
+.days-badge.warning {
+    background: #ff9e00;
+    color: white;
+}
+
+.days-badge.expired {
+    background: #ef233c;
+    color: white;
+}
