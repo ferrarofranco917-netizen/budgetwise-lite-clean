@@ -1,5 +1,5 @@
 // ============================================
-// BUDGETWISE 2.0 - VERSIONE COMPLETA CON TRADUZIONE
+// BUDGETWISE 2.0 - VERSIONE STABILE COMPLETA
 // ============================================
 
 class BudgetWise {
@@ -17,20 +17,17 @@ class BudgetWise {
         };
         
         this.chart = null;
-        this.categoryExpenses = {}; // Per memorizzare le spese per categoria
+        this.categoryExpenses = {};
         
-        // ========== SISTEMA DI TRADUZIONE COMPLETO ==========
+        // ========== TRADUZIONI ==========
         this.translations = {
             it: {
-                // Generali
                 budget: 'Budget giornaliero',
                 remaining: 'Rimanenza',
                 days: 'Giorni rimasti',
                 period: 'Periodo',
                 totalIncome: 'Totale entrate',
                 startGuide: '👋 Inizia inserendo le tue entrate nella sezione qui sotto!',
-                
-                // Sezioni
                 incomes: '🏦 Entrate del periodo',
                 fixed: '📌 Spese fisse mensili',
                 variable: '🧾 Spese variabili',
@@ -38,11 +35,7 @@ class BudgetWise {
                 assistant: '🤖 Assistente Finanziario AI',
                 savings: '🎯 Obiettivo risparmio',
                 settings: '⚙️ Impostazioni',
-                
-                // Badge
                 badge: 'multiplo',
-                
-                // Pulsanti
                 addIncome: '➕ Aggiungi entrata',
                 addFixed: '➕ Aggiungi spesa fissa',
                 addExpense: '➕ Aggiungi spesa',
@@ -53,8 +46,6 @@ class BudgetWise {
                 resetAll: '⚠️ Reset completo',
                 export: '📅 Esporta in Calendar',
                 send: 'Invia',
-                
-                // Placeholder e testi form
                 incomeDesc: 'Descrizione (es. Stipendio)',
                 incomeAmount: 'Importo €',
                 fixedName: 'Nome (es. Mutuo)',
@@ -63,8 +54,6 @@ class BudgetWise {
                 expenseName: 'Cosa hai comprato?',
                 expenseAmount: '€',
                 chatPlaceholder: 'Es. Quanto posso risparmiare questo mese?',
-                
-                // Etichette
                 dateLabel: 'Seleziona data:',
                 dayLabel: 'Giorno del mese',
                 endDateLabel: 'Data scadenza (fine)',
@@ -73,8 +62,6 @@ class BudgetWise {
                 thresholdLabel: '🔔 Soglia avviso (€)',
                 languageLabel: '🌍 Lingua',
                 backupLabel: '📅 Backup dati',
-                
-                // Testi informativi
                 micFixed: '🎤 Tocca e di\' tutto in una frase',
                 micVariable: '🎤 Tocca per parlare',
                 helpFixed: '⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza',
@@ -82,16 +69,12 @@ class BudgetWise {
                 noIncome: 'Nessuna entrata',
                 noFixed: 'Nessuna spesa fissa',
                 noVariable: 'Nessuna spesa in questo giorno',
-                
-                // Chat
                 welcomeMessage: 'Ciao! Sono il tuo assistente finanziario. Chiedimi qualsiasi cosa sul tuo budget!',
                 suggestion1: '💶 Risparmia 100€',
                 suggestion2: '🔮 Simula aumento',
                 suggestion3: '🎯 Obiettivo',
                 suggestion4: '📊 Top categoria',
                 assistantName: 'Assistente',
-                
-                // Toast messages
                 incomeAdded: '✅ Entrata aggiunta!',
                 incomeDeleted: '🗑️ Entrata eliminata',
                 fixedAdded: '✅ Spesa fissa aggiunta!',
@@ -104,35 +87,21 @@ class BudgetWise {
                 dataRestored: '📂 Dati ripristinati!',
                 resetCompleted: '🔄 Reset completato',
                 calendarExported: '📅 Calendario esportato!',
-                
-                // Errori
                 fillFields: '⚠️ Compila tutti i campi',
                 invalidDay: '⚠️ Giorno non valido (1-31)',
                 thresholdExceeded: '⚠️ Attenzione! Hai superato la soglia di ',
-                
-                // Stati spese fisse
                 active: '🟢 Attivo',
                 expired: '🔴 Scaduto',
                 dueToday: 'Scade oggi',
                 daysAgo: 'Scaduta da {days} giorni',
                 inDays: 'Tra {days} giorni',
-                
-                // Conferme
                 confirmReset: 'Sei sicuro di voler cancellare TUTTI i dati?',
-                
-                // Risposte chat
                 noGoal: 'Non hai ancora impostato un obiettivo di risparmio. Vai nella sezione 🎯 e impostalo!',
                 noExpenses: 'Non hai ancora spese registrate. Aggiungine qualcuna per avere un\'analisi!',
-                
-                // Footer
                 footerText: 'BudgetWise 2.0 — Gestione intelligente delle tue finanze',
                 footerFeatures: '✨ Assistente AI integrato • Riconoscimento vocale • Tema scuro',
-                
-                // Testi aggiuntivi
                 fixedVoiceButton: '🎤 Inserisci spesa fissa con voce',
                 variableVoiceButton: '🎤 Inserisci con voce',
-                
-                // Categorie
                 categoryAlimentari: '🍎 Alimentari',
                 categoryTrasporti: '🚗 Trasporti',
                 categorySvago: '🎮 Svago',
@@ -141,15 +110,12 @@ class BudgetWise {
                 categoryAltro: '📦 Altro'
             },
             en: {
-                // General
                 budget: 'Daily budget',
                 remaining: 'Remaining',
                 days: 'Days left',
                 period: 'Period',
                 totalIncome: 'Total income',
                 startGuide: '👋 Start by adding your income below!',
-                
-                // Sections
                 incomes: '🏦 Period income',
                 fixed: '📌 Monthly fixed expenses',
                 variable: '🧾 Variable expenses',
@@ -157,11 +123,7 @@ class BudgetWise {
                 assistant: '🤖 AI Financial Assistant',
                 savings: '🎯 Savings goal',
                 settings: '⚙️ Settings',
-                
-                // Badge
                 badge: 'multiple',
-                
-                // Buttons
                 addIncome: '➕ Add income',
                 addFixed: '➕ Add fixed expense',
                 addExpense: '➕ Add expense',
@@ -172,8 +134,6 @@ class BudgetWise {
                 resetAll: '⚠️ Full reset',
                 export: '📅 Export to Calendar',
                 send: 'Send',
-                
-                // Placeholders and form texts
                 incomeDesc: 'Description (e.g. Salary)',
                 incomeAmount: 'Amount €',
                 fixedName: 'Name (e.g. Mortgage)',
@@ -182,8 +142,6 @@ class BudgetWise {
                 expenseName: 'What did you buy?',
                 expenseAmount: '€',
                 chatPlaceholder: 'E.g. How much can I save this month?',
-                
-                // Labels
                 dateLabel: 'Select date:',
                 dayLabel: 'Day of month',
                 endDateLabel: 'Expiry date',
@@ -192,8 +150,6 @@ class BudgetWise {
                 thresholdLabel: '🔔 Alert threshold (€)',
                 languageLabel: '🌍 Language',
                 backupLabel: '📅 Data backup',
-                
-                // Info texts
                 micFixed: '🎤 Say everything in one phrase',
                 micVariable: '🎤 Tap to speak',
                 helpFixed: '⏰ Automatically counted each month until expiry',
@@ -201,16 +157,12 @@ class BudgetWise {
                 noIncome: 'No income',
                 noFixed: 'No fixed expenses',
                 noVariable: 'No expenses on this day',
-                
-                // Chat
                 welcomeMessage: 'Hi! I\'m your financial assistant. Ask me anything about your budget!',
                 suggestion1: '💶 Save 100€',
                 suggestion2: '🔮 Simulate increase',
                 suggestion3: '🎯 Goal',
                 suggestion4: '📊 Top category',
                 assistantName: 'Assistant',
-                
-                // Toast messages
                 incomeAdded: '✅ Income added!',
                 incomeDeleted: '🗑️ Income deleted',
                 fixedAdded: '✅ Fixed expense added!',
@@ -223,35 +175,21 @@ class BudgetWise {
                 dataRestored: '📂 Data restored!',
                 resetCompleted: '🔄 Reset completed',
                 calendarExported: '📅 Calendar exported!',
-                
-                // Errors
                 fillFields: '⚠️ Fill all fields',
                 invalidDay: '⚠️ Invalid day (1-31)',
                 thresholdExceeded: '⚠️ Warning! You exceeded the threshold of ',
-                
-                // Fixed expense status
                 active: '🟢 Active',
                 expired: '🔴 Expired',
                 dueToday: 'Due today',
                 daysAgo: 'Expired {days} days ago',
                 inDays: 'In {days} days',
-                
-                // Confirmations
                 confirmReset: 'Are you sure you want to delete ALL data?',
-                
-                // Chat responses
                 noGoal: 'You haven\'t set a savings goal yet. Go to the 🎯 section and set one!',
                 noExpenses: 'You haven\'t recorded any expenses yet. Add some to get an analysis!',
-                
-                // Footer
                 footerText: 'BudgetWise 2.0 — Smart financial management',
                 footerFeatures: '✨ AI Assistant • Voice recognition • Dark theme',
-                
-                // Additional texts
                 fixedVoiceButton: '🎤 Add fixed expense with voice',
                 variableVoiceButton: '🎤 Add with voice',
-                
-                // Categories
                 categoryAlimentari: '🍎 Groceries',
                 categoryTrasporti: '🚗 Transport',
                 categorySvago: '🎮 Leisure',
@@ -285,74 +223,13 @@ class BudgetWise {
         return end.toISOString().split('T')[0];
     }
 
-    setupEventListeners() {
-        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
-        document.getElementById('addIncomeBtn').addEventListener('click', () => this.addIncome());
-        document.getElementById('addFixedBtn').addEventListener('click', () => this.addFixedExpense());
-        document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
-        document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
-        document.getElementById('expenseDate').valueAsDate = new Date();
-        document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
-        document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
-        document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
-        document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
-        document.getElementById('resetAllBtn').addEventListener('click', () => this.resetAll());
-        document.getElementById('exportCalendarBtn').addEventListener('click', () => this.exportToCalendar());
-        document.getElementById('sendChatBtn').addEventListener('click', () => this.handleChatInput());
-        document.getElementById('chatInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.handleChatInput();
-        });
-
-        document.querySelectorAll('.suggestion-chip').forEach(chip => {
-            chip.addEventListener('click', () => {
-                document.getElementById('chatInput').value = chip.dataset.question;
-                this.handleChatInput();
-            });
-        });
-
-        document.getElementById('thresholdInput').addEventListener('change', (e) => {
-            this.data.threshold = parseFloat(e.target.value) || 50;
-            this.saveData();
-        });
-
-        document.getElementById('savePercent').addEventListener('input', (e) => {
-            this.data.savingsPercent = parseFloat(e.target.value) || 0;
-            this.saveData();
-        });
-
-        document.getElementById('saveGoal').addEventListener('input', (e) => {
-            this.data.savingsGoal = parseFloat(e.target.value) || 0;
-            this.saveData();
-        });
-
-        document.getElementById('languageSelect').addEventListener('change', (e) => {
-            this.data.language = e.target.value;
-            this.saveData();
-            this.applyLanguage();
-        });
-
-        // Pulsante chiudi dettaglio categoria
-        const closeDetailBtn = document.getElementById('closeDetailBtn');
-        if (closeDetailBtn) {
-            closeDetailBtn.addEventListener('click', () => {
-                document.getElementById('categoryDetail').style.display = 'none';
-            });
-        }
-
-        // Setup AI widget actions
-        this.setupAiActions();
-    }
-
-    // ========== TRADUZIONE ==========
     t(key) {
         return this.translations[this.data.language][key] || key;
     }
 
     applyLanguage() {
         console.log('🌐 Cambio lingua a:', this.data.language);
-        
         document.getElementById('languageSelect').value = this.data.language;
-        
         document.querySelector('.subtitle').textContent = this.data.language === 'it' 
             ? 'Stipendio a stipendio — gestione intelligente con AI'
             : 'Paycheck to paycheck — smart management with AI';
@@ -411,11 +288,8 @@ class BudgetWise {
         document.getElementById('fixedVoiceStatus').textContent = this.t('micFixed');
         document.getElementById('voiceStatus').textContent = this.t('micVariable');
         
-        // Traduci help spese fisse
         const helpFixed = document.getElementById('fixedHelp');
-        if (helpFixed) {
-            helpFixed.textContent = this.t('helpFixed');
-        }
+        if (helpFixed) helpFixed.textContent = this.t('helpFixed');
         
         document.getElementById('chartNote').textContent = this.t('chartNote');
         
@@ -445,27 +319,21 @@ class BudgetWise {
         
         document.getElementById('guideMessage').textContent = this.t('startGuide');
         
-        // ===== NUOVE TRADUZIONI AGGIUNTE =====
-        
-        // Traduci i testi dei pulsanti microfono
         const micFixedSpan = document.getElementById('micFixedText');
         if (micFixedSpan) micFixedSpan.textContent = this.t('fixedVoiceButton');
 
         const voiceBtnSpan = document.getElementById('voiceBtnText');
         if (voiceBtnSpan) voiceBtnSpan.textContent = this.t('variableVoiceButton');
 
-        // Traduci l'etichetta "Totale entrate"
         const totalIncomeLabel = document.getElementById('totalIncomeLabel');
         if (totalIncomeLabel) totalIncomeLabel.textContent = this.t('totalIncome');
 
-        // Traduci il footer
         const footerText = document.getElementById('footerText');
         if (footerText) footerText.textContent = this.t('footerText');
 
         const footerFeatures = document.getElementById('footerFeatures');
         if (footerFeatures) footerFeatures.textContent = this.t('footerFeatures');
 
-        // Traduci le etichette del summary (se non già tradotte)
         const budgetLabel = document.getElementById('budgetLabel');
         if (budgetLabel) budgetLabel.textContent = this.t('budget');
         
@@ -475,11 +343,9 @@ class BudgetWise {
         const daysLabel = document.getElementById('daysLabel');
         if (daysLabel) daysLabel.textContent = this.t('days');
         
-        // Traduci il nome dell'assistente nella chat
         const assistantNameText = document.getElementById('assistantNameText');
         if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
         
-        // Traduci le categorie nel select
         const categorySelect = document.getElementById('expenseCategory');
         if (categorySelect) {
             const options = categorySelect.options;
@@ -491,17 +357,11 @@ class BudgetWise {
             options[5].text = this.t('categoryAltro');
         }
         
-        // ===== NUOVE RIGHE PER GLI HINT DELLE DATE (SOLO QUESTE 10 RIGHE) =====
-        // Traduci gli hint delle date
         const dateHintFixed = document.getElementById('dateHintFixed');
-        if (dateHintFixed) {
-            dateHintFixed.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
-        }
+        if (dateHintFixed) dateHintFixed.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
 
         const dateHintVariable = document.getElementById('dateHintVariable');
-        if (dateHintVariable) {
-            dateHintVariable.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
-        }
+        if (dateHintVariable) dateHintVariable.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
         
         this.updatePeriodInfo();
     }
@@ -510,7 +370,6 @@ class BudgetWise {
         document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
     }
 
-    // ========== ENTRATE MULTIPLE ==========
     calculateTotalIncome() {
         return this.data.incomes.reduce((sum, inc) => sum + inc.amount, 0);
     }
@@ -518,23 +377,14 @@ class BudgetWise {
     addIncome() {
         const desc = document.getElementById('incomeDesc').value.trim();
         const amount = parseFloat(document.getElementById('incomeAmount').value);
-        
         if (!desc || !amount) {
             alert(this.t('fillFields'));
             return;
         }
-        
-        this.data.incomes.push({
-            desc,
-            amount,
-            date: new Date().toISOString().split('T')[0],
-            id: Date.now()
-        });
-        
+        this.data.incomes.push({ desc, amount, date: new Date().toISOString().split('T')[0], id: Date.now() });
         this.saveData();
         this.updateUI();
         alert(this.t('incomeAdded'));
-        
         document.getElementById('incomeDesc').value = '';
         document.getElementById('incomeAmount').value = '';
     }
@@ -546,7 +396,6 @@ class BudgetWise {
         alert(this.t('incomeDeleted'));
     }
 
-    // ========== SPESE FISSE ==========
     addFixedExpense() {
         const name = document.getElementById('fixedName').value.trim();
         const amount = parseFloat(document.getElementById('fixedAmount').value);
@@ -557,35 +406,21 @@ class BudgetWise {
             alert(this.t('fillFields'));
             return;
         }
-
         if (day < 1 || day > 31) {
             alert(this.t('invalidDay'));
             return;
         }
 
-        this.data.fixedExpenses.push({ 
-            name, 
-            amount, 
-            day,
-            endDate,
-            id: Date.now()
-        });
-        
+        this.data.fixedExpenses.push({ name, amount, day, endDate, id: Date.now() });
         this.saveData();
         this.updateUI();
 
-        // === FEEDBACK ===
         const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
-        this.showToast(
-            `💰 ${name} ${this.formatCurrency(amount)} – giorno ${day} (scad. ${endDate}) ${status}`,
-            'success'
-        );
-
+        this.showToast(`💰 ${name} ${this.formatCurrency(amount)} – giorno ${day} (scad. ${endDate}) ${status}`, 'success');
         this.highlightField('fixedName');
         this.highlightField('fixedAmount');
         this.highlightField('fixedDay');
         this.highlightField('fixedEndDate');
-        // ==============
 
         document.getElementById('fixedName').value = '';
         document.getElementById('fixedAmount').value = '';
@@ -600,7 +435,6 @@ class BudgetWise {
         alert(this.t('fixedDeleted'));
     }
 
-    // ========== SPESE VARIABILI ==========
     addVariableExpense() {
         const date = document.getElementById('expenseDate').value;
         const name = document.getElementById('expenseName').value.trim();
@@ -612,52 +446,27 @@ class BudgetWise {
             return;
         }
 
-        if (!this.data.variableExpenses[date]) {
-            this.data.variableExpenses[date] = [];
-        }
-
-        this.data.variableExpenses[date].push({
-            name,
-            amount,
-            category,
-            id: Date.now()
-        });
+        if (!this.data.variableExpenses[date]) this.data.variableExpenses[date] = [];
+        this.data.variableExpenses[date].push({ name, amount, category, id: Date.now() });
 
         this.saveData();
         this.updateUI();
         this.updateChart();
 
-        // === FEEDBACK ===
-        const categoryEmoji = {
-            Alimentari: '🍎',
-            Trasporti: '🚗',
-            Svago: '🎮',
-            Salute: '💊',
-            Abbigliamento: '👕',
-            Altro: '📦'
-        }[category] || '💰';
-
-        this.showToast(
-            `${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`,
-            'success'
-        );
-
+        const categoryEmoji = { Alimentari: '🍎', Trasporti: '🚗', Svago: '🎮', Salute: '💊', Abbigliamento: '👕', Altro: '📦' }[category] || '💰';
+        this.showToast(`${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`, 'success');
         this.highlightField('expenseName');
         this.highlightField('expenseAmount');
-        // ==============
 
         document.getElementById('expenseName').value = '';
         document.getElementById('expenseAmount').value = '';
-        
         this.checkThreshold(date);
     }
 
     deleteVariableExpense(date, id) {
         if (this.data.variableExpenses[date]) {
             this.data.variableExpenses[date] = this.data.variableExpenses[date].filter(exp => exp.id !== id);
-            if (this.data.variableExpenses[date].length === 0) {
-                delete this.data.variableExpenses[date];
-            }
+            if (this.data.variableExpenses[date].length === 0) delete this.data.variableExpenses[date];
             this.saveData();
             this.updateUI();
             this.updateChart();
@@ -679,18 +488,15 @@ class BudgetWise {
     checkThreshold(date) {
         const today = new Date().toISOString().split('T')[0];
         if (date !== today) return;
-
         const totalSpent = this.calculateTotalVariableExpenses();
         if (totalSpent > this.data.threshold) {
             alert(this.t('thresholdExceeded') + this.formatCurrency(this.data.threshold));
         }
     }
 
-    // ========== RISPARMIO ==========
     applySavings() {
         const percent = parseFloat(document.getElementById('savePercent').value) || 0;
         const goal = parseFloat(document.getElementById('saveGoal').value) || 0;
-        
         this.data.savingsPercent = percent;
         this.data.savingsGoal = goal;
         this.saveData();
@@ -698,14 +504,9 @@ class BudgetWise {
         alert(this.t('savingsApplied'));
     }
 
-    // ========== CALCOLI ==========
     calculateTotalVariableExpenses() {
         let total = 0;
-        Object.values(this.data.variableExpenses).forEach(day => {
-            day.forEach(expense => {
-                total += expense.amount;
-            });
-        });
+        Object.values(this.data.variableExpenses).forEach(day => day.forEach(exp => total += exp.amount));
         return total;
     }
 
@@ -713,14 +514,10 @@ class BudgetWise {
         const today = new Date();
         const currentMonth = today.getMonth();
         const currentYear = today.getFullYear();
-        
         return this.data.fixedExpenses.reduce((sum, exp) => {
-            const endDate = new Date(exp.endDate);
-            if (endDate < today) return sum;
-            
+            if (new Date(exp.endDate) < today) return sum;
             const paymentDate = new Date(currentYear, currentMonth, exp.day);
             if (paymentDate > today) return sum;
-            
             return sum + exp.amount;
         }, 0);
     }
@@ -740,150 +537,153 @@ class BudgetWise {
     }
 
     getDaysLeft() {
-        const today = new Date();
-        const end = new Date(this.data.periodEnd);
-        const diffTime = end - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return Math.max(0, diffDays);
+        const diff = new Date(this.data.periodEnd) - new Date();
+        return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
     }
 
     calculateSavingsProgress() {
         if (!this.data.savingsGoal) return 0;
-        const totalIncome = this.calculateTotalIncome();
-        const saved = (totalIncome * this.data.savingsPercent) / 100;
+        const saved = (this.calculateTotalIncome() * this.data.savingsPercent) / 100;
         return (saved / this.data.savingsGoal) * 100;
     }
 
     getNextPaymentDate(day) {
         const today = new Date();
-        let nextDate = new Date(today.getFullYear(), today.getMonth(), day);
-        if (nextDate < today) {
-            nextDate = new Date(today.getFullYear(), today.getMonth() + 1, day);
-        }
-        return nextDate.toISOString().split('T')[0];
+        let next = new Date(today.getFullYear(), today.getMonth(), day);
+        if (next < today) next = new Date(today.getFullYear(), today.getMonth() + 1, day);
+        return next.toISOString().split('T')[0];
     }
 
-    // ========== SPARKLINE ==========
     getLast7DaysData() {
         const today = new Date();
         const data = [];
-        
         for (let i = 6; i >= 0; i--) {
             const date = new Date(today);
             date.setDate(date.getDate() - i);
             const dateStr = date.toISOString().split('T')[0];
-            
-            // Spese variabili del giorno
             let daySpent = 0;
             if (this.data.variableExpenses[dateStr]) {
                 daySpent = this.data.variableExpenses[dateStr].reduce((sum, exp) => sum + exp.amount, 0);
             }
-            
             data.push(daySpent);
         }
-        
         return data;
     }
 
     getLast7DaysBudget() {
         const dailyBudget = this.calculateDailyBudget();
         const data = [];
-        
-        for (let i = 6; i >= 0; i--) {
-            data.push(dailyBudget);
-        }
-        
+        for (let i = 6; i >= 0; i--) data.push(dailyBudget);
         return data;
     }
 
     drawSparkline(canvasId, data, color = '#4361ee') {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
-        
         const ctx = canvas.getContext('2d');
         const width = canvas.width;
         const height = canvas.height;
-        
         ctx.clearRect(0, 0, width, height);
-        
         if (data.length === 0 || data.every(v => v === 0)) return;
-        
         const max = Math.max(...data, 1);
         const min = Math.min(...data, 0);
         const range = max - min || 1;
-        
-        // Calcola punti
-        const points = data.map((value, index) => {
-            const x = (index / (data.length - 1)) * width;
-            const y = height - ((value - min) / range) * height;
+        const points = data.map((v, i) => {
+            const x = (i / (data.length - 1)) * width;
+            const y = height - ((v - min) / range) * height;
             return { x, y };
         });
-        
-        // Disegna linea
         ctx.beginPath();
         ctx.strokeStyle = color;
         ctx.lineWidth = 2;
         ctx.lineJoin = 'round';
         ctx.lineCap = 'round';
-        
-        points.forEach((point, i) => {
-            if (i === 0) {
-                ctx.moveTo(point.x, point.y);
-            } else {
-                ctx.lineTo(point.x, point.y);
-            }
-        });
-        
+        points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
         ctx.stroke();
-        
-        // Disegna punti
         ctx.fillStyle = color;
-        points.forEach(point => {
+        points.forEach(p => {
             ctx.beginPath();
-            ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
+            ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
             ctx.fill();
         });
     }
 
-    // ========== UI ==========
+    setupEventListeners() {
+        document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+        document.getElementById('addIncomeBtn').addEventListener('click', () => this.addIncome());
+        document.getElementById('addFixedBtn').addEventListener('click', () => this.addFixedExpense());
+        document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
+        document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
+        document.getElementById('expenseDate').valueAsDate = new Date();
+        document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
+        document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
+        document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
+        document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
+        document.getElementById('resetAllBtn').addEventListener('click', () => this.resetAll());
+        document.getElementById('exportCalendarBtn').addEventListener('click', () => this.exportToCalendar());
+        document.getElementById('sendChatBtn').addEventListener('click', () => this.handleChatInput());
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.handleChatInput();
+        });
+        document.querySelectorAll('.suggestion-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                document.getElementById('chatInput').value = chip.dataset.question;
+                this.handleChatInput();
+            });
+        });
+        document.getElementById('thresholdInput').addEventListener('change', (e) => {
+            this.data.threshold = parseFloat(e.target.value) || 50;
+            this.saveData();
+        });
+        document.getElementById('savePercent').addEventListener('input', (e) => {
+            this.data.savingsPercent = parseFloat(e.target.value) || 0;
+            this.saveData();
+        });
+        document.getElementById('saveGoal').addEventListener('input', (e) => {
+            this.data.savingsGoal = parseFloat(e.target.value) || 0;
+            this.saveData();
+        });
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            this.data.language = e.target.value;
+            this.saveData();
+            this.applyLanguage();
+        });
+        const closeDetailBtn = document.getElementById('closeDetailBtn');
+        if (closeDetailBtn) {
+            closeDetailBtn.addEventListener('click', () => {
+                document.getElementById('categoryDetail').style.display = 'none';
+            });
+        }
+        this.setupAiActions();
+    }
+
     updateUI() {
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
 
-        // === NUOVO: stato salute e trend ===
         const remainingStatus = document.getElementById('remainingStatus');
         const remainingTrend = document.getElementById('remainingTrend');
         const remaining = this.calculateRemaining();
-
         if (remainingStatus) {
-            if (remaining >= 0) {
-                remainingStatus.textContent = '✅';
-                remainingStatus.title = this.data.language === 'it' ? 'Saldo positivo' : 'Positive balance';
-            } else {
-                remainingStatus.textContent = '⚠️';
-                remainingStatus.title = this.data.language === 'it' ? 'Attenzione: saldo negativo' : 'Warning: negative balance';
-            }
+            remainingStatus.textContent = remaining >= 0 ? '✅' : '⚠️';
+            remainingStatus.title = remaining >= 0 
+                ? (this.data.language === 'it' ? 'Saldo positivo' : 'Positive balance')
+                : (this.data.language === 'it' ? 'Attenzione: saldo negativo' : 'Warning: negative balance');
+        }
+        if (remainingTrend) {
+            remainingTrend.textContent = this.data.language === 'it' ? 'rispetto a ieri: 0%' : 'vs yesterday: 0%';
         }
 
-       if (remainingTrend) {
-    remainingTrend.textContent = this.data.language === 'it'
-        ? 'rispetto a ieri: 0%'
-        : 'vs yesterday: 0%';
-}
-        // =================================
-
         this.updatePeriodInfo();
-
         this.updateIncomeList();
         this.updateFixedExpensesList();
         this.updateVariableExpensesList();
-        
+
         document.getElementById('savePercent').value = this.data.savingsPercent;
         document.getElementById('saveGoal').value = this.data.savingsGoal;
         document.getElementById('thresholdInput').value = this.data.threshold;
 
-        // === NUOVA BARRA EMOZIONALE ===
         const progress = this.calculateSavingsProgress();
         const goal = this.data.savingsGoal;
         const percent = this.data.savingsPercent;
@@ -895,42 +695,29 @@ class BudgetWise {
         const savingsTip = document.getElementById('savingsTip');
 
         if (progress > 0 && goal > 0 && percent > 0) {
-            // Mostra la barra
             progressContainer.style.display = 'block';
             document.getElementById('progressBar').style.width = progress + '%';
             
-            // Calcola data prevista
             const today = new Date();
             const monthsNeeded = Math.ceil(goal / savedPerMonth);
             const targetDate = new Date(today);
             targetDate.setMonth(today.getMonth() + monthsNeeded);
-            
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const formattedDate = targetDate.toLocaleDateString(
-                this.data.language === 'it' ? 'it-IT' : 'en-US', 
-                options
-            );
+            const formattedDate = targetDate.toLocaleDateString(this.data.language === 'it' ? 'it-IT' : 'en-US', options);
             
-            // Messaggio predittivo
-            const message = this.data.language === 'it'
+            savingsMessage.textContent = this.data.language === 'it'
                 ? `🐷 Al ritmo attuale, raggiungerai l'obiettivo il ${formattedDate}`
                 : `🐷 At current pace, you'll reach your goal on ${formattedDate}`;
-            savingsMessage.textContent = message;
             
-            // Suggerimento
             if (percent < 20) {
                 const suggestedPercent = Math.min(percent + 5, 20);
                 const newMonths = Math.ceil(goal / ((totalIncome * suggestedPercent) / 100));
                 const monthsDiff = monthsNeeded - newMonths;
-                
-                const tip = this.data.language === 'it'
+                savingsTip.textContent = this.data.language === 'it'
                     ? `💡 Se risparmiassi il ${suggestedPercent}% invece del ${percent}%, arriveresti ${monthsDiff} ${monthsDiff === 1 ? 'mese' : 'mesi'} prima!`
                     : `💡 If you saved ${suggestedPercent}% instead of ${percent}%, you'd get there ${monthsDiff} ${monthsDiff === 1 ? 'month' : 'months'} sooner!`;
-                savingsTip.textContent = tip;
             } else {
-                savingsTip.textContent = this.data.language === 'it'
-                    ? '🎉 Ottimo lavoro! Continua così!'
-                    : '🎉 Great job! Keep it up!';
+                savingsTip.textContent = this.data.language === 'it' ? '🎉 Ottimo lavoro! Continua così!' : '🎉 Great job! Keep it up!';
             }
         } else {
             progressContainer.style.display = 'none';
@@ -940,25 +727,18 @@ class BudgetWise {
 
         document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
 
-        // === NUOVO: SPARKLINE ===
         const last7Days = this.getLast7DaysData();
         const last7DaysBudget = this.getLast7DaysBudget();
-
-        // Budget sparkline (blu)
         this.drawSparkline('budgetSparkline', last7DaysBudget, '#4361ee');
-
-        // Rimanenza sparkline (verde/rosso)
         const remainingColor = this.calculateRemaining() >= 0 ? '#2dc653' : '#ef233c';
         this.drawSparkline('remainingSparkline', last7Days, remainingColor);
 
-        // === AI WIDGET ===
         this.generateAiSuggestion();
     }
 
     updateIncomeList() {
         const container = document.getElementById('incomeList');
         if (!container) return;
-
         if (this.data.incomes.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noIncome')}</p>`;
         } else {
@@ -975,80 +755,56 @@ class BudgetWise {
                 </div>
             `).join('');
         }
-
         const totalDisplay = document.getElementById('totalIncomeDisplay');
-        if (totalDisplay) {
-            totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
-        }
+        if (totalDisplay) totalDisplay.textContent = this.formatCurrency(this.calculateTotalIncome());
     }
 
     updateFixedExpensesList() {
-    const container = document.getElementById('fixedExpensesList');
-    if (this.data.fixedExpenses.length === 0) {
-        container.innerHTML = `<p class="chart-note">${this.t('noFixed')}</p>`;
-        return;
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    container.innerHTML = this.data.fixedExpenses.map(exp => {
-        const endDate = new Date(exp.endDate);
-        endDate.setHours(0, 0, 0, 0);
-        
-        // Calcola giorni rimasti
-        const diffTime = endDate - today;
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        
-        // Determina stato e classe CSS
-        let statusClass = '';
-        let badgeClass = '';
-        
-        if (diffDays < 0) {
-            statusClass = 'expired';
-            badgeClass = 'expired';
-        } else if (diffDays <= 3) {
-            statusClass = 'warning';
-            badgeClass = 'warning';
-        } else {
-            statusClass = 'future';
-            badgeClass = 'future';
+        const container = document.getElementById('fixedExpensesList');
+        if (this.data.fixedExpenses.length === 0) {
+            container.innerHTML = `<p class="chart-note">${this.t('noFixed')}</p>`;
+            return;
         }
-
-                // Testo giorni rimasti (con traduzioni)
-        const daysText = diffDays < 0 
-            ? this.t('daysAgo').replace('{days}', Math.abs(diffDays))
-            : diffDays === 0
-                ? this.t('dueToday')
-                : this.t('inDays').replace('{days}', diffDays);
-        return `
-            <div class="expense-item fixed-expense-item ${statusClass}">
-                <div class="expense-info">
-                    <span class="expense-name">${exp.name}</span>
-                    <span class="expense-category">
-                        📅 ${this.t('dayLabel')} ${exp.day} · ${this.t('endDateLabel')}: ${exp.endDate}
-                        <span class="days-badge ${badgeClass}">${daysText}</span>
-                    </span>
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        container.innerHTML = this.data.fixedExpenses.map(exp => {
+            const endDate = new Date(exp.endDate);
+            endDate.setHours(0, 0, 0, 0);
+            const diffTime = endDate - today;
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            let statusClass = '', badgeClass = '';
+            if (diffDays < 0) { statusClass = 'expired'; badgeClass = 'expired'; }
+            else if (diffDays <= 3) { statusClass = 'warning'; badgeClass = 'warning'; }
+            else { statusClass = 'future'; badgeClass = 'future'; }
+            const daysText = diffDays < 0 
+                ? this.t('daysAgo').replace('{days}', Math.abs(diffDays))
+                : diffDays === 0 ? this.t('dueToday') : this.t('inDays').replace('{days}', diffDays);
+            return `
+                <div class="expense-item fixed-expense-item ${statusClass}">
+                    <div class="expense-info">
+                        <span class="expense-name">${exp.name}</span>
+                        <span class="expense-category">
+                            📅 ${this.t('dayLabel')} ${exp.day} · ${this.t('endDateLabel')}: ${exp.endDate}
+                            <span class="days-badge ${badgeClass}">${daysText}</span>
+                        </span>
+                    </div>
+                    <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
+                    <div class="expense-actions">
+                        <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
+                    </div>
                 </div>
-                <span class="expense-amount">${this.formatCurrency(exp.amount)}</span>
-                <div class="expense-actions">
-                    <button onclick="app.deleteFixedExpense(${exp.id})">🗑️</button>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
+            `;
+        }).join('');
+    }
 
     updateVariableExpensesList() {
         const date = document.getElementById('expenseDate').value;
         const container = document.getElementById('variableExpensesList');
         const expenses = this.data.variableExpenses[date] || [];
-
         if (expenses.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noVariable')}</p>`;
             return;
         }
-
         container.innerHTML = expenses.map(exp => `
             <div class="expense-item">
                 <div class="expense-info">
@@ -1066,48 +822,30 @@ class BudgetWise {
     updateChart() {
         const categories = {};
         const categoryExpenses = {};
-        
-        // Raccogli i dati per categoria
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(expense => {
                 const catName = this.t('category' + expense.category);
                 categories[catName] = (categories[catName] || 0) + expense.amount;
-                
-                // Salva le spese individuali per categoria
-                if (!categoryExpenses[catName]) {
-                    categoryExpenses[catName] = [];
-                }
-                categoryExpenses[catName].push({
-                    name: expense.name,
-                    amount: expense.amount,
-                    date: day
-                });
+                if (!categoryExpenses[catName]) categoryExpenses[catName] = [];
+                categoryExpenses[catName].push({ name: expense.name, amount: expense.amount, date: day });
             });
         });
-
         if (Object.keys(categories).length === 0) {
             document.getElementById('chartNote').style.display = 'block';
             document.getElementById('categoryDetail').style.display = 'none';
             if (this.chart) this.chart.destroy();
             return;
         }
-
         document.getElementById('chartNote').style.display = 'none';
-
         if (this.chart) this.chart.destroy();
-
         const ctx = document.getElementById('expenseChart').getContext('2d');
-        
-        // Crea il grafico con gestione click
         this.chart = new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: Object.keys(categories),
                 datasets: [{
                     data: Object.values(categories),
-                    backgroundColor: [
-                        '#6366f1', '#818cf8', '#10b981', '#34d399', '#f59e0b', '#ef4444'
-                    ],
+                    backgroundColor: ['#6366f1', '#818cf8', '#10b981', '#34d399', '#f59e0b', '#ef4444'],
                     borderColor: 'transparent'
                 }]
             },
@@ -1115,13 +853,7 @@ class BudgetWise {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary'),
-                            font: { size: 12 }
-                        }
-                    },
+                    legend: { position: 'bottom', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary'), font: { size: 12 } } },
                     tooltip: {
                         callbacks: {
                             label: (context) => {
@@ -1143,8 +875,6 @@ class BudgetWise {
                 }
             }
         });
-
-        // Salva i dati delle spese per categoria per usarli dopo
         this.categoryExpenses = categoryExpenses;
     }
 
@@ -1154,29 +884,18 @@ class BudgetWise {
         const totalEl = document.getElementById('detailTotal');
         const comparisonEl = document.getElementById('detailComparison');
         const listEl = document.getElementById('detailExpensesList');
-
         if (!detailContainer) return;
-
-        // Calcola totale
         const total = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-
-        // Calcola confronto con mese scorso (simulato per ora)
-        const lastMonthTotal = total * 0.85; // Esempio: -15% rispetto al mese scorso
+        const lastMonthTotal = total * 0.85;
         const difference = total - lastMonthTotal;
         const percentChange = ((difference / lastMonthTotal) * 100).toFixed(1);
         const trend = difference >= 0 ? '📈' : '📉';
         const comparisonText = this.data.language === 'it'
             ? `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'in più' : 'in meno'} rispetto al mese scorso`
             : `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'more' : 'less'} than last month`;
-
-        // Popola i dettagli
         titleEl.textContent = categoryName;
-        totalEl.textContent = this.data.language === 'it'
-            ? `Totale: ${this.formatCurrency(total)}`
-            : `Total: ${this.formatCurrency(total)}`;
+        totalEl.textContent = this.data.language === 'it' ? `Totale: ${this.formatCurrency(total)}` : `Total: ${this.formatCurrency(total)}`;
         comparisonEl.textContent = comparisonText;
-
-        // Lista spese
         if (expenses.length === 0) {
             listEl.innerHTML = `<p class="chart-note">${this.data.language === 'it' ? 'Nessuna spesa' : 'No expenses'}</p>`;
         } else {
@@ -1187,8 +906,6 @@ class BudgetWise {
                 </div>
             `).join('');
         }
-
-        // Mostra il dettaglio
         detailContainer.style.display = 'block';
     }
 
@@ -1196,7 +913,6 @@ class BudgetWise {
         return amount.toFixed(2).replace('.', ',') + ' €';
     }
 
-    // ========== HIGHLIGHT ==========
     highlightField(fieldId) {
         const field = document.getElementById(fieldId);
         if (!field) return;
@@ -1209,15 +925,20 @@ class BudgetWise {
         }, 800);
     }
 
-    // ========== CHAT ASSISTANT ==========
+    showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.style.background = type === 'success' ? '#2dc653' : '#ef233c';
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
     handleChatInput() {
         const input = document.getElementById('chatInput');
         const question = input.value.trim();
         if (!question) return;
-
         this.addChatMessage('user', question);
         input.value = '';
-
         setTimeout(() => {
             const answer = this.generateAnswer(question);
             this.addChatMessage('bot', answer);
@@ -1226,13 +947,10 @@ class BudgetWise {
 
     addChatMessage(sender, text) {
         const container = document.getElementById('chatMessages');
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `chat-message ${sender}`;
-        messageDiv.innerHTML = `
-            <span class="message-sender">${sender === 'bot' ? '🤖 ' + this.t('assistantName') : '👤 ' + (this.data.language === 'it' ? 'Tu' : 'You')}:</span>
-            <span class="message-text">${text}</span>
-        `;
-        container.appendChild(messageDiv);
+        const div = document.createElement('div');
+        div.className = `chat-message ${sender}`;
+        div.innerHTML = `<span class="message-sender">${sender === 'bot' ? '🤖 ' + this.t('assistantName') : '👤 ' + (this.data.language === 'it' ? 'Tu' : 'You')}:</span> <span class="message-text">${text}</span>`;
+        container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
 
@@ -1243,7 +961,6 @@ class BudgetWise {
         const totalSpent = this.calculateTotalVariableExpenses();
         const totalFixed = this.calculateTotalFixedExpenses();
         const daysLeft = this.getDaysLeft();
-
         if (q.includes('risparmi') || q.includes('risparmiare') || q.includes('save')) {
             const match = q.match(/(\d+)/);
             if (match) {
@@ -1256,7 +973,6 @@ class BudgetWise {
                 }
             }
         }
-
         if (q.includes('categoria') || q.includes('category') || q.includes('spendo di più') || q.includes('spend most')) {
             const categories = {};
             Object.values(this.data.variableExpenses).forEach(day => {
@@ -1265,41 +981,27 @@ class BudgetWise {
                     categories[catName] = (categories[catName] || 0) + exp.amount;
                 });
             });
-            
-            if (Object.keys(categories).length === 0) {
-                return this.t('noExpenses');
-            }
-            
+            if (Object.keys(categories).length === 0) return this.t('noExpenses');
             const top = Object.entries(categories).sort((a,b) => b[1] - a[1])[0];
             return `📊 ${this.data.language === 'it' ? 'La categoria in cui spendi di più è' : 'The category where you spend the most is'} "${top[0]}" ${this.data.language === 'it' ? 'con' : 'with'} ${this.formatCurrency(top[1])}.`;
         }
-
         if (q.includes('obiettivo') || q.includes('goal')) {
             const goal = this.data.savingsGoal;
             const percent = this.data.savingsPercent;
             const income = this.calculateTotalIncome();
-            
-            if (!goal || !percent) {
-                return this.t('noGoal');
-            }
-            
+            if (!goal || !percent) return this.t('noGoal');
             const savedPerMonth = (income * percent) / 100;
             const monthsNeeded = Math.ceil(goal / savedPerMonth);
-            
             return `🎯 ${this.data.language === 'it' ? 'Raggiungerai l\'obiettivo in' : 'You\'ll reach your goal in'} ${monthsNeeded} ${this.data.language === 'it' ? 'mesi' : 'months'}.`;
         }
-
         return this.getContextualAdvice();
     }
 
     getContextualAdvice() {
         const remaining = this.calculateRemaining();
         const dailyBudget = this.calculateDailyBudget();
-        
         if (remaining < 0) {
-            return this.data.language === 'it' 
-                ? "⚠️ Sei in rosso! Rivedi le spese."
-                : "⚠️ You're in the red! Review your expenses.";
+            return this.data.language === 'it' ? "⚠️ Sei in rosso! Rivedi le spese." : "⚠️ You're in the red! Review your expenses.";
         } else if (remaining < dailyBudget * 7) {
             return this.data.language === 'it'
                 ? `⚠️ Attenzione: ti rimangono solo ${this.formatCurrency(remaining)} per i prossimi giorni.`
@@ -1311,23 +1013,16 @@ class BudgetWise {
         }
     }
 
-    // ========== TEMA ==========
     toggleTheme() {
-        const currentTheme = document.documentElement.getAttribute('data-theme');
-        if (currentTheme === 'dark') {
-            document.documentElement.removeAttribute('data-theme');
-            document.getElementById('themeToggle').textContent = '🌙';
-        } else {
-            document.documentElement.setAttribute('data-theme', 'dark');
-            document.getElementById('themeToggle').textContent = '☀️';
-        }
-        this.saveTheme();
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
+        document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
+        localStorage.setItem('budgetwise-theme', isDark ? 'light' : 'dark');
         this.updateChart();
     }
 
     applyTheme() {
-        const savedTheme = localStorage.getItem('budgetwise-theme');
-        if (savedTheme === 'dark') {
+        if (localStorage.getItem('budgetwise-theme') === 'dark') {
             document.documentElement.setAttribute('data-theme', 'dark');
             document.getElementById('themeToggle').textContent = '☀️';
         }
@@ -1338,7 +1033,6 @@ class BudgetWise {
         localStorage.setItem('budgetwise-theme', theme);
     }
 
-    // ========== PERSISTENZA DATI ==========
     saveData() {
         localStorage.setItem('budgetwise-data', JSON.stringify(this.data));
     }
@@ -1362,22 +1056,17 @@ class BudgetWise {
 
     backupData() {
         const dataStr = JSON.stringify(this.data, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
-        const exportFileDefaultName = `budgetwise-backup-${new Date().toISOString().split('T')[0]}.json`;
-        
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
-        
+        const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+        const link = document.createElement('a');
+        link.href = dataUri;
+        link.download = `budgetwise-backup-${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
         alert(this.t('backupDownloaded'));
     }
 
     restoreData(event) {
         const file = event.target.files[0];
         if (!file) return;
-
         const reader = new FileReader();
         reader.onload = (e) => {
             try {
@@ -1387,7 +1076,7 @@ class BudgetWise {
                 this.updateChart();
                 this.applyLanguage();
                 alert(this.t('dataRestored'));
-            } catch (error) {
+            } catch {
                 alert('❌ File non valido');
             }
         };
@@ -1415,50 +1104,40 @@ class BudgetWise {
         }
     }
 
-    // ========== ESPORTAZIONE CALENDARIO ==========
     exportToCalendar() {
-        let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
-        
+        let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
         this.data.fixedExpenses.forEach(exp => {
-            const endDate = new Date(exp.endDate);
-            if (endDate >= new Date()) {
-                icsContent += "BEGIN:VEVENT\n";
-                icsContent += `SUMMARY:💰 ${exp.name}\n`;
-                icsContent += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa' : 'Fixed expense'} ${this.formatCurrency(exp.amount)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day}\n`;
+            if (new Date(exp.endDate) >= new Date()) {
+                ics += "BEGIN:VEVENT\n";
+                ics += `SUMMARY:💰 ${exp.name}\n`;
+                ics += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa' : 'Fixed expense'} ${this.formatCurrency(exp.amount)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day}\n`;
                 const nextDate = this.getNextPaymentDate(exp.day);
-                icsContent += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
-                icsContent += `RRULE:FREQ=MONTHLY;UNTIL=${exp.endDate.replace(/-/g, '')}\n`;
-                icsContent += "END:VEVENT\n";
+                ics += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
+                ics += `RRULE:FREQ=MONTHLY;UNTIL=${exp.endDate.replace(/-/g, '')}\n`;
+                ics += "END:VEVENT\n";
             }
         });
-
         Object.entries(this.data.variableExpenses).forEach(([date, expenses]) => {
             expenses.forEach(exp => {
-                icsContent += "BEGIN:VEVENT\n";
-                icsContent += `SUMMARY:🛒 ${exp.name}\n`;
-                icsContent += `DESCRIPTION:${exp.category} - ${this.formatCurrency(exp.amount)}\n`;
-                icsContent += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
-                icsContent += `DTEND;VALUE=DATE:${date.replace(/-/g, '')}\n`;
-                icsContent += "END:VEVENT\n";
+                ics += "BEGIN:VEVENT\n";
+                ics += `SUMMARY:🛒 ${exp.name}\n`;
+                ics += `DESCRIPTION:${exp.category} - ${this.formatCurrency(exp.amount)}\n`;
+                ics += `DTSTART;VALUE=DATE:${date.replace(/-/g, '')}\n`;
+                ics += "END:VEVENT\n";
             });
         });
-
-        icsContent += "END:VCALENDAR";
-
-        const blob = new Blob([icsContent], { type: 'text/calendar' });
+        ics += "END:VCALENDAR";
+        const blob = new Blob([ics], { type: 'text/calendar' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
         a.download = `budgetwise-${this.data.periodStart}.ics`;
         a.click();
-        
         alert(this.t('calendarExported'));
     }
 
-    // ========== VOCE ==========
     setupVoice() {
         console.log('Setup voice...');
-        
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.warn('Riconoscimento vocale non supportato');
             const voiceBtn = document.getElementById('voiceBtn');
@@ -1468,26 +1147,13 @@ class BudgetWise {
             }
             return;
         }
-
         console.log('✅ Riconoscimento vocale supportato');
-
-        // Microfono spese fisse
         const micFixed = document.getElementById('micFixedBtn');
-        if (micFixed) {
-            micFixed.addEventListener('click', () => this.startVoiceInput('fixed'));
-        }
-
-        // Microfono spese variabili
+        if (micFixed) micFixed.addEventListener('click', () => this.startVoiceInput('fixed'));
         const voiceBtn = document.getElementById('voiceBtn');
-        if (voiceBtn) {
-            voiceBtn.addEventListener('click', () => this.startVoiceInput('variable'));
-        }
-
-        // Microfono chat (se presente)
+        if (voiceBtn) voiceBtn.addEventListener('click', () => this.startVoiceInput('variable'));
         const chatVoice = document.getElementById('chatVoiceBtn');
-        if (chatVoice) {
-            chatVoice.addEventListener('click', () => this.startVoiceInput('chat'));
-        }
+        if (chatVoice) chatVoice.addEventListener('click', () => this.startVoiceInput('chat'));
     }
 
     startVoiceInput(type = 'variable') {
@@ -1497,12 +1163,12 @@ class BudgetWise {
         recognition.interimResults = true;
 
         let button, statusElement;
-        let timeoutDuration = 8000; // default 8 secondi
+        let timeoutDuration = 8000;
 
         if (type === 'fixed') {
             button = document.getElementById('micFixedBtn');
             statusElement = document.getElementById('fixedVoiceStatus');
-            timeoutDuration = 15000; // 15 secondi per le spese fisse
+            timeoutDuration = 15000;
         } else {
             button = document.getElementById('voiceBtn');
             statusElement = document.getElementById('voiceStatus');
@@ -1516,13 +1182,9 @@ class BudgetWise {
         recognition.onresult = (event) => {
             const result = event.results[event.results.length - 1];
             const transcript = result[0].transcript.trim();
-
             if (result.isFinal) {
-                if (type === 'fixed') {
-                    this.processFixedVoiceCommand(transcript);
-                } else {
-                    this.processVoiceCommand(transcript);
-                }
+                if (type === 'fixed') this.processFixedVoiceCommand(transcript);
+                else this.processVoiceCommand(transcript);
                 statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
             } else {
                 statusElement.textContent = `🔊 ${transcript}...`;
@@ -1543,7 +1205,6 @@ class BudgetWise {
 
         recognition.start();
 
-        // Timeout personalizzato in base al tipo
         setTimeout(() => {
             recognition.stop();
             button.classList.remove('listening');
@@ -1556,10 +1217,8 @@ class BudgetWise {
         if (amountMatch) {
             const amount = parseFloat(amountMatch[0].replace(',', '.'));
             let description = transcript.replace(amountMatch[0], '').replace(/euro|€|euros/gi, '').trim();
-            
             document.getElementById('expenseName').value = description || (this.data.language === 'it' ? 'Spesa' : 'Expense');
             document.getElementById('expenseAmount').value = amount;
-            
             alert(this.data.language === 'it' 
                 ? `✅ Rilevato: ${description || 'Spesa'} €${amount}`
                 : `✅ Detected: ${description || 'Expense'} €${amount}`);
@@ -1567,14 +1226,11 @@ class BudgetWise {
     }
 
     processFixedVoiceCommand(transcript) {
-        // Esempio: "Mutuo 800 euro giorno 27 scadenza 31 12 2030"
         const words = transcript.split(' ');
-        let name = words[0] || 'Spesa';
+        let name = words[0] || (this.data.language === 'it' ? 'Spesa' : 'Expense');
         if (name.length > 20) name = name.substring(0, 20);
-
         const amountMatch = transcript.match(/(\d+[.,]?\d*)/);
         const amount = amountMatch ? parseFloat(amountMatch[0].replace(',', '.')) : 0;
-
         const dayMatch = transcript.match(/(\d{1,2})/g);
         let day = 1;
         if (dayMatch && dayMatch.length > 0) {
@@ -1586,7 +1242,6 @@ class BudgetWise {
                 }
             }
         }
-
         const dateMatch = transcript.match(/(\d{1,2})[\/\s](\d{1,2})[\/\s](\d{4})/);
         let endDate = '';
         if (dateMatch) {
@@ -1596,12 +1251,10 @@ class BudgetWise {
             d.setFullYear(d.getFullYear() + 10);
             endDate = d.toISOString().split('T')[0];
         }
-
         document.getElementById('fixedName').value = name;
         document.getElementById('fixedAmount').value = amount;
         document.getElementById('fixedDay').value = day;
         document.getElementById('fixedEndDate').value = endDate;
-
         alert(this.data.language === 'it'
             ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
             : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
@@ -1612,7 +1265,6 @@ class BudgetWise {
         const suggestions = [];
         const language = this.data.language;
         
-        // Analizza spese per categoria
         const categoryTotals = {};
         Object.values(this.data.variableExpenses).forEach(day => {
             day.forEach(exp => {
@@ -1621,23 +1273,16 @@ class BudgetWise {
             });
         });
 
-        // Se non ci sono abbastanza dati, non mostrare nulla
         if (Object.keys(categoryTotals).length === 0) {
             document.getElementById('aiWidget').style.display = 'none';
             return;
         }
 
-        // Trova la categoria principale
-        const topCategory = Object.entries(categoryTotals)
-            .sort((a, b) => b[1] - a[1])[0];
-        
-        const topCatName = language === 'it'
-            ? this.t('category' + topCategory[0])
-            : this.t('category' + topCategory[0]);
+        const topCategory = Object.entries(categoryTotals).sort((a, b) => b[1] - a[1])[0];
+        const topCatName = language === 'it' ? this.t('category' + topCategory[0]) : this.t('category' + topCategory[0]);
 
-        // Suggerimento 1: Ridurre la spesa principale
         if (topCategory[1] > 100) {
-            const reduction = Math.round(topCategory[1] * 0.1); // 10%
+            const reduction = Math.round(topCategory[1] * 0.1);
             suggestions.push({
                 message: language === 'it'
                     ? `💡 Hai speso ${this.formatCurrency(topCategory[1])} in ${topCatName}. Riducendo del 10% (${this.formatCurrency(reduction)}), potresti destinare quella cifra al risparmio.`
@@ -1649,9 +1294,8 @@ class BudgetWise {
             });
         }
 
-        // Suggerimento 2: Confronto con trasporti
         if (categoryTotals.Trasporti && categoryTotals.Trasporti > 50) {
-            const potentialSave = Math.round(categoryTotals.Trasporti * 0.2); // 20%
+            const potentialSave = Math.round(categoryTotals.Trasporti * 0.2);
             suggestions.push({
                 message: language === 'it'
                     ? `🚗 Hai speso ${this.formatCurrency(categoryTotals.Trasporti)} in trasporti. Usando più mezzi pubblici, potresti risparmiare circa ${this.formatCurrency(potentialSave)} al mese.`
@@ -1662,9 +1306,8 @@ class BudgetWise {
             });
         }
 
-        // Suggerimento 3: Confronto con svago
         if (categoryTotals.Svago && categoryTotals.Svago > 80) {
-            const potentialSave = Math.round(categoryTotals.Svago * 0.15); // 15%
+            const potentialSave = Math.round(categoryTotals.Svago * 0.15);
             suggestions.push({
                 message: language === 'it'
                     ? `🎮 Hai speso ${this.formatCurrency(categoryTotals.Svago)} in svago. Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(potentialSave)}.`
@@ -1675,7 +1318,6 @@ class BudgetWise {
             });
         }
 
-        // Mostra un suggerimento casuale
         if (suggestions.length > 0) {
             const randomIndex = Math.floor(Math.random() * suggestions.length);
             this.showAiSuggestion(suggestions[randomIndex]);
@@ -1693,7 +1335,6 @@ class BudgetWise {
         messageEl.textContent = suggestion.message;
         actionBtn.textContent = suggestion.action;
         
-        // Salva i dati per l'azione
         actionBtn.dataset.type = suggestion.actionType;
         actionBtn.dataset.amount = suggestion.amount || 0;
         actionBtn.dataset.category = suggestion.category || '';
@@ -1703,29 +1344,11 @@ class BudgetWise {
     }
 
     setupAiActions() {
-    document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-        const type = e.target.dataset.type;
-        const amount = parseFloat(e.target.dataset.amount);
-        
-        if (type === 'reduce' && amount > 0) {
-            // Suggerisci di aumentare l'obiettivo di risparmio
-            const currentGoal = this.data.savingsGoal || 0;
-            document.getElementById('saveGoal').value = currentGoal + amount;
-            this.showToast(
-                this.data.language === 'it'
-                    ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                    : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                'success'
-            );
-        } 
-        else if (type === 'transport') {
-            // Azione per il suggerimento trasporti
-            const message = this.data.language === 'it'
-                ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
-                : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
+        document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
+            const type = e.target.dataset.type;
+            const amount = parseFloat(e.target.dataset.amount);
             
-            if (confirm(message)) {
-                // Aumenta l'obiettivo di risparmio
+            if (type === 'reduce' && amount > 0) {
                 const currentGoal = this.data.savingsGoal || 0;
                 document.getElementById('saveGoal').value = currentGoal + amount;
                 this.showToast(
@@ -1734,45 +1357,58 @@ class BudgetWise {
                         : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
                     'success'
                 );
+            } 
+            else if (type === 'transport') {
+                const message = this.data.language === 'it'
+                    ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
+                    : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
+                
+                if (confirm(message)) {
+                    const currentGoal = this.data.savingsGoal || 0;
+                    document.getElementById('saveGoal').value = currentGoal + amount;
+                    this.showToast(
+                        this.data.language === 'it'
+                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                        'success'
+                    );
+                }
             }
-        }
-        else if (type === 'leisure') {
-            // Azione per il suggerimento svago
-            const message = this.data.language === 'it'
-                ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
-                : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
-            
-            if (confirm(message)) {
-                const currentGoal = this.data.savingsGoal || 0;
-                document.getElementById('saveGoal').value = currentGoal + amount;
+            else if (type === 'leisure') {
+                const message = this.data.language === 'it'
+                    ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
+                    : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
+                
+                if (confirm(message)) {
+                    const currentGoal = this.data.savingsGoal || 0;
+                    document.getElementById('saveGoal').value = currentGoal + amount;
+                    this.showToast(
+                        this.data.language === 'it'
+                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
+                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                        'success'
+                    );
+                }
+            }
+            else {
                 this.showToast(
                     this.data.language === 'it'
-                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                    'success'
+                        ? '🔍 Funzionalità in sviluppo'
+                        : '🔍 Feature in development',
+                    'info'
                 );
             }
-        }
-        else {
-            // Altri tipi di azione (fallback)
-            this.showToast(
-                this.data.language === 'it'
-                    ? '🔍 Funzionalità in sviluppo'
-                    : '🔍 Feature in development',
-                'info'
-            );
-        }
-        
-        // Nascondi il widget dopo l'azione
-        document.getElementById('aiAction').style.display = 'none';
-        setTimeout(() => {
-            document.getElementById('aiWidget').style.display = 'none';
-        }, 2000);
-    });
+            
+            document.getElementById('aiAction').style.display = 'none';
+            setTimeout(() => {
+                document.getElementById('aiWidget').style.display = 'none';
+            }, 2000);
+        });
 
-    document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
-        document.getElementById('aiWidget').style.display = 'none';
-    });
+        document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
+            document.getElementById('aiWidget').style.display = 'none';
+        });
+    }
 }
 
 // ============================================
