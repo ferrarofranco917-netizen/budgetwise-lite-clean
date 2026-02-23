@@ -751,6 +751,88 @@ class BudgetWise {
         return nextDate.toISOString().split('T')[0];
     }
 
+    // ========== SPARKLINE ==========
+    getLast7DaysData() {
+        const today = new Date();
+        const data = [];
+        
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date(today);
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            
+            // Spese variabili del giorno
+            let daySpent = 0;
+            if (this.data.variableExpenses[dateStr]) {
+                daySpent = this.data.variableExpenses[dateStr].reduce((sum, exp) => sum + exp.amount, 0);
+            }
+            
+            data.push(daySpent);
+        }
+        
+        return data;
+    }
+
+    getLast7DaysBudget() {
+        const dailyBudget = this.calculateDailyBudget();
+        const data = [];
+        
+        for (let i = 6; i >= 0; i--) {
+            data.push(dailyBudget);
+        }
+        
+        return data;
+    }
+
+    drawSparkline(canvasId, data, color = '#4361ee') {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        
+        ctx.clearRect(0, 0, width, height);
+        
+        if (data.length === 0 || data.every(v => v === 0)) return;
+        
+        const max = Math.max(...data, 1);
+        const min = Math.min(...data, 0);
+        const range = max - min || 1;
+        
+        // Calcola punti
+        const points = data.map((value, index) => {
+            const x = (index / (data.length - 1)) * width;
+            const y = height - ((value - min) / range) * height;
+            return { x, y };
+        });
+        
+        // Disegna linea
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        
+        points.forEach((point, i) => {
+            if (i === 0) {
+                ctx.moveTo(point.x, point.y);
+            } else {
+                ctx.lineTo(point.x, point.y);
+            }
+        });
+        
+        ctx.stroke();
+        
+        // Disegna punti
+        ctx.fillStyle = color;
+        points.forEach(point => {
+            ctx.beginPath();
+            ctx.arc(point.x, point.y, 2, 0, 2 * Math.PI);
+            ctx.fill();
+        });
+    }
+
     // ========== UI ==========
     updateUI() {
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
@@ -799,6 +881,17 @@ class BudgetWise {
         }
 
         document.getElementById('guideMessage').style.display = this.data.incomes.length === 0 ? 'block' : 'none';
+
+        // === NUOVO: SPARKLINE ===
+        const last7Days = this.getLast7DaysData();
+        const last7DaysBudget = this.getLast7DaysBudget();
+
+        // Budget sparkline (blu)
+        this.drawSparkline('budgetSparkline', last7DaysBudget, '#4361ee');
+
+        // Rimanenza sparkline (verde/rosso)
+        const remainingColor = this.calculateRemaining() >= 0 ? '#2dc653' : '#ef233c';
+        this.drawSparkline('remainingSparkline', last7Days, remainingColor);
     }
 
     updateIncomeList() {
