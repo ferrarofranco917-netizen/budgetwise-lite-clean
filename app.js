@@ -1290,7 +1290,89 @@ class BudgetWise {
         a.click();
         alert(this.t('calendarExported'));
     }
-
+// ========== IMPORT CSV ==========
+parseCSV(file, delimiter, dateFormat) {
+    console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
+    
+    const reader = new FileReader();
+    
+    reader.onload = (e) => {
+        const text = e.target.result;
+        const lines = text.split('\n');
+        
+        // Salta l'intestazione se presente
+        const startIndex = lines[0].toLowerCase().includes('data') ? 1 : 0;
+        
+        for (let i = startIndex; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            
+            // Dividi la riga usando il delimitatore
+            const parts = line.split(delimiter);
+            if (parts.length < 3) continue;
+            
+            // Estrai data, descrizione, importo
+            let dateStr = parts[0].trim();
+            let description = parts[1].trim();
+            let amountStr = parts[2].trim();
+            
+            // Converti data nel formato GG/MM/AAAA
+            if (dateFormat === 'DD/MM/YYYY') {
+                const [day, month, year] = dateStr.split(/[\/\-]/);
+                dateStr = `${year}-${month}-${day}`;
+            } else if (dateFormat === 'MM/DD/YYYY') {
+                const [month, day, year] = dateStr.split(/[\/\-]/);
+                dateStr = `${year}-${month}-${day}`;
+            }
+            
+            // Pulisci e converti importo
+            let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
+            if (isNaN(amount)) continue;
+            
+            // Determina se è entrata o spesa in base al segno
+            if (amount > 0) {
+                // Potrebbe essere un'entrata
+                if (!this.data.incomes) this.data.incomes = [];
+                this.data.incomes.push({
+                    desc: description,
+                    amount: amount,
+                    date: dateStr,
+                    id: Date.now() + i
+                });
+            } else {
+                // È una spesa (importo negativo)
+                amount = Math.abs(amount);
+                
+                // Assegna una categoria di default
+                const category = 'Altro';
+                
+                if (!this.data.variableExpenses) this.data.variableExpenses = {};
+                if (!this.data.variableExpenses[dateStr]) this.data.variableExpenses[dateStr] = [];
+                
+                this.data.variableExpenses[dateStr].push({
+                    name: description,
+                    amount: amount,
+                    category: category,
+                    id: Date.now() + i
+                });
+            }
+        }
+        
+        this.saveData();
+        this.updateUI();
+        this.updateChart();
+        
+        console.log('✅ Import CSV completato');
+        alert('✅ File importato con successo!');
+    };
+    
+    reader.onerror = () => {
+        console.error('❌ Errore lettura file');
+        alert('❌ Errore durante la lettura del file');
+    };
+    
+    reader.readAsText(file);
+}
     setupVoice() {
         console.log('Setup voice...');
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -1577,60 +1659,32 @@ class BudgetWise {
 const app = new BudgetWise();
 window.app = app;
 // ============================================
-// FIX: Pulsante Importa CSV (Aggiunto il 23/02/2026)
+// FIX: Pulsante Importa CSV
 // ============================================
 setTimeout(function() {
-    'use strict';
+    const btn = document.getElementById('importCsvBtn');
+    if (!btn || !window.app) return;
     
-    var btn = document.getElementById('importCsvBtn');
-    if (!btn || !window.app) {
-        console.log('Fix CSV: elementi non trovati, riprovo tra 2 secondi...');
-        setTimeout(arguments.callee, 2000);
-        return;
-    }
+    btn.addEventListener('click', function() {
+        document.getElementById('csvFile').click();
+    });
     
-    console.log('✅ Fix CSV: pulsante trovato, applico...');
-    
-    // Sostituisci il pulsante per rimuovere eventuali listener vecchi
-    var newBtn = btn.cloneNode(true);
-    btn.parentNode.replaceChild(newBtn, btn);
-    
-    newBtn.addEventListener('click', function() {
-        var fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.accept = '.csv,.txt';
-        fileInput.style.display = 'none';
+    document.getElementById('csvFile').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
         
-        fileInput.addEventListener('change', function(e) {
-            var file = e.target.files[0];
-            if (!file) return;
-            
-            // Prendi i valori dalla UI
-            var delimiterSelect = document.querySelector('select[name="delimiter"]') || 
-                                  document.querySelector('select:has(option[value=","])');
-            var dateFormatSelect = document.querySelector('select[name="dateFormat"]') ||
-                                   document.querySelector('select:has(option[value="DD/MM/YYYY"])');
-            
-            var delimiter = ',';
-            if (delimiterSelect && delimiterSelect.value) {
-                delimiter = delimiterSelect.value;
-            }
-            
-            var dateFormat = 'DD/MM/YYYY';
-            if (dateFormatSelect && dateFormatSelect.value) {
-                dateFormat = dateFormatSelect.value;
-            }
-            
-            // Chiama parseCSV dal prototipo
-            var proto = Object.getPrototypeOf(window.app);
-            if (proto && typeof proto.parseCSV === 'function') {
-                proto.parseCSV.call(window.app, file, delimiter, dateFormat);
-                console.log('✅ CSV importato:', file.name);
-            } else {
-                console.error('❌ parseCSV non trovato');
-                alert('Errore: funzione parseCSV non trovata');
-            }
-        });
+        document.getElementById('csvFileName').textContent = file.name;
+        
+        const delimiter = document.getElementById('csvSeparator').value;
+        const dateFormat = document.getElementById('csvDelimiter').value;
+        
+        if (window.app.parseCSV) {
+            window.app.parseCSV(file, delimiter, dateFormat);
+        } else {
+            alert('❌ Funzione parseCSV non trovata!');
+        }
+    });
+}, 2000);
         
         document.body.appendChild(fileInput);
         fileInput.click();
