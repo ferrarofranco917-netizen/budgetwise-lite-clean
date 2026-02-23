@@ -212,6 +212,16 @@ class BudgetWise {
         this.updateChart();
         this.setupVoice();
         this.applyLanguage();
+        init() {
+    this.loadData();
+    this.setupEventListeners();
+    this.applyTheme();
+    this.updateUI();
+    this.updateChart();
+    this.setupVoice();
+    this.applyLanguage();
+    this.startOnboarding(); // <-- QUI
+}
     }
 
     getDefaultPeriodStart() {
