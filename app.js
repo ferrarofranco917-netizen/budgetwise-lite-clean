@@ -1564,7 +1564,7 @@ startOnboarding() {
 
     let stepIndex = 0;
 
-    // Crea overlay onboarding
+    // Crea overlay onboarding (SOLO sfondo scuro, niente card con bottoni duplicati)
     const overlay = document.createElement('div');
     overlay.id = 'onboarding-overlay';
     overlay.style.cssText = `
@@ -1582,9 +1582,10 @@ startOnboarding() {
         justify-content: center;
         padding: 20px;
         box-sizing: border-box;
+        pointer-events: none; /* Permette di cliccare attraverso lo sfondo */
     `;
 
-    // Card principale (SOLO benvenuto e controlli)
+    // Card benvenuto (senza bottoni dell'app)
     const card = document.createElement('div');
     card.style.cssText = `
         background: var(--card-bg, #ffffff);
@@ -1598,6 +1599,7 @@ startOnboarding() {
         border: 2px solid var(--accent);
         margin-bottom: 30px;
         box-sizing: border-box;
+        pointer-events: auto; /* La card è cliccabile */
     `;
 
     card.innerHTML = `
@@ -1605,12 +1607,12 @@ startOnboarding() {
         <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
         <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
         
-        <!-- ISTRUZIONE DEL PASSO (dentro la card) -->
+        <!-- SOLO ISTRUZIONE, NESSUN BOTTONE DELL'APP -->
         <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
             <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
         </div>
         
-        <!-- PULSANTI DI CONTROLLO -->
+        <!-- SOLO PULSANTI DI CONTROLLO DELL'ONBOARDING -->
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
             <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
             <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
@@ -1648,19 +1650,17 @@ startOnboarding() {
                 transition: all 0.3s ease !important;
                 position: relative !important;
                 z-index: 10000 !important;
+                pointer-events: auto !important;
             }
             @keyframes targetGlow {
                 0% { 
                     box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6);
-                    transform: scale(1);
                 }
                 50% { 
                     box-shadow: 0 0 0 8px rgba(67, 97, 238, 1), 0 0 50px rgba(67, 97, 238, 0.9);
-                    transform: scale(1.02);
                 }
                 100% { 
                     box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6);
-                    transform: scale(1);
                 }
             }
         `;
@@ -1682,7 +1682,7 @@ startOnboarding() {
             el.classList.remove('onboarding-highlight');
         });
 
-        // Evidenzia l'elemento target (il bottone VERO che sta SOTTO la card)
+        // Evidenzia l'elemento target (che sta nella pagina SOTTO la card)
         const target = document.querySelector(step.highlight);
         if (target) {
             target.classList.add('onboarding-highlight');
