@@ -372,8 +372,16 @@ class BudgetWise {
     }
 
     updatePeriodInfo() {
-        document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
+    document.getElementById('periodInfo').textContent = `📅 ${this.t('period')}: ${this.data.periodStart} → ${this.data.periodEnd}`;
+    
+    const sourceEl = document.getElementById('periodSource');
+    if (sourceEl && this.data.incomes && this.data.incomes.length > 0) {
+        const firstIncome = this.data.incomes.sort((a,b) => new Date(a.date) - new Date(b.date))[0];
+        sourceEl.textContent = this.data.language === 'it'
+            ? `⏳ Periodo iniziato con: ${firstIncome.desc} del ${firstIncome.date}`
+            : `⏳ Period started with: ${firstIncome.desc} on ${firstIncome.date}`;
     }
+}
 
     // ========== CALCOLI CON CONTROLLI ==========
     calculateTotalIncome() {
