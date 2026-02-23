@@ -862,11 +862,11 @@ inDays: 'In {days} days',
             }
         }
 
-        if (remainingTrend) {
-            remainingTrend.textContent = this.data.language === 'it'
-                ? 'rispetto a ieri: 0%'
-                : 'vs yesterday: 0%';
-        }
+       if (remainingTrend) {
+    remainingTrend.textContent = this.data.language === 'it'
+        ? 'rispetto a ieri: 0%'
+        : 'vs yesterday: 0%';
+}
         // =================================
 
         this.updatePeriodInfo();
@@ -1564,5 +1564,6 @@ inDays: 'In {days} days',
 
 const app = new BudgetWise();
 window.app = app;
+
 
 
