@@ -55,78 +55,80 @@
         <!-- TOAST -->
         <div id="toast" class="toast">✅ Operazione completata</div>
 
-              <!-- RIEPILOGO CON SPARKLINE -->
-<div class="summary-card">
-    <div class="summary-grid">
-        <div class="summary-item">
-            <span class="summary-label" id="budgetLabel">Budget giornaliero</span>
-            <span class="summary-value" id="dailyBudget">0,00 €</span>
-            <div class="sparkline-container">
-                <canvas id="budgetSparkline" width="100" height="30"></canvas>
+        <!-- RIEPILOGO CON SPARKLINE -->
+        <div class="summary-card">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label" id="budgetLabel">Budget giornaliero</span>
+                    <span class="summary-value" id="dailyBudget">0,00 €</span>
+                    <div class="sparkline-container">
+                        <canvas id="budgetSparkline" width="100" height="30"></canvas>
+                    </div>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" id="remainingLabel">Rimanenza</span>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                        <span class="summary-value" id="remaining">0,00 €</span>
+                        <span id="remainingStatus" class="status-icon" title="Saldo positivo">✅</span>
+                    </div>
+                    <small class="trend-indicator" id="remainingTrend"></small>
+                    <div class="sparkline-container">
+                        <canvas id="remainingSparkline" width="100" height="30"></canvas>
+                    </div>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" id="daysLabel">Giorni rimasti</span>
+                    <span class="summary-value" id="daysLeft">28</span>
+                </div>
+            </div>
+            <div class="period-info" id="periodInfo">
+                📅 Periodo: 2026-02-22 → 2026-03-22
             </div>
         </div>
-        <div class="summary-item">
-            <span class="summary-label" id="remainingLabel">Rimanenza</span>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
-                <span class="summary-value" id="remaining">0,00 €</span>
-                <span id="remainingStatus" class="status-icon" title="Saldo positivo">✅</span>
-            </div>
-            <small class="trend-indicator" id="remainingTrend"></small>
-            <div class="sparkline-container">
-                <canvas id="remainingSparkline" width="100" height="30"></canvas>
-            </div>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label" id="daysLabel">Giorni rimasti</span>
-            <span class="summary-value" id="daysLeft">28</span>
-        </div>
-    </div>
-    <div class="period-info" id="periodInfo">
-        📅 Periodo: 2026-02-22 → 2026-03-22
-    </div>
-</div>
+        
         <!-- Indicatore periodo attivo -->
-<div class="period-info" id="periodInfo">
-    📅 Periodo: <span id="periodStart"></span> → <span id="periodEnd"></span>
-</div>
-<div class="period-source" id="periodSource"></div>
+        <div class="period-info" id="periodInfo">
+            📅 Periodo: <span id="periodStart"></span> → <span id="periodEnd"></span>
+        </div>
+        <div class="period-source" id="periodSource"></div>
+        
         <!-- GUIDA -->
         <div class="guide-message" id="guideMessage">
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-       <!-- ==================== ENTRATE MULTIPLE CON DATA ==================== -->
-<div class="section-card">
-    <div class="section-header">
-        <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
-        <span class="badge" id="badge">multiplo</span>
-    </div>
-    <div class="section-content">
-        <!-- Lista entrate -->
-        <div id="incomeList" class="expenses-list">
-            <p class="chart-note">Nessuna entrata</p>
-        </div>
-        
-        <!-- Form inserimento con DATA -->
-        <div class="input-group-row">
-            <div class="input-with-mic" style="flex: 2;">
-                <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
+        <!-- ==================== ENTRATE MULTIPLE CON DATA ==================== -->
+        <div class="section-card">
+            <div class="section-header">
+                <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
+                <span class="badge" id="badge">multiplo</span>
             </div>
-            <div class="input-with-mic" style="flex: 1;">
-                <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
+            <div class="section-content">
+                <!-- Lista entrate -->
+                <div id="incomeList" class="expenses-list">
+                    <p class="chart-note">Nessuna entrata</p>
+                </div>
+                
+                <!-- Form inserimento con DATA -->
+                <div class="input-group-row">
+                    <div class="input-with-mic" style="flex: 2;">
+                        <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
+                    </div>
+                    <div class="input-with-mic" style="flex: 1;">
+                        <input type="number" id="incomeAmount" placeholder="Importo €" step="0.01" min="0">
+                    </div>
+                </div>
+                <div class="input-group-row">
+                    <div style="flex: 1;">
+                        <label for="incomeDate" id="incomeDateLabel">Data</label>
+                        <input type="date" id="incomeDate" class="date-input" value="">
+                    </div>
+                </div>
+                
+                <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
+                <p class="help-text">📊 <span id="totalIncomeLabel">Totale entrate</span>: <span id="totalIncomeDisplay">0,00 €</span></p>
             </div>
         </div>
-        <div class="input-group-row">
-            <div style="flex: 1;">
-                <label for="incomeDate" id="incomeDateLabel">Data</label>
-                <input type="date" id="incomeDate" class="date-input" value="">
-            </div>
-        </div>
-        
-        <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
-        <p class="help-text">📊 <span id="totalIncomeLabel">Totale entrate</span>: <span id="totalIncomeDisplay">0,00 €</span></p>
-    </div>
-</div>
         
         <!-- ==================== SPESE FISSE ==================== -->
         <div class="section-card">
@@ -150,16 +152,15 @@
                     <div class="input-group half">
                         <label id="endDateLabel">Data scadenza (fine)</label>
                         <input type="date" id="fixedEndDate">
-                        <!-- AGGIUNTO: hint per il formato data -->
                         <small class="date-hint" id="dateHintFixed"></small>
                     </div>
                 </div>
                 
                 <!-- Microfono unico -->
                 <div class="voice-fixed-container">
-                   <button id="micFixedBtn" class="voice-fixed-btn">
-    🎤 <span id="micFixedText">Inserisci spesa fissa con voce</span>
-</button>
+                    <button id="micFixedBtn" class="voice-fixed-btn">
+                        🎤 <span id="micFixedText">Inserisci spesa fissa con voce</span>
+                    </button>
                     <div id="fixedVoiceStatus" class="voice-status">🎤 Tocca e di' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")</div>
                 </div>
                 
@@ -175,7 +176,6 @@
                 <div class="date-selector">
                     <label id="dateLabel">Seleziona data:</label>
                     <input type="date" id="expenseDate" class="date-input">
-                    <!-- AGGIUNTO: hint per il formato data -->
                     <small class="date-hint" id="dateHintVariable"></small>
                 </div>
                 
@@ -212,47 +212,47 @@
                 <button class="btn-danger" id="resetDayBtn">🗑️ Cancella spese del giorno</button>
             </div>
         </div>
-<!-- ============================================ -->
-<!-- IMPORT CSV - Aggiunto il 23/02/2026 -->
-<!-- ============================================ -->
-<div class="section-card">
-    <h2>📥 Importa movimenti bancari</h2>
-    <div class="section-content">
-        <p class="subtitle" style="margin-bottom: 15px;">
-            Scarica l'estratto conto dalla tua banca in formato CSV
-        </p>
-        
-        <div class="input-group">
-            <label for="csvFile">Scegli il file</label>
-            <input type="file" id="csvFile" accept=".csv,.txt" style="display: none;">
-            <div class="file-name" id="csvFileName">Nessun file selezionato</div>
-            <button class="btn-secondary" id="importCsvBtn">📥 Importa CSV</button>
+
+        <!-- IMPORT CSV -->
+        <div class="section-card">
+            <h2 id="csvTitle">📥 Importa movimenti bancari</h2>
+            <div class="section-content">
+                <p class="subtitle" id="csvSubtitle" style="margin-bottom: 15px;">
+                    Scarica l'estratto conto dalla tua banca in formato CSV
+                </p>
+                
+                <div class="input-group">
+                    <label for="csvFile" id="csvChooseFileLabel">Scegli il file</label>
+                    <input type="file" id="csvFile" accept=".csv,.txt" style="display: none;">
+                    <div class="file-name" id="csvFileName">Nessun file selezionato</div>
+                    <button class="btn-secondary" id="importCsvBtn">📥 Importa CSV</button>
+                </div>
+
+                <div class="input-group-row">
+                    <div class="input-group half">
+                        <label for="csvDelimiter" id="csvDateFormatLabel">Formato data</label>
+                        <select id="csvDelimiter">
+                            <option value="DD/MM/YYYY">GG/MM/AAAA</option>
+                            <option value="MM/DD/YYYY">MM/DD/AAAA</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label for="csvSeparator" id="csvSeparatorLabel">Separatore</label>
+                        <select id="csvSeparator">
+                            <option value=",">Virgola (,)</option>
+                            <option value=";">Punto e virgola (;)</option>
+                            <option value="\t">Tabulazione</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="csvPreview" class="csv-preview" style="display: none; margin-top: 20px;">
+                    <h3 id="csvPreviewTitle">Anteprima</h3>
+                    <div id="previewContent"></div>
+                </div>
+            </div>
         </div>
 
-        <div class="input-group-row">
-            <div class="input-group half">
-                <label for="csvDelimiter">Formatato data</label>
-                <select id="csvDelimiter">
-                    <option value="DD/MM/YYYY">GG/MM/AAAA</option>
-                    <option value="MM/DD/YYYY">MM/DD/AAAA</option>
-                </select>
-            </div>
-            <div class="input-group half">
-                <label for="csvSeparator">Separatore</label>
-                <select id="csvSeparator">
-                    <option value=",">Virgola (,)</option>
-                    <option value=";">Punto e virgola (;)</option>
-                    <option value="\t">Tabulazione</option>
-                </select>
-            </div>
-        </div>
-
-        <div id="csvPreview" class="csv-preview" style="display: none; margin-top: 20px;">
-            <h3>Anteprima</h3>
-            <div id="previewContent"></div>
-        </div>
-    </div>
-</div>
         <!-- ==================== GRAFICO ==================== -->
         <div class="section-card">
             <h2 id="chartTitle">📊 Distribuzione spese</h2>
@@ -261,14 +261,16 @@
                 <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
             </div>
         </div>
-<!-- Dettaglio categoria (inizialmente nascosto) -->
-<div id="categoryDetail" class="category-detail" style="display: none;">
-    <h3 id="detailCategoryTitle"></h3>
-    <p id="detailTotal"></p>
-    <p id="detailComparison"></p>
-    <div id="detailExpensesList" class="detail-expenses-list"></div>
-    <button id="closeDetailBtn" class="btn-secondary">Chiudi</button>
-</div>
+
+        <!-- Dettaglio categoria (inizialmente nascosto) -->
+        <div id="categoryDetail" class="category-detail" style="display: none;">
+            <h3 id="detailCategoryTitle"></h3>
+            <p id="detailTotal"></p>
+            <p id="detailComparison"></p>
+            <div id="detailExpensesList" class="detail-expenses-list"></div>
+            <button id="closeDetailBtn" class="btn-secondary">Chiudi</button>
+        </div>
+
         <!-- ==================== ASSISTENTE ==================== -->
         <div class="section-card">
             <h2 id="assistantTitle">🤖 Assistente Finanziario AI</h2>
@@ -293,50 +295,52 @@
                 </div>
             </div>
         </div>
-<!-- ==================== WIDGET AI PERSONALIZZATO ==================== -->
-<div class="section-card" id="aiWidget" style="display: none;">
-    <div class="section-header">
-        <h2>🤖 Suggerimenti AI</h2>
-        <span class="badge">intelligente</span>
-    </div>
-    <div class="section-content">
-        <div id="aiSuggestion" class="ai-suggestion">
-            <span class="ai-icon">💡</span>
-            <span id="aiMessage"></span>
-        </div>
-        <div id="aiAction" class="ai-action" style="display: none;">
-            <button id="applyAiSuggestion" class="btn-secondary"></button>
-            <button id="dismissAiSuggestion" class="btn-text">✕</button>
-        </div>
-    </div>
-</div>
-        <!-- ==================== RISPARMIO ==================== -->
-<div class="section-card">
-    <h2 id="savingsTitle">🎯 Obiettivo risparmio</h2>
-    <div class="section-content">
-        <div class="input-group">
-            <label for="savePercent" id="percentLabel">Percentuale su entrate (%)</label>
-            <input type="number" id="savePercent" placeholder="10" min="0" max="100" step="1">
-        </div>
-        <div class="input-group">
-            <label for="saveGoal" id="goalLabel">Obiettivo (€)</label>
-            <input type="number" id="saveGoal" placeholder="1000" step="100">
-        </div>
-        <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
-        
-        <!-- NUOVA BARRA EMOZIONALE -->
-        <div class="savings-container">
-            <div class="savings-pig">
-                <span class="pig-emoji">🐷</span>
-                <div class="progress-emotional" id="progressContainer" style="display: none;">
-                    <div class="progress-fill" id="progressBar" style="width: 0%;"></div>
+
+        <!-- ==================== WIDGET AI PERSONALIZZATO ==================== -->
+        <div class="section-card" id="aiWidget" style="display: none;">
+            <div class="section-header">
+                <h2>🤖 Suggerimenti AI</h2>
+                <span class="badge">intelligente</span>
+            </div>
+            <div class="section-content">
+                <div id="aiSuggestion" class="ai-suggestion">
+                    <span class="ai-icon">💡</span>
+                    <span id="aiMessage"></span>
+                </div>
+                <div id="aiAction" class="ai-action" style="display: none;">
+                    <button id="applyAiSuggestion" class="btn-secondary"></button>
+                    <button id="dismissAiSuggestion" class="btn-text">✕</button>
                 </div>
             </div>
-            <div class="savings-message" id="savingsMessage"></div>
-            <div class="savings-tip" id="savingsTip"></div>
         </div>
-    </div>
-</div>
+
+        <!-- ==================== RISPARMIO ==================== -->
+        <div class="section-card">
+            <h2 id="savingsTitle">🎯 Obiettivo risparmio</h2>
+            <div class="section-content">
+                <div class="input-group">
+                    <label for="savePercent" id="percentLabel">Percentuale su entrate (%)</label>
+                    <input type="number" id="savePercent" placeholder="10" min="0" max="100" step="1">
+                </div>
+                <div class="input-group">
+                    <label for="saveGoal" id="goalLabel">Obiettivo (€)</label>
+                    <input type="number" id="saveGoal" placeholder="1000" step="100">
+                </div>
+                <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
+                
+                <!-- NUOVA BARRA EMOZIONALE -->
+                <div class="savings-container">
+                    <div class="savings-pig">
+                        <span class="pig-emoji">🐷</span>
+                        <div class="progress-emotional" id="progressContainer" style="display: none;">
+                            <div class="progress-fill" id="progressBar" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                    <div class="savings-message" id="savingsMessage"></div>
+                    <div class="savings-tip" id="savingsTip"></div>
+                </div>
+            </div>
+        </div>
 
         <!-- ==================== IMPOSTAZIONI ==================== -->
         <div class="section-card">
@@ -402,27 +406,17 @@
     </script>
 
     <script src="app.js"></script>
+    
     <!-- REVISIONE IMPORT CSV -->
-<div id="importReviewOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center;">
-    <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-        <h3 style="margin-bottom: 20px; color: var(--text-primary);">📋 Revisione spese importate</h3>
-        <div id="importReviewList" style="margin-bottom: 20px;"></div>
-        <div class="button-group" style="display: flex; gap: 10px; justify-content: flex-end;">
-            <button id="confirmImportBtn" class="btn-primary" style="padding: 12px 24px;">✅ Conferma</button>
-            <button id="cancelImportBtn" class="btn-secondary" style="padding: 12px 24px;">✕ Annulla</button>
+    <div id="importReviewOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center;">
+        <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
+            <h3 style="margin-bottom: 20px; color: var(--text-primary);">📋 Revisione spese importate</h3>
+            <div id="importReviewList" style="margin-bottom: 20px;"></div>
+            <div class="button-group" style="display: flex; gap: 10px; justify-content: flex-end;">
+                <button id="confirmImportBtn" class="btn-primary" style="padding: 12px 24px;">✅ Conferma</button>
+                <button id="cancelImportBtn" class="btn-secondary" style="padding: 12px 24px;">✕ Annulla</button>
+            </div>
         </div>
     </div>
-</div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
