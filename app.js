@@ -129,7 +129,20 @@ class BudgetWise {
                 importConfirm: '✅ Conferma',
                 importCancel: '✕ Annulla',
                 importCategory: 'Categoria',
-                importLearn: '📌 L\'app ricorderà questa scelta'
+                importLearn: '📌 L\'app ricorderà questa scelta',
+                
+                // Traduzioni CSV
+                csvTitle: '📥 Importa movimenti bancari',
+                csvSubtitle: 'Scarica l\'estratto conto dalla tua banca in formato CSV',
+                csvChooseFile: 'Scegli il file',
+                csvNoFile: 'Nessun file selezionato',
+                csvImportBtn: '📥 Importa CSV',
+                csvDateFormat: 'Formato data',
+                csvSeparator: 'Separatore',
+                csvComma: 'Virgola (,)',
+                csvSemicolon: 'Punto e virgola (;)',
+                csvTab: 'Tabulazione',
+                csvPreview: 'Anteprima'
             },
             en: {
                 budget: 'Daily budget',
@@ -236,7 +249,20 @@ class BudgetWise {
                 importConfirm: '✅ Confirm',
                 importCancel: '✕ Cancel',
                 importCategory: 'Category',
-                importLearn: '📌 The app will remember this choice'
+                importLearn: '📌 The app will remember this choice',
+                
+                // Traduzioni CSV
+                csvTitle: '📥 Import bank statements',
+                csvSubtitle: 'Download your bank statement in CSV format',
+                csvChooseFile: 'Choose file',
+                csvNoFile: 'No file selected',
+                csvImportBtn: '📥 Import CSV',
+                csvDateFormat: 'Date format',
+                csvSeparator: 'Separator',
+                csvComma: 'Comma (,)',
+                csvSemicolon: 'Semicolon (;)',
+                csvTab: 'Tab',
+                csvPreview: 'Preview'
             }
         };
         
@@ -407,6 +433,53 @@ class BudgetWise {
 
         const dateHintVariable = document.getElementById('dateHintVariable');
         if (dateHintVariable) dateHintVariable.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+        
+        // Traduzioni sezione Import CSV
+        const csvTitle = document.getElementById('csvTitle');
+        if (csvTitle) csvTitle.textContent = this.t('csvTitle');
+
+        const csvSubtitle = document.getElementById('csvSubtitle');
+        if (csvSubtitle) csvSubtitle.textContent = this.t('csvSubtitle');
+
+        const csvChooseFileLabel = document.getElementById('csvChooseFileLabel');
+        if (csvChooseFileLabel) csvChooseFileLabel.textContent = this.t('csvChooseFile');
+
+        const csvFileName = document.getElementById('csvFileName');
+        if (csvFileName && (csvFileName.textContent === 'Nessun file selezionato' || csvFileName.textContent === 'No file selected')) {
+            csvFileName.textContent = this.t('csvNoFile');
+        }
+
+        const importCsvBtn = document.getElementById('importCsvBtn');
+        if (importCsvBtn) importCsvBtn.innerHTML = this.t('csvImportBtn');
+
+        const csvDateFormatLabel = document.getElementById('csvDateFormatLabel');
+        if (csvDateFormatLabel) csvDateFormatLabel.textContent = this.t('csvDateFormat');
+
+        const csvSeparatorLabel = document.getElementById('csvSeparatorLabel');
+        if (csvSeparatorLabel) csvSeparatorLabel.textContent = this.t('csvSeparator');
+
+        // Traduci le opzioni dei select
+        const delimiterSelect = document.getElementById('csvDelimiter');
+        if (delimiterSelect) {
+            const options = delimiterSelect.options;
+            if (options.length >= 2) {
+                options[0].text = this.data.language === 'it' ? 'GG/MM/AAAA' : 'DD/MM/YYYY';
+                options[1].text = this.data.language === 'it' ? 'MM/DD/AAAA' : 'MM/DD/YYYY';
+            }
+        }
+
+        const separatorSelect = document.getElementById('csvSeparator');
+        if (separatorSelect) {
+            const options = separatorSelect.options;
+            if (options.length >= 3) {
+                options[0].text = this.t('csvComma');
+                options[1].text = this.t('csvSemicolon');
+                options[2].text = this.t('csvTab');
+            }
+        }
+
+        const csvPreviewTitle = document.getElementById('csvPreviewTitle');
+        if (csvPreviewTitle) csvPreviewTitle.textContent = this.t('csvPreview');
         
         this.updatePeriodInfo();
     }
@@ -1548,151 +1621,152 @@ class BudgetWise {
         reader.readAsText(file);
     }
 
-  // ========== ONBOARDING GUIDATO ==========
-startOnboarding() {
-    if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
+    // ========== ONBOARDING GUIDATO ==========
+    startOnboarding() {
+        if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
 
-    const steps = [
-        { text: this.t('onboardingStep1'), highlight: "#addIncomeBtn" },
-        { text: this.t('onboardingStep2'), highlight: "#addFixedBtn" },
-        { text: this.t('onboardingStep3'), highlight: "#addExpenseBtn" },
-        { text: this.t('onboardingStep4'), highlight: ".summary-card" },
-        { text: this.t('onboardingStep5'), highlight: "#chatInput" },
-        { text: this.t('onboardingStep6'), highlight: "#importCsvBtn" }
-    ];
+        const steps = [
+            { text: this.t('onboardingStep1'), highlight: "#addIncomeBtn" },
+            { text: this.t('onboardingStep2'), highlight: "#addFixedBtn" },
+            { text: this.t('onboardingStep3'), highlight: "#addExpenseBtn" },
+            { text: this.t('onboardingStep4'), highlight: ".summary-card" },
+            { text: this.t('onboardingStep5'), highlight: "#chatInput" },
+            { text: this.t('onboardingStep6'), highlight: "#importCsvBtn" }
+        ];
 
-    let stepIndex = 0;
+        let stepIndex = 0;
 
-    const overlay = document.createElement('div');
-    overlay.id = 'onboarding-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(5px);
-        z-index: 9999;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-        box-sizing: border-box;
-        pointer-events: none;
-    `;
-
-    const card = document.createElement('div');
-    card.style.cssText = `
-        background: var(--card-bg, #ffffff);
-        padding: 30px 25px;
-        border-radius: 28px;
-        max-width: 450px;
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-        animation: onboardingSlideUp 0.5s ease;
-        border: 2px solid var(--accent);
-        margin-bottom: 30px;
-        box-sizing: border-box;
-        pointer-events: auto;
-    `;
-
-    card.innerHTML = `
-        <div style="font-size: 3.5rem; margin-bottom: 10px;">✨</div>
-        <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
-        <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
-        
-        <!-- SOLO TESTO ISTRUZIONE -->
-        <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
-            <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
-        </div>
-        
-        <!-- SOLO PULSANTI AVANTI/SALTA -->
-        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-            <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
-            <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
-        </div>
-        
-        <!-- PROGRESS -->
-        <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
-            <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
-            <div style="flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
-                <div id="onboarding-progress" style="width: ${(1/steps.length)*100}%; height: 100%; background: linear-gradient(90deg, var(--accent-light), var(--accent)); transition: width 0.4s ease;"></div>
-            </div>
-        </div>
-    `;
-
-    overlay.appendChild(card);
-    document.body.appendChild(overlay);
-
-    if (!document.getElementById('onboarding-style')) {
-        const style = document.createElement('style');
-        style.id = 'onboarding-style';
-        style.textContent = `
-            @keyframes onboardingSlideUp {
-                from { transform: translateY(40px); opacity: 0; }
-                to { transform: translateY(0); opacity: 1; }
-            }
-            .onboarding-highlight {
-                animation: targetGlow 2s infinite !important;
-                box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6) !important;
-            }
-            @keyframes targetGlow {
-                0% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6); }
-                50% { box-shadow: 0 0 0 8px rgba(67, 97, 238, 1), 0 0 50px rgba(67, 97, 238, 0.9); }
-                100% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6); }
-            }
+        const overlay = document.createElement('div');
+        overlay.id = 'onboarding-overlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            box-sizing: border-box;
+            pointer-events: none;
         `;
-        document.head.appendChild(style);
-    }
 
-    const showStep = () => {
-        const step = steps[stepIndex];
-        document.getElementById('onboarding-description').textContent = step.text;
-        document.getElementById('onboarding-counter').innerText = stepIndex + 1;
-        
-        const progress = ((stepIndex + 1) / steps.length) * 100;
-        const progressBar = document.getElementById('onboarding-progress');
-        if (progressBar) progressBar.style.width = progress + '%';
+        const card = document.createElement('div');
+        card.style.cssText = `
+            background: var(--card-bg, #ffffff);
+            padding: 30px 25px;
+            border-radius: 28px;
+            max-width: 450px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+            animation: onboardingSlideUp 0.5s ease;
+            border: 2px solid var(--accent);
+            margin-bottom: 30px;
+            box-sizing: border-box;
+            pointer-events: auto;
+        `;
 
-        document.querySelectorAll('.onboarding-highlight').forEach(el => {
-            el.classList.remove('onboarding-highlight');
+        card.innerHTML = `
+            <div style="font-size: 3.5rem; margin-bottom: 10px;">✨</div>
+            <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
+            
+            <!-- SOLO TESTO ISTRUZIONE -->
+            <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
+                <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
+            </div>
+            
+            <!-- SOLO PULSANTI AVANTI/SALTA -->
+            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
+                <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
+                <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
+            </div>
+            
+            <!-- PROGRESS -->
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
+                <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
+                <div style="flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
+                    <div id="onboarding-progress" style="width: ${(1/steps.length)*100}%; height: 100%; background: linear-gradient(90deg, var(--accent-light), var(--accent)); transition: width 0.4s ease;"></div>
+                </div>
+            </div>
+        `;
+
+        overlay.appendChild(card);
+        document.body.appendChild(overlay);
+
+        if (!document.getElementById('onboarding-style')) {
+            const style = document.createElement('style');
+            style.id = 'onboarding-style';
+            style.textContent = `
+                @keyframes onboardingSlideUp {
+                    from { transform: translateY(40px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+                .onboarding-highlight {
+                    animation: targetGlow 2s infinite !important;
+                    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6) !important;
+                }
+                @keyframes targetGlow {
+                    0% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6); }
+                    50% { box-shadow: 0 0 0 8px rgba(67, 97, 238, 1), 0 0 50px rgba(67, 97, 238, 0.9); }
+                    100% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        const showStep = () => {
+            const step = steps[stepIndex];
+            document.getElementById('onboarding-description').textContent = step.text;
+            document.getElementById('onboarding-counter').innerText = stepIndex + 1;
+            
+            const progress = ((stepIndex + 1) / steps.length) * 100;
+            const progressBar = document.getElementById('onboarding-progress');
+            if (progressBar) progressBar.style.width = progress + '%';
+
+            document.querySelectorAll('.onboarding-highlight').forEach(el => {
+                el.classList.remove('onboarding-highlight');
+            });
+
+            const target = document.querySelector(step.highlight);
+            if (target) {
+                target.classList.add('onboarding-highlight');
+                target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        };
+
+        document.getElementById('onboarding-next').addEventListener('click', () => {
+            stepIndex++;
+            if (stepIndex < steps.length) {
+                showStep();
+            } else {
+                localStorage.setItem('budgetwise-onboarding-completed', 'true');
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.remove(), 300);
+                document.querySelectorAll('.onboarding-highlight').forEach(el => {
+                    el.classList.remove('onboarding-highlight');
+                });
+            }
         });
 
-        const target = document.querySelector(step.highlight);
-        if (target) {
-            target.classList.add('onboarding-highlight');
-            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    };
-
-    document.getElementById('onboarding-next').addEventListener('click', () => {
-        stepIndex++;
-        if (stepIndex < steps.length) {
-            showStep();
-        } else {
+        document.getElementById('onboarding-skip').addEventListener('click', () => {
             localStorage.setItem('budgetwise-onboarding-completed', 'true');
             overlay.style.opacity = '0';
             setTimeout(() => overlay.remove(), 300);
             document.querySelectorAll('.onboarding-highlight').forEach(el => {
                 el.classList.remove('onboarding-highlight');
             });
-        }
-    });
-
-    document.getElementById('onboarding-skip').addEventListener('click', () => {
-        localStorage.setItem('budgetwise-onboarding-completed', 'true');
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 300);
-        document.querySelectorAll('.onboarding-highlight').forEach(el => {
-            el.classList.remove('onboarding-highlight');
         });
-    });
 
-    showStep();
-}
+        showStep();
+    }
+
     setupVoice() {
         console.log('Setup voice...');
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
