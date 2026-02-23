@@ -962,13 +962,12 @@ inDays: 'In {days} days',
             badgeClass = 'future';
         }
 
-        // Testo giorni rimasti
+                // Testo giorni rimasti (con traduzioni)
         const daysText = diffDays < 0 
-    ? this.t('daysAgo').replace('{days}', Math.abs(diffDays))
-    : diffDays === 0
-        ? this.t('dueToday')
-        : this.t('inDays').replace('{days}', diffDays);
-
+            ? this.t('daysAgo').replace('{days}', Math.abs(diffDays))
+            : diffDays === 0
+                ? this.t('dueToday')
+                : this.t('inDays').replace('{days}', diffDays);
         return `
             <div class="expense-item fixed-expense-item ${statusClass}">
                 <div class="expense-info">
@@ -1562,6 +1561,7 @@ inDays: 'In {days} days',
 
 const app = new BudgetWise();
 window.app = app;
+
 
 
 
