@@ -1498,7 +1498,174 @@ class BudgetWise {
             ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
             : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
     }
+// ========== ONBOARDING GUIDATO ==========
+startOnboarding() {
+    // Controlla se già completato
+    if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
 
+    const steps = [
+        {
+            text: this.data.language === 'it' 
+                ? "👋 Inserisci il tuo primo stipendio o entrata qui sotto."
+                : "👋 Add your first income below.",
+            highlight: "#addIncomeBtn",
+            position: 'bottom'
+        },
+        {
+            text: this.data.language === 'it'
+                ? "📌 Aggiungi una spesa fissa mensile (es. affitto, bollette)."
+                : "📌 Add a fixed monthly expense (e.g. rent, utilities).",
+            highlight: "#addFixedBtn",
+            position: 'bottom'
+        },
+        {
+            text: this.data.language === 'it'
+                ? "🧾 Registra una spesa variabile come la spesa alimentare."
+                : "🧾 Record a variable expense like groceries.",
+            highlight: "#addExpenseBtn",
+            position: 'bottom'
+        },
+        {
+            text: this.data.language === 'it'
+                ? "📊 Controlla il tuo budget giornaliero nel riquadro in alto."
+                : "📊 Check your daily budget in the top card.",
+            highlight: ".summary-card",
+            position: 'top'
+        },
+        {
+            text: this.data.language === 'it'
+                ? "🤖 Chiedi consigli all'assistente AI o prova il microfono."
+                : "🤖 Ask the AI assistant or try voice input.",
+            highlight: "#chatInput",
+            position: 'top'
+        },
+        {
+            text: this.data.language === 'it'
+                ? "📥 Puoi anche importare movimenti bancari in formato CSV."
+                : "📥 You can also import bank statements in CSV format.",
+            highlight: "#importCsvBtn",
+            position: 'top'
+        }
+    ];
+
+    let stepIndex = 0;
+
+    // Crea overlay onboarding
+    const overlay = document.createElement('div');
+    overlay.id = 'onboarding-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.3s ease;
+    `;
+
+    const card = document.createElement('div');
+    card.style.cssText = `
+        background: var(--card-bg, #ffffff);
+        padding: 30px;
+        border-radius: 24px;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        animation: slideUp 0.3s ease;
+    `;
+
+    card.innerHTML = `
+        <h3 style="margin-bottom: 10px; color: var(--text-primary);">✨ ${this.data.language === 'it' ? 'Benvenuto in BudgetWise' : 'Welcome to BudgetWise'}</h3>
+        <p id="onboarding-text" style="margin: 20px 0; color: var(--text-secondary); font-size: 1.1rem;"></p>
+        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+            <button id="onboarding-next" class="btn-primary" style="padding: 12px 24px;">${this.data.language === 'it' ? 'Avanti →' : 'Next →'}</button>
+            <button id="onboarding-skip" class="btn-secondary" style="padding: 12px 24px;">${this.data.language === 'it' ? 'Salta' : 'Skip'}</button>
+        </div>
+        <div style="margin-top: 15px; font-size: 0.9rem; color: var(--text-secondary);">
+            <span id="onboarding-counter">1 / ${steps.length}</span>
+        </div>
+    `;
+
+    overlay.appendChild(card);
+    document.body.appendChild(overlay);
+
+    // Aggiungi stile animazione se non presente
+    if (!document.getElementById('onboarding-style')) {
+        const style = document.createElement('style');
+        style.id = 'onboarding-style';
+        style.textContent = `
+            @keyframes slideUp {
+                from { transform: translateY(30px); opacity: 0; }
+                to { transform: translateY(0); opacity: 1; }
+            }
+            .onboarding-highlight {
+                outline: 4px solid var(--accent, #4361ee);
+                outline-offset: 4px;
+                border-radius: 12px;
+                transition: all 0.2s ease;
+                position: relative;
+                z-index: 10000;
+                box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.3);
+            }
+        `;
+        document.head.appendChild(style);
+    }
+
+    const showStep = () => {
+        const step = steps[stepIndex];
+        document.getElementById('onboarding-text').innerText = step.text;
+        document.getElementById('onboarding-counter').innerText = `${stepIndex + 1} / ${steps.length}`;
+
+        // Rimuovi highlight precedente
+        document.querySelectorAll('.onboarding-highlight').forEach(el => {
+            el.classList.remove('onboarding-highlight');
+        });
+
+        // Evidenzia elemento target
+        const target = document.querySelector(step.highlight);
+        if (target) {
+            target.classList.add('onboarding-highlight');
+            
+            // Scroll morbido verso l'elemento
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    };
+
+    // Avanti
+    document.getElementById('onboarding-next').addEventListener('click', () => {
+        stepIndex++;
+        if (stepIndex < steps.length) {
+            showStep();
+        } else {
+            // Fine onboarding
+            localStorage.setItem('budgetwise-onboarding-completed', 'true');
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 300);
+            document.querySelectorAll('.onboarding-highlight').forEach(el => {
+                el.classList.remove('onboarding-highlight');
+            });
+        }
+    });
+
+    // Salta
+    document.getElementById('onboarding-skip').addEventListener('click', () => {
+        localStorage.setItem('budgetwise-onboarding-completed', 'true');
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 300);
+        document.querySelectorAll('.onboarding-highlight').forEach(el => {
+            el.classList.remove('onboarding-highlight');
+        });
+    });
+
+    // Mostra primo step
+    showStep();
+}
     // ========== AI WIDGET ==========
     generateAiSuggestion() {
         const suggestions = [];
