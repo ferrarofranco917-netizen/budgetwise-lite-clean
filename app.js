@@ -122,6 +122,8 @@ class BudgetWise {
                 categorySalute: '💊 Salute',
                 categoryAbbigliamento: '👕 Abbigliamento',
                 categoryAltro: '📦 Altro',
+                savingsBalanceLabel:'💰 Saldo risparmi',
+                savingsBalanceSub:'fuori budget',
                 
                 // Onboarding
                 onboardingWelcome: '👋 Benvenuto in BudgetWise',
@@ -318,7 +320,8 @@ edit: 'Modifica',
                 categorySalute: '💊 Health',
                 categoryAbbigliamento: '👕 Clothing',
                 categoryAltro: '📦 Other',
-                
+                savingsBalanceLabel:'💰 Savings balance',
+                savingsBalanceSub:'outside budget',
                 // Onboarding
                 onboardingWelcome: '👋 Welcome to BudgetWise',
                 onboardingStep1: 'Add your first income below.',
@@ -610,6 +613,8 @@ edit: 'Edit',
                 csvMappingFieldsTitle: '🎯 Asignación de campos:',
                 showAllExpenses: 'Mostrar todos los gastos del período',
                 edit: 'Editar'
+                savingsBalanceLabel:'💰 Saldo de ahorros',
+                savingsBalanceSub:'fuera del presupuesto',
             },
             fr: {
                 budget: 'Budget journalier',
@@ -795,6 +800,8 @@ edit: 'Edit',
                 csvMappingFieldsTitle: '🎯 Association des champs :',
                 showAllExpenses: 'Afficher toutes les dépenses de la période',
                 edit: 'Modifier'
+                savingsBalanceLabel:'💰 Solde épargne',
+                savingsBalanceSub:'hors budget',
             }
 
         };
@@ -1046,6 +1053,11 @@ edit: 'Edit',
             summaryLabels[0].textContent = this.t('budget');
             summaryLabels[1].textContent = this.t('remaining');
             summaryLabels[2].textContent = this.t('days');
+            const sbl = document.getElementById('savingsBalanceLabel');
+            if (sbl) sbl.textContent = this.t('savingsBalanceLabel');
+
+            const sbs = document.getElementById('savingsBalanceSub');
+            if (sbs) sbs.textContent = this.t('savingsBalanceSub');
         }
         
         const h2s = document.querySelectorAll('h2');
@@ -1371,6 +1383,11 @@ edit: 'Edit',
 
     // ========== ENTRATE ==========
     addIncome() {
+        const prevRemaining = this.calculateRemaining?.() || 0;
+if (prevRemaining > 0) {
+  this.data.savingsBalance = (this.data.savingsBalance || 0) + prevRemaining;
+}
+        
         const desc = document.getElementById('incomeDesc').value.trim();
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         const dateInput = document.getElementById('incomeDate').value;
