@@ -5,6 +5,7 @@
 class BudgetWise {
     constructor() {
         this.data = {
+            savingsBalance: 0,
             incomes: [],
             fixedExpenses: [],
             variableExpenses: {},
@@ -1682,6 +1683,8 @@ edit: 'Edit',
         if (remainingStatus) {
             remainingStatus.textContent = remaining >= 0 ? '✅' : '⚠️';
             remainingStatus.title = remaining >= 0 ? this.t('positiveBalance') : this.t('negativeBalance');
+            const sb = document.getElementById('savingsBalance');
+if (sb) sb.textContent = this.formatCurrency(this.data.savingsBalance || 0);
         }
         if (remainingTrend) {
             remainingTrend.textContent = this.t('vsYesterday0');
@@ -2274,6 +2277,7 @@ edit: 'Edit',
         reader.onload = (e) => {
             try {
                 this.data = JSON.parse(e.target.result);
+                this.data.savingsBalance = Number(this.data.savingsBalance || 0);
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
