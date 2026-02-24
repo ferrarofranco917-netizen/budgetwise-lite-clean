@@ -811,6 +811,110 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         return end.toISOString().split('T')[0];
     }
 
+
+    // ==================== FIRST RUN / DEMO DATA ====================
+    isFirstRun() {
+        // Primo avvio se non esiste un flag "seen"
+        return localStorage.getItem('budgetwise-first-run-seen') !== 'true';
+    }
+
+    markFirstRunSeen() {
+        localStorage.setItem('budgetwise-first-run-seen', 'true');
+    }
+
+    ensureDemoCategories() {
+        // Categorie demo aggiuntive (non predefinite)
+        const demoCats = ['Casa', 'Bambini', 'Lavoro'];
+        let changed = false;
+
+        demoCats.forEach(cat => {
+            if (!this.getAllCategories().includes(cat)) {
+                this.customCategories.push(cat);
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            this.saveCustomCategories();
+            this.updateAllCategorySelects();
+        }
+    }
+
+    getDemoData() {
+        const today = new Date();
+        const iso = (d) => d.toISOString().split('T')[0];
+
+        // periodo: da oggi a +30
+        const start = new Date(today);
+        const end = new Date(today);
+        end.setDate(end.getDate() + 30);
+
+        const makeDate = (offset) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() - offset);
+            return iso(d);
+        };
+
+        const now = Date.now();
+
+        const demoVariable = {};
+        // Giorno 0: due spese (anche "Casa")
+        demoVariable[makeDate(0)] = [
+            { name: 'Spesa supermercato', amount: 23.40, category: 'Alimentari', id: now + 1 },
+            { name: 'Manutenzione casa', amount: 30.00, category: 'Casa', id: now + 7 }
+        ];
+        demoVariable[makeDate(1)] = [
+            { name: 'Benzina', amount: 35.00, category: 'Trasporti', id: now + 2 }
+        ];
+        demoVariable[makeDate(2)] = [
+            { name: 'Farmacia', amount: 12.90, category: 'Salute', id: now + 3 }
+        ];
+        demoVariable[makeDate(3)] = [
+            { name: 'Pizza', amount: 18.00, category: 'Svago', id: now + 4 },
+            { name: 'Asilo', amount: 120.00, category: 'Bambini', id: now + 8 }
+        ];
+        demoVariable[makeDate(4)] = [
+            { name: 'Maglietta', amount: 19.99, category: 'Abbigliamento', id: now + 5 }
+        ];
+        demoVariable[makeDate(5)] = [
+            { name: 'Caffè', amount: 2.20, category: 'Altro', id: now + 6 },
+            { name: 'Pranzo lavoro', amount: 14.00, category: 'Lavoro', id: now + 9 }
+        ];
+
+        const farFuture = new Date(today);
+        farFuture.setFullYear(farFuture.getFullYear() + 5);
+
+        return {
+            incomes: [
+                { desc: this.data.language === 'it' ? 'Stipendio' : 'Salary', amount: 2000, date: iso(today), id: now + 100 }
+            ],
+            fixedExpenses: [
+                { name: this.data.language === 'it' ? 'Affitto' : 'Rent', amount: 650, day: 5, endDate: iso(farFuture), id: now + 200 },
+                { name: this.data.language === 'it' ? 'Telefono' : 'Phone', amount: 15, day: 12, endDate: iso(farFuture), id: now + 201 }
+            ],
+            variableExpenses: demoVariable,
+            savingsPercent: 10,
+            savingsGoal: 1500,
+            threshold: 50,
+            language: this.data.language || 'it',
+            periodStart: iso(start),
+            periodEnd: iso(end)
+        };
+    }
+
+    loadDemoData() {
+        this.ensureDemoCategories();
+        this.data = this.getDemoData();
+        this.saveData();
+        this.updateAllCategorySelects();
+        this.updateUI();
+        this.updateChart();
+        this.applyLanguage();
+
+        localStorage.setItem('budgetwise-demo-loaded', 'true');
+        this.showToast(this.data.language === 'it' ? '✨ Dati demo caricati!' : '✨ Demo data loaded!', 'success');
+    }
+
     t(key, vars) {
         const lang = this.data.language || "it";
         const dict = this.translations[lang] || this.translations.it || {};
@@ -2484,11 +2588,11 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
             alert(this.t('fileReadError'));
         };
         reader.readAsText(file);
-    }
-
-    // ========== ONBOARDING GUIDATO ==========
+    }    // ========== ONBOARDING GUIDATO ==========
     startOnboarding() {
         if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
+        // Se NON è first run, non mostrare l'onboarding
+        if (!this.isFirstRun()) return;
 
         const steps = [
             { text: this.t('onboardingStep1'), highlight: "#addIncomeBtn" },
@@ -2541,16 +2645,29 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
             <div style="font-size: 3.5rem; margin-bottom: 10px;">✨</div>
             <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
             <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.t('onboardingSubtitle')}</p>
-            
+
             <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
                 <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
             </div>
-            
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-                <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
-                <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
+
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom: 14px;">
+                <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">
+                    ${this.t('onboardingNext')}
+                </button>
+                <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">
+                    ✕ ${this.t('onboardingSkip')}
+                </button>
             </div>
-            
+
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom: 14px;">
+                <button id="onboarding-demo" class="btn-secondary" style="padding: 12px 20px; border-radius: 50px; min-width: 180px;">
+                    ✨ ${this.data.language === 'it' ? 'Carica dati demo' : 'Load demo data'}
+                </button>
+                <button id="onboarding-empty" class="btn-text" style="padding: 12px 14px;">
+                    ${this.data.language === 'it' ? 'Inizia vuoto' : 'Start empty'}
+                </button>
+            </div>
+
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                 <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
                 <div style="flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
@@ -2583,18 +2700,27 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
             document.head.appendChild(style);
         }
 
+        const closeOnboarding = () => {
+            localStorage.setItem('budgetwise-onboarding-completed', 'true');
+            this.markFirstRunSeen();
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 250);
+            document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
+        };
+
         const showStep = () => {
             const step = steps[stepIndex];
-            document.getElementById('onboarding-description').textContent = step.text;
-            document.getElementById('onboarding-counter').innerText = stepIndex + 1;
-            
+            const descEl = document.getElementById('onboarding-description');
+            if (descEl) descEl.textContent = step.text;
+
+            const counterEl = document.getElementById('onboarding-counter');
+            if (counterEl) counterEl.innerText = String(stepIndex + 1);
+
             const progress = ((stepIndex + 1) / steps.length) * 100;
             const progressBar = document.getElementById('onboarding-progress');
             if (progressBar) progressBar.style.width = progress + '%';
 
-            document.querySelectorAll('.onboarding-highlight').forEach(el => {
-                el.classList.remove('onboarding-highlight');
-            });
+            document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
 
             const target = document.querySelector(step.highlight);
             if (target) {
@@ -2603,28 +2729,32 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
             }
         };
 
-        document.getElementById('onboarding-next').addEventListener('click', () => {
-            stepIndex++;
-            if (stepIndex < steps.length) {
-                showStep();
-            } else {
-                localStorage.setItem('budgetwise-onboarding-completed', 'true');
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.remove(), 300);
-                document.querySelectorAll('.onboarding-highlight').forEach(el => {
-                    el.classList.remove('onboarding-highlight');
-                });
-            }
-        });
-
-        document.getElementById('onboarding-skip').addEventListener('click', () => {
-            localStorage.setItem('budgetwise-onboarding-completed', 'true');
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 300);
-            document.querySelectorAll('.onboarding-highlight').forEach(el => {
-                el.classList.remove('onboarding-highlight');
+        const nextBtn = document.getElementById('onboarding-next');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                stepIndex++;
+                if (stepIndex < steps.length) showStep();
+                else closeOnboarding();
             });
-        });
+        }
+
+        const skipBtn = document.getElementById('onboarding-skip');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => closeOnboarding());
+        }
+
+        const demoBtn = document.getElementById('onboarding-demo');
+        if (demoBtn) {
+            demoBtn.addEventListener('click', () => {
+                this.loadDemoData();
+                closeOnboarding();
+            });
+        }
+
+        const emptyBtn = document.getElementById('onboarding-empty');
+        if (emptyBtn) {
+            emptyBtn.addEventListener('click', () => closeOnboarding());
+        }
 
         showStep();
     }
