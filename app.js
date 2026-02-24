@@ -211,6 +211,8 @@ fileReadError: '❌ Errore durante la lettura del file',
 importCompleted: '✅ Import completato!\n➕ Aggiunti: {added}{dupLine}',
                 duplicatesSkipped: '⚠️ Duplicati saltati: {dup}',
 onboardingSubtitle: 'Segui la guida passo-passo',
+onboardingDemo: '✨ Carica dati demo',
+onboardingEmpty: 'Inizia vuoto',
 you: 'Tu',
 adviceRed: '⚠️ Sei in rosso! Rivedi le spese.',
 adviceLowRemaining: '⚠️ Attenzione: ti rimangono solo {remaining} per i prossimi giorni.',
@@ -403,6 +405,8 @@ fileReadError: '❌ Error reading the file',
 importCompleted: '✅ Import completed!\n➕ Added: {added}{dupLine}',
                 duplicatesSkipped: '⚠️ Duplicates skipped: {dup}',
 onboardingSubtitle: 'Follow the step-by-step guide',
+onboardingDemo: '✨ Load demo data',
+onboardingEmpty: 'Start empty',
 you: 'You',
 adviceRed: "⚠️ You're in the red! Review your expenses.",
 adviceLowRemaining: '⚠️ Warning: you only have {remaining} left for the coming days.',
@@ -591,6 +595,8 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                 duplicatesSkipped: '⚠️ Duplicados omitidos: {dup}',
                 importCompleted: '✅ Importación completada!\\n➕ Añadidos: {added}{dupLine}',
                 onboardingSubtitle: 'Sigue la guía paso a paso',
+                onboardingDemo: '✨ Cargar datos demo',
+                onboardingEmpty: 'Empezar vacío',
                 you: 'Tú',
                 adviceRed: '⚠️ ¡Estás en negativo! Revisa tus gastos.',
                 adviceLowRemaining: '⚠️ Atención: solo te quedan {remaining} para los próximos días.',
@@ -772,6 +778,8 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                 duplicatesSkipped: '⚠️ Doublons ignorés : {dup}',
                 importCompleted: '✅ Import terminé !\\n➕ Ajoutés : {added}{dupLine}',
                 onboardingSubtitle: 'Suis le guide pas à pas',
+                onboardingDemo: '✨ Charger des données démo',
+                onboardingEmpty: 'Commencer vide',
                 you: 'Toi',
                 adviceRed: '⚠️ Tu es dans le rouge ! Revois tes dépenses.',
                 adviceLowRemaining: '⚠️ Attention : il ne te reste que {remaining} pour les prochains jours.',
@@ -2660,12 +2668,12 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
             </div>
 
             <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom: 14px;">
-                <button id="onboarding-demo" class="btn-secondary" style="padding: 12px 20px; border-radius: 50px; min-width: 180px;">
-                    ✨ ${this.data.language === 'it' ? 'Carica dati demo' : 'Load demo data'}
-                </button>
-                <button id="onboarding-empty" class="btn-text" style="padding: 12px 14px;">
-                    ${this.data.language === 'it' ? 'Inizia vuoto' : 'Start empty'}
-                </button>
+    <button id="onboarding-demo" class="btn-secondary" style="padding: 12px 20px; border-radius: 50px; min-width: 180px;">
+        ${this.t('onboardingDemo')}
+    </button>
+    <button id="onboarding-empty" class="btn-text" style="padding: 12px 14px;">
+        ${this.t('onboardingEmpty')}
+    </button>
             </div>
 
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
