@@ -812,6 +812,21 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         return end.toISOString().split('T')[0];
     }
 
+    // Normalizza una data ISO in formato YYYY-MM-DD.
+    // Utile perché alcuni import possono produrre "YYYY-M-D" che non combacia con gli input date.
+    normalizeIsoDate(dateStr) {
+        if (!dateStr) return '';
+        const s = String(dateStr).trim();
+        const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (m) {
+            const y = m[1];
+            const mm = String(m[2]).padStart(2, '0');
+            const dd = String(m[3]).padStart(2, '0');
+            return `${y}-${mm}-${dd}`;
+        }
+        return s;
+    }
+
 
     // ==================== FIRST RUN / DEMO DATA ====================
     isFirstRun() {
@@ -1431,7 +1446,7 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
 
     // ========== SPESE VARIABILI ==========
     addVariableExpense() {
-        const date = document.getElementById('expenseDate').value;
+        const date = this.normalizeIsoDate(document.getElementById('expenseDate').value);
         const name = document.getElementById('expenseName').value.trim();
         const amount = parseFloat(document.getElementById('expenseAmount').value);
         const category = document.getElementById('expenseCategory').value;
@@ -1796,7 +1811,7 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
     }
 
     updateVariableExpensesList() {
-        const date = document.getElementById('expenseDate').value;
+        const date = this.normalizeIsoDate(document.getElementById('expenseDate').value);
         const container = document.getElementById('variableExpensesList');
         const expenses = (this.data.variableExpenses && this.data.variableExpenses[date]) || [];
         
@@ -1816,11 +1831,22 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
+                        <button class="edit-variable-btn" title="Modifica" data-id="${exp.id}" data-date="${date}">✏️</button>
                         <button class="delete-variable-btn" data-id="${exp.id}" data-date="${date}">🗑️</button>
                     </div>
                 </div>
             `;
         }).join('');
+
+        // Event listener per modifica spese variabili
+        document.querySelectorAll('.edit-variable-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(e.currentTarget.dataset.id);
+                const date = e.currentTarget.dataset.date;
+                this.editVariableExpense(date, id);
+            });
+        });
 
         // Event listener per i pulsanti di eliminazione spese variabili
         document.querySelectorAll('.delete-variable-btn').forEach(btn => {
@@ -1831,6 +1857,52 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                 this.deleteVariableExpense(date, id);
             });
         });
+    }
+
+    editVariableExpense(date, id) {
+        date = this.normalizeIsoDate(date);
+        if (!this.data.variableExpenses || !this.data.variableExpenses[date]) return;
+        const idx = this.data.variableExpenses[date].findIndex(e => e.id === id);
+        if (idx === -1) return;
+
+        const exp = this.data.variableExpenses[date][idx];
+
+        const newName = prompt(this.data.language === 'it' ? 'Descrizione' : 'Description', exp.name || '');
+        if (newName === null) return;
+
+        const newAmountStr = prompt(this.data.language === 'it' ? 'Importo (€)' : 'Amount (€)', String(exp.amount ?? ''));
+        if (newAmountStr === null) return;
+        const newAmount = parseFloat(String(newAmountStr).replace(',', '.'));
+        if (!isFinite(newAmount) || newAmount <= 0) {
+            alert(this.t('fillFields'));
+            return;
+        }
+
+        const cats = this.getAllCategories();
+        const catHint = cats.join(', ');
+        const newCategory = prompt(
+            this.data.language === 'it' ? `Categoria (es. ${catHint})` : `Category (e.g. ${catHint})`,
+            exp.category || 'Altro'
+        );
+        if (newCategory === null) return;
+        const trimmedCat = String(newCategory).trim() || 'Altro';
+
+        // Se la categoria non esiste, la aggiungiamo tra le custom
+        if (!this.getAllCategories().includes(trimmedCat)) {
+            this.customCategories.push(trimmedCat);
+            this.saveCustomCategories();
+            this.updateAllCategorySelects();
+        }
+
+        exp.name = String(newName).trim() || exp.name;
+        exp.amount = newAmount;
+        exp.category = trimmedCat;
+
+        this.data.variableExpenses[date][idx] = exp;
+        this.saveData();
+        this.updateUI();
+        this.updateChart();
+        this.showToast(this.data.language === 'it' ? '✅ Spesa aggiornata' : '✅ Expense updated', 'success');
     }
 
     updateChart() {
@@ -2604,17 +2676,19 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                     const parts = dateStr.split(/[\/\-]/);
                     if (parts.length === 3) {
                         const [d, m, y] = parts;
-                        if (d && m && y) dateStr = `${y}-${m}-${d}`;
+                        if (d && m && y) dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         else continue;
                     } else continue;
                 } else if (dateFormat === 'MM/DD/YYYY') {
                     const parts = dateStr.split(/[\/\-]/);
                     if (parts.length === 3) {
                         const [m, d, y] = parts;
-                        if (m && d && y) dateStr = `${y}-${m}-${d}`;
+                        if (m && d && y) dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
                         else continue;
                     } else continue;
                 }
+
+                dateStr = this.normalizeIsoDate(dateStr);
                 
                 let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
                 if (isNaN(amount)) continue;
@@ -2657,7 +2731,17 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                     this.saveData();
                     this.updateUI();
                     this.updateChart();
-                    alert(`✅ Importate ${reviewed.length} spese!`);
+                    // Porta subito l'utente su una data importata, così vede le spese nella lista.
+                    const mostRecent = reviewed
+                        .map(e => this.normalizeIsoDate(e.date))
+                        .sort()
+                        .slice(-1)[0];
+                    const dateInput = document.getElementById('expenseDate');
+                    if (dateInput && mostRecent) dateInput.value = mostRecent;
+                    this.updateVariableExpensesList();
+                    alert(this.data.language === 'it'
+                        ? `✅ Importate ${reviewed.length} spese!`
+                        : `✅ Imported ${reviewed.length} expenses!`);
                 } else {
                     alert(this.t('importCancelled'));
                 }
@@ -2665,7 +2749,7 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
-                alert('✅ File importato con successo!');
+                alert(this.data.language === 'it' ? '✅ File importato con successo!' : '✅ File imported successfully!');
             }
         };
         reader.onerror = () => {
