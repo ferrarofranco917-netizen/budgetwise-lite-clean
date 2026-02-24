@@ -18,7 +18,71 @@ class BudgetWise {
         
         this.chart = null;
         this.categoryExpenses = {};
-        
+        // ================= DEMO + CATEGORIE =================
+
+saveCustomCategories() {
+  localStorage.setItem('budgetwise-custom-categories', JSON.stringify(this.customCategories));
+}
+
+ensureDemoCategories() {
+  const demoCats = ['Casa', 'Bambini', 'Lavoro'];
+  let changed = false;
+
+  demoCats.forEach(cat => {
+    if (!this.getAllCategories().includes(cat)) {
+      this.customCategories.push(cat);
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    this.saveCustomCategories();
+    this.updateAllCategorySelects();
+  }
+}
+
+getDemoData() {
+  const today = new Date();
+  const iso = d => d.toISOString().split('T')[0];
+
+  const start = iso(today);
+  const end = iso(new Date(today.getTime() + 30 * 86400000));
+
+  const demoVariable = {};
+  const make = (off, obj) => {
+    const d = new Date(today);
+    d.setDate(d.getDate() - off);
+    demoVariable[iso(d)] = obj;
+  };
+
+  make(0,[{name:'Spesa casa',amount:23,category:'Casa',id:1}]);
+  make(1,[{name:'Asilo',amount:120,category:'Bambini',id:2}]);
+  make(2,[{name:'Pranzo lavoro',amount:14,category:'Lavoro',id:3}]);
+
+  return {
+    incomes:[{desc:'Stipendio',amount:2000,date:start,id:10}],
+    fixedExpenses:[
+      {name:'Affitto',amount:650,day:5,endDate:end,id:20}
+    ],
+    variableExpenses:demoVariable,
+    savingsPercent:10,
+    savingsGoal:1500,
+    threshold:50,
+    language:this.data.language || 'it',
+    periodStart:start,
+    periodEnd:end
+  };
+}
+
+loadDemoData() {
+  this.ensureDemoCategories();
+  this.data = this.getDemoData();
+  this.saveData();
+  this.updateUI();
+  this.updateChart();
+  this.applyLanguage();
+  localStorage.setItem('budgetwise-demo-loaded','true');
+}
         // ========== REGOLE CATEGORIE APPRESE ==========
         this.categoryRules = JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {};
         
