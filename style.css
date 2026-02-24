@@ -1255,3 +1255,24 @@ input:focus, select:focus {
     text-align: center;
     padding: 15px;
 }
+
+/* Toggle row (es. mostra tutte le spese del periodo) */
+.toggle-row {
+    margin: 10px 0 8px;
+}
+
+.toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.toggle-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}

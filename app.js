@@ -26,6 +26,10 @@ class BudgetWise {
         this.defaultCategories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
         const savedCustom = JSON.parse(localStorage.getItem('budgetwise-custom-categories')) || [];
         this.customCategories = savedCustom.filter(cat => !this.defaultCategories.includes(cat));
+
+        // ========== UI STATE ==========
+        // Mostra tutte le spese variabili del periodo (non solo del giorno selezionato)
+        this.showAllExpenses = localStorage.getItem('budgetwise-show-all-expenses') === 'true';
         
         // ========== TRADUZIONI ==========
         this.translations = {
@@ -215,6 +219,8 @@ aiSmartBadge: 'intelligente',
 csvMappingTitle: '📋 Mappa le colonne del file CSV',
 csvMappingInstructionsHtml: '<strong>📌 Istruzioni:</strong> Associa ogni colonna del tuo file al campo corrispondente. Le righe con importo positivo saranno considerate <strong>entrate</strong>, quelle negative <strong>spese</strong>.',
 csvMappingFieldsTitle: '🎯 Associazione campi:',
+showAllExpenses: 'Mostra tutte le spese del periodo',
+edit: 'Modifica',
                 categoriesSectionTitle: '📂 Gestione categorie',
                 manageCustomCategories: '➕ Gestisci categorie personalizzate',
                 newCategoryLabel: 'Nuova categoria',
@@ -409,6 +415,8 @@ aiSmartBadge: 'smart',
 csvMappingTitle: '📋 Map CSV columns',
 csvMappingInstructionsHtml: '<strong>📌 Instructions:</strong> Map each CSV column to the right field. Positive amounts are treated as <strong>income</strong>, negative amounts as <strong>expenses</strong>.',
 csvMappingFieldsTitle: '🎯 Field mapping:',
+showAllExpenses: 'Show all period expenses',
+edit: 'Edit',
                 categoriesSectionTitle: '📂 Category management',
                 manageCustomCategories: '➕ Manage custom categories',
                 newCategoryLabel: 'New category',
@@ -598,7 +606,9 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                 aiSmartBadge: 'inteligente',
                 csvMappingTitle: '📋 Mapear columnas CSV',
                 csvMappingInstructionsHtml: '<strong>📌 Instrucciones:</strong> Asocia cada columna del CSV con su campo. Importes positivos = <strong>ingresos</strong>, negativos = <strong>gastos</strong>.',
-                csvMappingFieldsTitle: '🎯 Asignación de campos:'
+                csvMappingFieldsTitle: '🎯 Asignación de campos:',
+                showAllExpenses: 'Mostrar todos los gastos del período',
+                edit: 'Editar'
             },
             fr: {
                 budget: 'Budget journalier',
@@ -781,7 +791,9 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
                 aiSmartBadge: 'intelligent',
                 csvMappingTitle: '📋 Mapper les colonnes CSV',
                 csvMappingInstructionsHtml: '<strong>📌 Instructions :</strong> Associe chaque colonne du CSV au bon champ. Montants positifs = <strong>revenus</strong>, négatifs = <strong>dépenses</strong>.',
-                csvMappingFieldsTitle: '🎯 Association des champs :'
+                csvMappingFieldsTitle: '🎯 Association des champs :',
+                showAllExpenses: 'Afficher toutes les dépenses de la période',
+                edit: 'Modifier'
             }
 
         };
@@ -799,6 +811,10 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         this.applyLanguage();
         this.startOnboarding();
         this.updateAllCategorySelects(); // Popola i select con le categorie
+
+        // Sync toggle UI (mostra tutte le spese)
+        const toggle = document.getElementById('showAllExpensesToggle');
+        if (toggle) toggle.checked = !!this.showAllExpenses;
     }
 
     getDefaultPeriodStart() {
@@ -1159,6 +1175,9 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
 
         const dateHintVariable = document.getElementById('dateHintVariable');
         if (dateHintVariable) dateHintVariable.textContent = this.t('dateHint');
+
+        const showAllLabel = document.getElementById('showAllExpensesLabel');
+        if (showAllLabel) showAllLabel.textContent = this.t('showAllExpenses');
         
         // Traduzioni sezione Import CSV
         const csvTitle = document.getElementById('csvTitle');
@@ -1578,6 +1597,17 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
         document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
         document.getElementById('expenseDate').valueAsDate = new Date();
+        document.getElementById('expenseDate').addEventListener('change', () => this.updateVariableExpensesList());
+
+        const showAllToggle = document.getElementById('showAllExpensesToggle');
+        if (showAllToggle) {
+            showAllToggle.checked = !!this.showAllExpenses;
+            showAllToggle.addEventListener('change', (e) => {
+                this.showAllExpenses = !!e.target.checked;
+                localStorage.setItem('budgetwise-show-all-expenses', this.showAllExpenses ? 'true' : 'false');
+                this.updateVariableExpensesList();
+            });
+        }
         document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
 
         const loadDemoBtn = document.getElementById('loadDemoBtn');
@@ -1811,27 +1841,54 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
     }
 
     updateVariableExpensesList() {
-        const date = this.normalizeIsoDate(document.getElementById('expenseDate').value);
         const container = document.getElementById('variableExpensesList');
-        const expenses = (this.data.variableExpenses && this.data.variableExpenses[date]) || [];
-        
-        if (expenses.length === 0) {
+        if (!container) return;
+
+        const selectedDateRaw = document.getElementById('expenseDate')?.value || '';
+        const selectedDate = this.normalizeIsoDate(selectedDateRaw);
+
+        // Build view: either selected day OR all expenses
+        let view = [];
+        if (this.showAllExpenses) {
+            const entries = (this.data.variableExpenses && typeof this.data.variableExpenses === 'object')
+                ? Object.entries(this.data.variableExpenses)
+                : [];
+
+            for (const [d, dayExpenses] of entries) {
+                if (!Array.isArray(dayExpenses)) continue;
+                for (const exp of dayExpenses) view.push({ date: this.normalizeIsoDate(d), exp });
+            }
+
+            view.sort((a, b) => {
+                const da = new Date(a.date);
+                const db = new Date(b.date);
+                if (db - da !== 0) return db - da;
+                return (b.exp?.id || 0) - (a.exp?.id || 0);
+            });
+        } else {
+            const expenses = (this.data.variableExpenses && this.data.variableExpenses[selectedDate]) || [];
+            if (Array.isArray(expenses)) view = expenses.map(exp => ({ date: selectedDate, exp }));
+        }
+
+        if (!view || view.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noVariable')}</p>`;
             return;
         }
-        
-        container.innerHTML = expenses.map(exp => {
+
+        container.innerHTML = view.map(({ date, exp }) => {
             const cat = exp.category || 'Altro';
             const catDisplay = this.getAllCategories().includes(cat) ? cat : 'Altro';
+            const dateBadge = this.showAllExpenses ? `<span class="expense-category">📅 ${date}</span>` : '';
             return `
                 <div class="expense-item">
                     <div class="expense-info">
                         <span class="expense-name">${exp.name || '?'}</span>
                         <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${catDisplay}</span>
+                        ${dateBadge}
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
-                        <button class="edit-variable-btn" title="Modifica" data-id="${exp.id}" data-date="${date}">✏️</button>
+                        <button class="edit-variable-btn" title="${this.t('edit')}" data-id="${exp.id}" data-date="${date}">✏️</button>
                         <button class="delete-variable-btn" data-id="${exp.id}" data-date="${date}">🗑️</button>
                     </div>
                 </div>
