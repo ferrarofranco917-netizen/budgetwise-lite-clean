@@ -23,14 +23,7 @@ class BudgetWise {
         this.categoryRules = JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {};
         
         // ========== CATEGORIE PERSONALIZZATE ==========
-        this.defaultCategories = [
-  'food',
-  'transport',
-  'leisure',
-  'health',
-  'clothing',
-  'other'
-];
+        this.defaultCategories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
         const savedCustom = JSON.parse(localStorage.getItem('budgetwise-custom-categories')) || [];
         this.customCategories = savedCustom.filter(cat => !this.defaultCategories.includes(cat));
         
@@ -830,9 +823,21 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         localStorage.setItem('budgetwise-first-run-seen', 'true');
     }
 
+    getDemoCustomCategories() {
+        const lang = this.data.language || 'it';
+        const map = {
+            it: { home: 'Casa', kids: 'Bambini', work: 'Lavoro' },
+            en: { home: 'Home', kids: 'Kids', work: 'Work' },
+            es: { home: 'Casa', kids: 'Niños', work: 'Trabajo' },
+            fr: { home: 'Maison', kids: 'Enfants', work: 'Travail' }
+        };
+        return map[lang] || map.it;
+    }
+
     ensureDemoCategories() {
         // Categorie demo aggiuntive (non predefinite)
-        const demoCats = ['Casa', 'Bambini', 'Lavoro'];
+        const dc = this.getDemoCustomCategories();
+        const demoCats = [dc.home, dc.kids, dc.work];
         let changed = false;
 
         demoCats.forEach(cat => {
@@ -850,6 +855,67 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
 
     getDemoData() {
         const today = new Date();
+        const lang = this.data.language || 'it';
+        const demoText = {
+            it: {
+                income: 'Stipendio',
+                rent: 'Affitto',
+                phone: 'Telefono',
+                grocery: 'Spesa supermercato',
+                homeMaint: 'Manutenzione casa',
+                fuel: 'Benzina',
+                pharmacy: 'Farmacia',
+                pizza: 'Pizza',
+                daycare: 'Asilo',
+                tshirt: 'Maglietta',
+                coffee: 'Caffè',
+                workLunch: 'Pranzo lavoro'
+            },
+            en: {
+                income: 'Salary',
+                rent: 'Rent',
+                phone: 'Phone',
+                grocery: 'Groceries',
+                homeMaint: 'Home maintenance',
+                fuel: 'Fuel',
+                pharmacy: 'Pharmacy',
+                pizza: 'Pizza',
+                daycare: 'Daycare',
+                tshirt: 'T-shirt',
+                coffee: 'Coffee',
+                workLunch: 'Work lunch'
+            },
+            es: {
+                income: 'Salario',
+                rent: 'Alquiler',
+                phone: 'Teléfono',
+                grocery: 'Supermercado',
+                homeMaint: 'Mantenimiento del hogar',
+                fuel: 'Gasolina',
+                pharmacy: 'Farmacia',
+                pizza: 'Pizza',
+                daycare: 'Guardería',
+                tshirt: 'Camiseta',
+                coffee: 'Café',
+                workLunch: 'Almuerzo de trabajo'
+            },
+            fr: {
+                income: 'Salaire',
+                rent: 'Loyer',
+                phone: 'Téléphone',
+                grocery: 'Courses',
+                homeMaint: 'Entretien maison',
+                fuel: 'Carburant',
+                pharmacy: 'Pharmacie',
+                pizza: 'Pizza',
+                daycare: 'Crèche',
+                tshirt: 'T-shirt',
+                coffee: 'Café',
+                workLunch: 'Déjeuner de travail'
+            }
+        };
+        const T = demoText[lang] || demoText.it;
+        const dc = this.getDemoCustomCategories();
         const iso = (d) => d.toISOString().split('T')[0];
 
         // periodo: da oggi a +30
@@ -868,25 +934,25 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         const demoVariable = {};
         // Giorno 0: due spese (anche "Casa")
         demoVariable[makeDate(0)] = [
-            { name: 'Spesa supermercato', amount: 23.40, category: 'Alimentari', id: now + 1 },
-            { name: 'Manutenzione casa', amount: 30.00, category: 'Casa', id: now + 7 }
+            { name: T.grocery, amount: 23.40, category: 'Alimentari', id: now + 1 },
+            { name: T.homeMaint, amount: 30.00, category: dc.home, id: now + 7 }
         ];
         demoVariable[makeDate(1)] = [
-            { name: 'Benzina', amount: 35.00, category: 'Trasporti', id: now + 2 }
+            { name: T.fuel, amount: 35.00, category: 'Trasporti', id: now + 2 }
         ];
         demoVariable[makeDate(2)] = [
-            { name: 'Farmacia', amount: 12.90, category: 'Salute', id: now + 3 }
+            { name: T.pharmacy, amount: 12.90, category: 'Salute', id: now + 3 }
         ];
         demoVariable[makeDate(3)] = [
-            { name: 'Pizza', amount: 18.00, category: 'Svago', id: now + 4 },
-            { name: 'Asilo', amount: 120.00, category: 'Bambini', id: now + 8 }
+            { name: T.pizza, amount: 18.00, category: 'Svago', id: now + 4 },
+            { name: T.daycare, amount: 120.00, category: dc.kids, id: now + 8 }
         ];
         demoVariable[makeDate(4)] = [
-            { name: 'Maglietta', amount: 19.99, category: 'Abbigliamento', id: now + 5 }
+            { name: T.tshirt, amount: 19.99, category: 'Abbigliamento', id: now + 5 }
         ];
         demoVariable[makeDate(5)] = [
-            { name: 'Caffè', amount: 2.20, category: 'Altro', id: now + 6 },
-            { name: 'Pranzo lavoro', amount: 14.00, category: 'Lavoro', id: now + 9 }
+            { name: T.coffee, amount: 2.20, category: 'Altro', id: now + 6 },
+            { name: T.workLunch, amount: 14.00, category: dc.work, id: now + 9 }
         ];
 
         const farFuture = new Date(today);
@@ -894,11 +960,11 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
 
         return {
             incomes: [
-                { desc: this.data.language === 'it' ? 'Stipendio' : 'Salary', amount: 2000, date: iso(today), id: now + 100 }
+                { desc: T.income, amount: 2000, date: iso(today), id: now + 100 }
             ],
             fixedExpenses: [
-                { name: this.data.language === 'it' ? 'Affitto' : 'Rent', amount: 650, day: 5, endDate: iso(farFuture), id: now + 200 },
-                { name: this.data.language === 'it' ? 'Telefono' : 'Phone', amount: 15, day: 12, endDate: iso(farFuture), id: now + 201 }
+                { name: T.rent, amount: 650, day: 5, endDate: iso(farFuture), id: now + 200 },
+                { name: T.phone, amount: 15, day: 12, endDate: iso(farFuture), id: now + 201 }
             ],
             variableExpenses: demoVariable,
             savingsPercent: 10,
@@ -920,7 +986,7 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         this.applyLanguage();
 
         localStorage.setItem('budgetwise-demo-loaded', 'true');
-        this.showToast(this.data.language === 'it' ? '✨ Dati demo caricati!' : '✨ Demo data loaded!', 'success');
+        this.showToast(this.t('demoLoaded'), 'success');
     }
 
     t(key, vars) {
@@ -973,6 +1039,9 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         document.getElementById('applySaveBtn').textContent = this.t('applySavings');
         document.getElementById('backupBtn').innerHTML = this.t('backup');
         document.getElementById('restoreBtn').innerHTML = this.t('restore');
+
+        const loadDemoBtn = document.getElementById('loadDemoBtn');
+        if (loadDemoBtn) loadDemoBtn.textContent = this.t('loadDemoBtn');
         document.getElementById('resetAllBtn').innerHTML = this.t('resetAll');
         document.getElementById('exportCalendarBtn').textContent = this.t('export');
         document.getElementById('sendChatBtn').textContent = this.t('send');
@@ -1175,6 +1244,11 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         this.updateFixedExpensesList();
         this.updateVariableExpensesList();
         this.updateChart();
+
+        // Refresh categories UI (manager + selects)
+        this.updateAllCategorySelects();
+        const catOverlayOpen = document.getElementById('categoryManagerOverlay');
+        if (catOverlayOpen && catOverlayOpen.style.display === 'flex') this.refreshCategoryList();
 
         this.updatePeriodInfo();
     }
@@ -1490,6 +1564,9 @@ csvMappingFieldsTitle: '🎯 Field mapping:',
         document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
         document.getElementById('expenseDate').valueAsDate = new Date();
         document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
+
+        const loadDemoBtn = document.getElementById('loadDemoBtn');
+        if (loadDemoBtn) loadDemoBtn.addEventListener('click', () => this.loadDemoData());
         document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
         document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
         document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
