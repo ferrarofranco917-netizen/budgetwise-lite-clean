@@ -10,11 +10,17 @@ class BudgetWise {
             variableExpenses: {},
             savingsPercent: 0,
             savingsGoal: 0,
+            savingsPot: 0,
             threshold: 50,
             language: 'it',
-            periodStart: this.getDefaultPeriodStart(),
-            periodEnd: this.getDefaultPeriodEnd()
+            // Periodo: viene inizializzato dopo l'assegnazione di this.data
+            periodStart: '',
+            periodEnd: ''
         };
+
+        // Inizializza il periodo di default (oggi/+28) o basato su stipendio, se presente nei dati caricati.
+        this.data.periodStart = this.getDefaultPeriodStart();
+        this.data.periodEnd = this.getDefaultPeriodEnd();
         
         this.chart = null;
         this.categoryExpenses = {};
@@ -26,10 +32,25 @@ class BudgetWise {
         this.defaultCategories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
         const savedCustom = JSON.parse(localStorage.getItem('budgetwise-custom-categories')) || [];
         this.customCategories = savedCustom.filter(cat => !this.defaultCategories.includes(cat));
+
+        // ========== UI STATE ==========
+        this.showAllExpenses = localStorage.getItem('budgetwise-show-all-expenses') === 'true';
         
-        // ========== TRADUZIONI ==========
+        // ========== COLORI PERSONALIZZATI ==========
+        const savedColors = localStorage.getItem('budgetwise-custom-colors');
+        if (savedColors) {
+            this.customColors = JSON.parse(savedColors);
+        } else {
+            this.customColors = null;
+        }
+
+        
+        // Tema associato ai colori personalizzati (per evitare che blocchino la dark mode)
+        this.customColorsTheme = localStorage.getItem('budgetwise-custom-colors-theme') || null;
+// ========== TRADUZIONI ==========
         this.translations = {
             it: {
+                resetColors: 'Ripristina colori predefiniti',
                 budget: 'Budget giornaliero',
                 remaining: 'Rimanenza',
                 days: 'Giorni rimasti',
@@ -125,7 +146,7 @@ class BudgetWise {
                 onboardingStep3: '🧾 Registra una spesa variabile come la spesa alimentare.',
                 onboardingStep4: '📊 Controlla il tuo budget giornaliero nel riquadro in alto.',
                 onboardingStep5: '🤖 Chiedi consigli all\'assistente AI o prova il microfono.',
-                onboardingStep6: '📥 Puoi anche importare movimenti bancari in formato CSV.',
+                onboardingStep6: '📥 Puoi anche importare movimenti bancari in formato CSV o Excel.',
                 onboardingNext: 'Avanti →',
                 onboardingSkip: 'Salta',
                 
@@ -138,10 +159,10 @@ class BudgetWise {
                 
                 // Traduzioni CSV
                 csvTitle: '📥 Importa movimenti bancari',
-                csvSubtitle: 'Scarica l\'estratto conto dalla tua banca in formato CSV',
-                csvChooseFile: 'Scegli il file',
+                csvSubtitle: 'Scarica l\'estratto conto dalla tua banca in formato CSV o Excel (.xlsx)',
+                csvChooseFile: 'Scegli file CSV o Excel',
                 csvNoFile: 'Nessun file selezionato',
-                csvImportBtn: '📥 Importa CSV',
+                csvImportBtn: '📥 Importa CSV / Excel',
                 csvDateFormat: 'Formato data',
                 csvSeparator: 'Separatore',
                 csvComma: 'Virgola (,)',
@@ -162,9 +183,83 @@ class BudgetWise {
                 categoryUpdated: '✏️ Categoria aggiornata',
                 defaultCategories: 'Categorie predefinite',
                 customCategories: 'Le tue categorie',
-                noCustomCategories: 'Nessuna categoria personalizzata'
+                noCustomCategories: 'Nessuna categoria personalizzata',
+
+                // NUOVE CHIAVI PER I TAB
+                tabHome: '🏠 Home',
+                tabIncomes: '🏦 Entrate',
+                tabFixed: '📌 Fisse',
+                tabVariable: '🧾 Variabili',
+                tabTools: '🛠️ Strumenti',
+
+                // NUOVE CHIAVI PER SKIP ROWS
+                skipRowsLabel: 'Salta righe iniziali',
+                headerRowManualLabel: 'Riga intestazione',
+                skipHelp: '📌 Per file con righe iniziali (es. Fineco): salta le righe fino a trovare le colonne',
+
+                docTitle: '💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente',
+                subtitle: 'Stipendio a stipendio — gestione intelligente con AI',
+                add: 'Aggiungi',
+                dateHint: 'gg/mm/aaaa',
+                autoRecommended: 'Auto (consigliato)',
+                ddmmyyyy: 'GG/MM/AAAA',
+                mmddyyyy: 'MM/DD/AAAA',
+                positiveBalance: 'Saldo positivo',
+                negativeBalance: 'Attenzione: saldo negativo',
+                vsYesterday0: 'rispetto a ieri: 0%',
+                detailTotal: 'Totale: {total}',
+                noExpensesShort: 'Nessuna spesa',
+                voiceSpeak: 'Parlare...',
+                voiceTap: 'Tocca per parlare',
+                error: 'Errore',
+                genericExpense: 'Spesa',
+                voiceDetected: '✅ Rilevato: {desc} {amount}€',
+                voiceFixedDetected: '✅ Spesa fissa rilevata: {name} {amount}€ giorno {day}',
+                invalidFile: '❌ File non valido',
+                fixedExpense: 'Spesa fissa',
+                everyMonthOnDay: 'Ogni mese il giorno',
+                featureInDev: '🔍 Funzionalità in sviluppo',
+                csvTemplateDetected: '📌 Rilevato template CSV: "{name}".\nVuoi usarlo automaticamente?',
+                csvFieldDate: '📅 Data',
+                csvFieldDescription: '📝 Descrizione',
+                csvFieldAmount: '💰 Importo',
+                csvFieldCategory: '🏷️ Categoria',
+                csvFieldIgnore: '❌ Ignora',
+                csvSaveAsTemplate: '💾 Salva come template',
+                csvTemplateNamePlaceholder: 'Nome template (es. Intesa, Unicredit...)',
+                csvColumnN: 'Colonna {n}',
+                empty: 'vuota',
+                csvMappingRequired: '❌ Devi mappare Data, Descrizione e Importo!',
+                csvEmpty: '❌ CSV vuoto',
+                importCancelled: '⏸️ Import annullato',
+                csvImportError: '❌ Errore durante l\'import CSV',
+                fileReadError: '❌ Errore durante la lettura del file',
+                importCompleted: '✅ Import completato!\n➕ Aggiunti: {added}{dupLine}',
+                duplicatesSkipped: '⚠️ Duplicati saltati: {dup}',
+                onboardingSubtitle: 'Segui la guida passo-passo',
+                onboardingDemo: '✨ Carica dati demo',
+                onboardingEmpty: 'Inizia vuoto',
+                you: 'Tu',
+                adviceRed: '⚠️ Sei in rosso! Rivedi le spese.',
+                adviceLowRemaining: '⚠️ Attenzione: ti rimangono solo {remaining} per i prossimi giorni.',
+                adviceGood: '💪 Vai bene! Hai ancora {remaining} di margine.',
+                aiSuggestionsTitle: '🤖 Suggerimenti AI',
+                aiSmartBadge: 'intelligente',
+                csvMappingTitle: '📋 Mappa le colonne del file CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Istruzioni:</strong> Associa ogni colonna del tuo file al campo corrispondente. Le righe con importo positivo saranno considerate <strong>entrate</strong>, quelle negative <strong>spese</strong>.',
+                csvMappingFieldsTitle: '🎯 Associazione campi:',
+                showAllExpenses: 'Mostra tutte le spese del periodo',
+                edit: 'Modifica',
+                categoriesSectionTitle: '📂 Gestione categorie',
+                manageCustomCategories: '➕ Gestisci categorie personalizzate',
+                newCategoryLabel: 'Nuova categoria',
+                newCategoryPlaceholder: 'es. Viaggi',
+                defaultCategoriesTitle: 'Categorie predefinite',
+                yourCategoriesTitle: 'Le tue categorie',
+                close: 'Chiudi',
             },
             en: {
+                resetColors: 'Reset default colors',
                 budget: 'Daily budget',
                 remaining: 'Remaining',
                 days: 'Days left',
@@ -297,7 +392,478 @@ class BudgetWise {
                 categoryUpdated: '✏️ Category updated',
                 defaultCategories: 'Default categories',
                 customCategories: 'Your categories',
-                noCustomCategories: 'No custom categories'
+                noCustomCategories: 'No custom categories',
+
+                // NUOVE CHIAVI PER I TAB
+                tabHome: '🏠 Home',
+                tabIncomes: '🏦 Incomes',
+                tabFixed: '📌 Fixed',
+                tabVariable: '🧾 Variable',
+                tabTools: '🛠️ Tools',
+
+                // NUOVE CHIAVI PER SKIP ROWS
+                skipRowsLabel: 'Skip initial rows',
+                headerRowManualLabel: 'Header row',
+                skipHelp: '📌 For files with initial rows (e.g., Fineco): skip rows until you find the columns',
+
+                docTitle: '💰 BudgetWise 2.0 - Smart Budget Manager',
+                subtitle: 'Paycheck to paycheck — smart management with AI',
+                add: 'Add',
+                dateHint: 'mm/dd/yyyy',
+                autoRecommended: 'Auto (recommended)',
+                ddmmyyyy: 'DD/MM/YYYY',
+                mmddyyyy: 'MM/DD/YYYY',
+                positiveBalance: 'Positive balance',
+                negativeBalance: 'Warning: negative balance',
+                vsYesterday0: 'vs yesterday: 0%',
+                detailTotal: 'Total: {total}',
+                noExpensesShort: 'No expenses',
+                voiceSpeak: 'Speak...',
+                voiceTap: 'Tap to speak',
+                error: 'Error',
+                genericExpense: 'Expense',
+                voiceDetected: '✅ Detected: {desc} €{amount}',
+                voiceFixedDetected: '✅ Fixed expense detected: {name} €{amount} day {day}',
+                invalidFile: '❌ Invalid file',
+                fixedExpense: 'Fixed expense',
+                everyMonthOnDay: 'Every month on day',
+                featureInDev: '🔍 Feature in development',
+                csvTemplateDetected: '📌 CSV template detected: "{name}".\nUse it automatically?',
+                csvFieldDate: '📅 Date',
+                csvFieldDescription: '📝 Description',
+                csvFieldAmount: '💰 Amount',
+                csvFieldCategory: '🏷️ Category',
+                csvFieldIgnore: '❌ Ignore',
+                csvSaveAsTemplate: '💾 Save as template',
+                csvTemplateNamePlaceholder: 'Template name (e.g. Intesa, Unicredit...)',
+                csvColumnN: 'Column {n}',
+                empty: 'empty',
+                csvMappingRequired: '❌ You must map Date, Description and Amount!',
+                csvEmpty: '❌ Empty CSV',
+                importCancelled: '⏸️ Import cancelled',
+                csvImportError: '❌ Error during CSV import',
+                fileReadError: '❌ Error reading the file',
+                importCompleted: '✅ Import completed!\n➕ Added: {added}{dupLine}',
+                duplicatesSkipped: '⚠️ Duplicates skipped: {dup}',
+                onboardingSubtitle: 'Follow the step-by-step guide',
+                onboardingDemo: '✨ Load demo data',
+                onboardingEmpty: 'Start empty',
+                you: 'You',
+                adviceRed: "⚠️ You're in the red! Review your expenses.",
+                adviceLowRemaining: '⚠️ Warning: you only have {remaining} left for the coming days.',
+                adviceGood: "💪 You're doing well! You still have {remaining} left.",
+                aiSuggestionsTitle: '🤖 AI Suggestions',
+                aiSmartBadge: 'smart',
+                csvMappingTitle: '📋 Map CSV columns',
+                csvMappingInstructionsHtml: '<strong>📌 Instructions:</strong> Map each CSV column to the right field. Positive amounts are treated as <strong>income</strong>, negative amounts as <strong>expenses</strong>.',
+                csvMappingFieldsTitle: '🎯 Field mapping:',
+                showAllExpenses: 'Show all period expenses',
+                edit: 'Edit',
+                categoriesSectionTitle: '📂 Category management',
+                manageCustomCategories: '➕ Manage custom categories',
+                newCategoryLabel: 'New category',
+                newCategoryPlaceholder: 'e.g. Travel',
+                defaultCategoriesTitle: 'Default categories',
+                yourCategoriesTitle: 'Your categories',
+                close: 'Close',
+            },
+            es: {
+                resetColors: 'Restablecer colores predeterminados',
+                budget: 'Presupuesto diario',
+                remaining: 'Restante',
+                days: 'Días restantes',
+                period: 'Período',
+                totalIncome: 'Ingresos totales',
+                startGuide: '👋 ¡Empieza añadiendo tus ingresos abajo!',
+                incomes: '🏦 Ingresos del período',
+                fixed: '📌 Gastos fijos mensuales',
+                variable: '🧾 Gastos variables',
+                chart: '📊 Distribución de gastos',
+                assistant: '🤖 Asistente financiero IA',
+                savings: '🎯 Objetivo de ahorro',
+                settings: '⚙️ Ajustes',
+                badge: 'múltiple',
+                addIncome: '➕ Añadir ingreso',
+                addFixed: '➕ Añadir gasto fijo',
+                addExpense: '➕ Añadir gasto',
+                resetDay: '🗑️ Borrar gastos del día',
+                applySavings: 'Aplicar ahorro',
+                backup: '💾 Descargar copia',
+                restore: '📂 Restaurar',
+                resetAll: '⚠️ Reinicio total',
+                export: '📅 Exportar a Calendar',
+                send: 'Enviar',
+                incomeDesc: 'Descripción (p. ej. Salario)',
+                incomeAmount: 'Importe €',
+                incomeDateLabel: 'Fecha',
+                fixedName: 'Nombre (p. ej. Hipoteca)',
+                fixedAmount: 'Importe €',
+                fixedDay: 'Día (p. ej. 27)',
+                expenseName: '¿Qué compraste?',
+                expenseAmount: '€',
+                chatPlaceholder: 'p. ej. ¿Cuánto puedo ahorrar este mes?',
+                dateLabel: 'Selecciona fecha:',
+                dayLabel: 'Día del mes',
+                endDateLabel: 'Fecha de vencimiento',
+                percentLabel: 'Porcentaje de ingresos (%)',
+                goalLabel: 'Objetivo (€)',
+                thresholdLabel: '🔔 Umbral de aviso (€)',
+                languageLabel: '🌍 Idioma',
+                backupLabel: '📅 Copia de datos',
+                micFixed: '🎤 Toca y dilo en una frase',
+                micVariable: '🎤 Toca para hablar',
+                helpFixed: '⏰ Se contabiliza automáticamente cada mes hasta el vencimiento',
+                chartNote: 'Añade gastos para ver el gráfico',
+                noIncome: 'Sin ingresos',
+                noFixed: 'Sin gastos fijos',
+                noVariable: 'Sin gastos en este día',
+                welcomeMessage: '¡Hola! Soy tu asistente financiero. ¡Pregúntame lo que quieras sobre tu presupuesto!',
+                suggestion1: '💶 Ahorrar 100€',
+                suggestion2: '🔮 Simular aumento',
+                suggestion3: '🎯 Objetivo',
+                suggestion4: '📊 Categoría top',
+                assistantName: 'Asistente',
+                incomeAdded: '✅ ¡Ingreso añadido!',
+                incomeDeleted: '🗑️ Ingreso eliminado',
+                fixedAdded: '✅ ¡Gasto fijo añadido!',
+                fixedDeleted: '🗑️ Gasto eliminado',
+                expenseAdded: '✅ ¡Gasto añadido!',
+                expenseDeleted: '🗑️ Gasto eliminado',
+                dayReset: '🗑️ Gastos del día borrados',
+                savingsApplied: '💰 ¡Ahorro aplicado!',
+                backupDownloaded: '💾 ¡Copia descargada!',
+                dataRestored: '📂 ¡Datos restaurados!',
+                resetCompleted: '🔄 Reinicio completado',
+                calendarExported: '📅 ¡Calendario exportado!',
+                fillFields: '⚠️ Rellena todos los campos',
+                invalidDay: '⚠️ Día no válido (1-31)',
+                thresholdExceeded: '⚠️ ¡Atención! Has superado el umbral de ',
+                active: '🟢 Activo',
+                expired: '🔴 Vencido',
+                dueToday: 'Vence hoy',
+                daysAgo: 'Vencido hace {days} días',
+                inDays: 'En {days} días',
+                confirmReset: '¿Seguro que quieres borrar TODOS los datos?',
+                noGoal: 'Aún no has establecido un objetivo de ahorro. Ve a 🎯 y configúralo.',
+                noExpenses: 'Aún no tienes gastos registrados. Añade algunos para ver el análisis.',
+                footerText: 'BudgetWise 2.0 — Gestión inteligente de tus finanzas',
+                footerFeatures: '✨ Asistente IA • Reconocimiento de voz • Tema oscuro',
+                fixedVoiceButton: '🎤 Añadir gasto fijo con voz',
+                variableVoiceButton: '🎤 Añadir con voz',
+                categoryAlimentari: '🍎 Alimentación',
+                categoryTrasporti: '🚗 Transporte',
+                categorySvago: '🎮 Ocio',
+                categorySalute: '💊 Salud',
+                categoryAbbigliamento: '👕 Ropa',
+                categoryAltro: '📦 Otros',
+                onboardingWelcome: '👋 Bienvenido a BudgetWise',
+                onboardingStep1: 'Añade tu primer ingreso abajo.',
+                onboardingStep2: '📌 Añade un gasto fijo mensual (p. ej. alquiler, servicios).',
+                onboardingStep3: '🧾 Registra un gasto variable como la compra.',
+                onboardingStep4: '📊 Revisa tu presupuesto diario en la tarjeta superior.',
+                onboardingStep5: '🤖 Pregunta al asistente IA o prueba el micrófono.',
+                onboardingStep6: '📥 También puedes importar movimientos bancarios en CSV.',
+                onboardingNext: 'Siguiente →',
+                onboardingSkip: 'Saltar',
+                importReview: '📋 Revisión de importación',
+                importConfirm: '✅ Confirmar',
+                importCancel: '✕ Cancelar',
+                importCategory: 'Categoría',
+                importLearn: '📌 La app recordará esta elección',
+                csvTitle: '📥 Importar movimientos bancarios',
+                csvSubtitle: 'Descarga tu extracto en formato CSV',
+                csvChooseFile: 'Elegir archivo',
+                csvNoFile: 'Ningún archivo seleccionado',
+                csvImportBtn: '📥 Importar CSV',
+                csvDateFormat: 'Formato de fecha',
+                csvSeparator: 'Separador',
+                csvComma: 'Coma (,)',
+                csvSemicolon: 'Punto y coma (;)',
+                csvTab: 'Tabulación',
+                csvPreview: 'Vista previa',
+                categoriesSectionTitle: '📂 Gestión de categorías',
+                manageCustomCategories: '➕ Gestionar categorías personalizadas',
+                newCategoryLabel: 'Nueva categoría',
+                newCategoryPlaceholder: 'p. ej. Viajes',
+                close: 'Cerrar',
+                manageCategories: '📂 Gestionar categorías',
+                addCategory: '➕ Añadir categoría',
+                categoryName: 'Nombre de la categoría',
+                saveCategory: 'Guardar',
+                deleteCategory: '🗑️ Eliminar',
+                confirmDeleteCategory: '¿Seguro que quieres eliminar la categoría "{name}"?',
+                categoryAlreadyExists: 'La categoría ya existe',
+                categoryAdded: '✅ ¡Categoría añadida!',
+                categoryDeleted: '🗑️ Categoría eliminada',
+                categoryUpdated: '✏️ Categoría actualizada',
+                defaultCategories: 'Categorías predeterminadas',
+                customCategories: 'Tus categorías',
+                noCustomCategories: 'Sin categorías personalizadas',
+
+                // NUOVE CHIAVI PER I TAB
+                tabHome: '🏠 Inicio',
+                tabIncomes: '🏦 Ingresos',
+                tabFixed: '📌 Fijas',
+                tabVariable: '🧾 Variables',
+                tabTools: '🛠️ Herramientas',
+
+                // NUOVE CHIAVI PER SKIP ROWS
+                skipRowsLabel: 'Saltar filas iniciales',
+                headerRowManualLabel: 'Fila de encabezado',
+                skipHelp: '📌 Para archivos con filas iniciales (ej. Fineco): salta las filas hasta encontrar las columnas',
+
+                docTitle: '💰 BudgetWise 2.0 - Gestor de presupuesto inteligente',
+                subtitle: 'De nómina a nómina — gestión inteligente con IA',
+                add: 'Añadir',
+                dateHint: 'dd/mm/aaaa',
+                autoRecommended: 'Auto (recomendado)',
+                ddmmyyyy: 'DD/MM/AAAA',
+                mmddyyyy: 'MM/DD/AAAA',
+                positiveBalance: 'Saldo positivo',
+                negativeBalance: 'Atención: saldo negativo',
+                vsYesterday0: 'vs ayer: 0%',
+                detailTotal: 'Total: {total}',
+                noExpensesShort: 'Sin gastos',
+                voiceSpeak: 'Habla...',
+                voiceTap: 'Toca para hablar',
+                error: 'Error',
+                genericExpense: 'Gasto',
+                voiceDetected: '✅ Detectado: {desc} €{amount}',
+                voiceFixedDetected: '✅ Gasto fijo detectado: {name} €{amount} día {day}',
+                invalidFile: '❌ Archivo no válido',
+                fixedExpense: 'Gasto fijo',
+                everyMonthOnDay: 'Cada mes el día',
+                featureInDev: '🔍 Función en desarrollo',
+                csvTemplateDetected: '📌 Plantilla CSV detectada: "{name}".\\n¿Usarla automáticamente?',
+                csvFieldDate: '📅 Fecha',
+                csvFieldDescription: '📝 Descripción',
+                csvFieldAmount: '💰 Importe',
+                csvFieldCategory: '🏷️ Categoría',
+                csvFieldIgnore: '❌ Ignorar',
+                csvSaveAsTemplate: '💾 Guardar como plantilla',
+                csvTemplateNamePlaceholder: 'Nombre de plantilla (p. ej. Intesa, Unicredit...)',
+                csvColumnN: 'Columna {n}',
+                empty: 'vacía',
+                csvMappingRequired: '❌ Debes asignar Fecha, Descripción e Importe.',
+                csvEmpty: '❌ CSV vacío',
+                importCancelled: '⏸️ Importación cancelada',
+                csvImportError: '❌ Error durante la importación CSV',
+                fileReadError: '❌ Error al leer el archivo',
+                duplicatesSkipped: '⚠️ Duplicados omitidos: {dup}',
+                importCompleted: '✅ Importación completada!\\n➕ Añadidos: {added}{dupLine}',
+                onboardingSubtitle: 'Sigue la guía paso a paso',
+                onboardingDemo: '✨ Cargar datos demo',
+                onboardingEmpty: 'Empezar vacío',
+                you: 'Tú',
+                adviceRed: '⚠️ ¡Estás en negativo! Revisa tus gastos.',
+                adviceLowRemaining: '⚠️ Atención: solo te quedan {remaining} para los próximos días.',
+                adviceGood: '💪 ¡Vas bien! Aún te quedan {remaining}.',
+                aiSuggestionsTitle: '🤖 Sugerencias IA',
+                aiSmartBadge: 'inteligente',
+                csvMappingTitle: '📋 Mapear columnas CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Instrucciones:</strong> Asocia cada columna del CSV con su campo. Importes positivos = <strong>ingresos</strong>, negativos = <strong>gastos</strong>.',
+                csvMappingFieldsTitle: '🎯 Asignación de campos:',
+                showAllExpenses: 'Mostrar todos los gastos del período',
+                edit: 'Editar'
+            },
+            fr: {
+                resetColors: 'Réinitialiser les couleurs par défaut',
+                budget: 'Budget journalier',
+                remaining: 'Reste',
+                days: 'Jours restants',
+                period: 'Période',
+                totalIncome: 'Total des revenus',
+                startGuide: '👋 Commence en ajoutant tes revenus ci-dessous !',
+                incomes: '🏦 Revenus de la période',
+                fixed: '📌 Dépenses fixes mensuelles',
+                variable: '🧾 Dépenses variables',
+                chart: '📊 Répartition des dépenses',
+                assistant: '🤖 Assistant financier IA',
+                savings: '🎯 Objectif d’épargne',
+                settings: '⚙️ Paramètres',
+                badge: 'multiple',
+                addIncome: '➕ Ajouter un revenu',
+                addFixed: '➕ Ajouter une dépense fixe',
+                addExpense: '➕ Ajouter une dépense',
+                resetDay: '🗑️ Supprimer les dépenses du jour',
+                applySavings: 'Appliquer l’épargne',
+                backup: '💾 Télécharger la sauvegarde',
+                restore: '📂 Restaurer',
+                resetAll: '⚠️ Réinitialisation complète',
+                export: '📅 Exporter vers Calendar',
+                send: 'Envoyer',
+                incomeDesc: 'Description (ex. Salaire)',
+                incomeAmount: 'Montant €',
+                incomeDateLabel: 'Date',
+                fixedName: 'Nom (ex. Crédit)',
+                fixedAmount: 'Montant €',
+                fixedDay: 'Jour (ex. 27)',
+                expenseName: 'Qu’as-tu acheté ?',
+                expenseAmount: '€',
+                chatPlaceholder: 'Ex. Combien puis-je économiser ce mois-ci ?',
+                dateLabel: 'Choisir une date :',
+                dayLabel: 'Jour du mois',
+                endDateLabel: 'Date d’échéance',
+                percentLabel: 'Pourcentage des revenus (%)',
+                goalLabel: 'Objectif (€)',
+                thresholdLabel: '🔔 Seuil d’alerte (€)',
+                languageLabel: '🌍 Langue',
+                backupLabel: '📅 Sauvegarde des données',
+                micFixed: '🎤 Appuie et dis tout en une phrase',
+                micVariable: '🎤 Appuie pour parler',
+                helpFixed: '⏰ Comptabilisée automatiquement chaque mois jusqu’à l’échéance',
+                chartNote: 'Ajoute des dépenses pour voir le graphique',
+                noIncome: 'Aucun revenu',
+                noFixed: 'Aucune dépense fixe',
+                noVariable: 'Aucune dépense ce jour',
+                welcomeMessage: 'Salut ! Je suis ton assistant financier. Demande-moi n’importe quoi sur ton budget !',
+                suggestion1: '💶 Économiser 100€',
+                suggestion2: '🔮 Simuler une hausse',
+                suggestion3: '🎯 Objectif',
+                suggestion4: '📊 Catégorie top',
+                assistantName: 'Assistant',
+                incomeAdded: '✅ Revenu ajouté !',
+                incomeDeleted: '🗑️ Revenu supprimé',
+                fixedAdded: '✅ Dépense fixe ajoutée !',
+                fixedDeleted: '🗑️ Dépense supprimée',
+                expenseAdded: '✅ Dépense ajoutée !',
+                expenseDeleted: '🗑️ Dépense supprimée',
+                dayReset: '🗑️ Dépenses du jour supprimées',
+                savingsApplied: '💰 Épargne appliquée !',
+                backupDownloaded: '💾 Sauvegarde téléchargée !',
+                dataRestored: '📂 Données restaurées !',
+                resetCompleted: '🔄 Réinitialisation terminée',
+                calendarExported: '📅 Calendrier exporté !',
+                fillFields: '⚠️ Remplis tous les champs',
+                invalidDay: '⚠️ Jour invalide (1-31)',
+                thresholdExceeded: '⚠️ Attention ! Tu as dépassé le seuil de ',
+                active: '🟢 Actif',
+                expired: '🔴 Expiré',
+                dueToday: 'Échéance aujourd’hui',
+                daysAgo: 'Expiré il y a {days} jours',
+                inDays: 'Dans {days} jours',
+                confirmReset: 'Es-tu sûr de vouloir supprimer TOUTES les données ?',
+                noGoal: 'Tu n’as pas encore défini d’objectif d’épargne. Va sur 🎯 et configure-le.',
+                noExpenses: 'Tu n’as encore aucune dépense. Ajoute-en pour voir l’analyse.',
+                footerText: 'BudgetWise 2.0 — Gestion intelligente de tes finances',
+                footerFeatures: '✨ Assistant IA • Reconnaissance vocale • Thème sombre',
+                fixedVoiceButton: '🎤 Ajouter une dépense fixe par voix',
+                variableVoiceButton: '🎤 Ajouter par voix',
+                categoryAlimentari: '🍎 Alimentation',
+                categoryTrasporti: '🚗 Transport',
+                categorySvago: '🎮 Loisirs',
+                categorySalute: '💊 Santé',
+                categoryAbbigliamento: '👕 Vêtements',
+                categoryAltro: '📦 Autre',
+                onboardingWelcome: '👋 Bienvenue sur BudgetWise',
+                onboardingStep1: 'Ajoute ton premier revenu ci-dessous.',
+                onboardingStep2: '📌 Ajoute une dépense fixe mensuelle (ex. loyer, factures).',
+                onboardingStep3: '🧾 Enregistre une dépense variable comme les courses.',
+                onboardingStep4: '📊 Consulte ton budget journalier dans la carte du haut.',
+                onboardingStep5: '🤖 Demande à l’assistant IA ou teste le micro.',
+                onboardingStep6: '📥 Tu peux aussi importer un CSV bancaire.',
+                onboardingNext: 'Suivant →',
+                onboardingSkip: 'Passer',
+                importReview: '📋 Revue d’importation',
+                importConfirm: '✅ Confirmer',
+                importCancel: '✕ Annuler',
+                importCategory: 'Catégorie',
+                importLearn: '📌 L’app se souviendra de ce choix',
+                csvTitle: '📥 Importer des opérations bancaires',
+                csvSubtitle: 'Télécharge ton relevé en CSV',
+                csvChooseFile: 'Choisir un fichier',
+                csvNoFile: 'Aucun fichier sélectionné',
+                csvImportBtn: '📥 Importer CSV',
+                csvDateFormat: 'Format de date',
+                csvSeparator: 'Séparateur',
+                csvComma: 'Virgule (,)',
+                csvSemicolon: 'Point-virgule (;)',
+                csvTab: 'Tabulation',
+                csvPreview: 'Aperçu',
+                categoriesSectionTitle: '📂 Gestion des catégories',
+                manageCustomCategories: '➕ Gérer les catégories personnalisées',
+                newCategoryLabel: 'Nouvelle catégorie',
+                newCategoryPlaceholder: 'ex. Voyages',
+                close: 'Fermer',
+                manageCategories: '📂 Gérer les catégories',
+                addCategory: '➕ Ajouter une catégorie',
+                categoryName: 'Nom de la catégorie',
+                saveCategory: 'Enregistrer',
+                deleteCategory: '🗑️ Supprimer',
+                confirmDeleteCategory: 'Supprimer la catégorie « {name} » ?',
+                categoryAlreadyExists: 'La catégorie existe déjà',
+                categoryAdded: '✅ Catégorie ajoutée !',
+                categoryDeleted: '🗑️ Catégorie supprimée',
+                categoryUpdated: '✏️ Catégorie mise à jour',
+                defaultCategories: 'Catégories par défaut',
+                customCategories: 'Tes catégories',
+                noCustomCategories: 'Aucune catégorie personnalisée',
+
+                // NUOVE CHIAVI PER I TAB
+                tabHome: '🏠 Accueil',
+                tabIncomes: '🏦 Revenus',
+                tabFixed: '📌 Fixes',
+                tabVariable: '🧾 Variables',
+                tabTools: '🛠️ Outils',
+
+                // NUOVE CHIAVI PER SKIP ROWS
+                skipRowsLabel: 'Ignorer les lignes initiales',
+                headerRowManualLabel: 'Ligne d\'en-tête',
+                skipHelp: '📌 Pour les fichiers avec lignes initiales (ex. Fineco): ignorez les lignes jusqu\'à trouver les colonnes',
+
+                docTitle: '💰 BudgetWise 2.0 - Gestionnaire de budget intelligent',
+                subtitle: 'De paie en paie — gestion intelligente avec IA',
+                add: 'Ajouter',
+                dateHint: 'jj/mm/aaaa',
+                autoRecommended: 'Auto (recommandé)',
+                ddmmyyyy: 'JJ/MM/AAAA',
+                mmddyyyy: 'MM/JJ/AAAA',
+                positiveBalance: 'Solde positif',
+                negativeBalance: 'Attention : solde négatif',
+                vsYesterday0: 'vs hier : 0%',
+                detailTotal: 'Total : {total}',
+                noExpensesShort: 'Aucune dépense',
+                voiceSpeak: 'Parle...',
+                voiceTap: 'Appuie pour parler',
+                error: 'Erreur',
+                genericExpense: 'Dépense',
+                voiceDetected: '✅ Détecté : {desc} €{amount}',
+                voiceFixedDetected: '✅ Dépense fixe détectée : {name} €{amount} jour {day}',
+                invalidFile: '❌ Fichier invalide',
+                fixedExpense: 'Dépense fixe',
+                everyMonthOnDay: 'Chaque mois le jour',
+                featureInDev: '🔍 Fonction en développement',
+                csvTemplateDetected: '📌 Modèle CSV détecté : « {name} ».\\nL’utiliser automatiquement ?',
+                csvFieldDate: '📅 Date',
+                csvFieldDescription: '📝 Description',
+                csvFieldAmount: '💰 Montant',
+                csvFieldCategory: '🏷️ Catégorie',
+                csvFieldIgnore: '❌ Ignorer',
+                csvSaveAsTemplate: '💾 Enregistrer comme modèle',
+                csvTemplateNamePlaceholder: 'Nom du modèle (ex. Intesa, Unicredit...)',
+                csvColumnN: 'Colonne {n}',
+                empty: 'vide',
+                csvMappingRequired: '❌ Tu dois mapper Date, Description et Montant.',
+                csvEmpty: '❌ CSV vide',
+                importCancelled: '⏸️ Import annulé',
+                csvImportError: '❌ Erreur pendant l’import CSV',
+                fileReadError: '❌ Erreur de lecture du fichier',
+                duplicatesSkipped: '⚠️ Doublons ignorés : {dup}',
+                importCompleted: '✅ Import terminé !\\n➕ Ajoutés : {added}{dupLine}',
+                onboardingSubtitle: 'Suis le guide pas à pas',
+                onboardingDemo: '✨ Charger des données démo',
+                onboardingEmpty: 'Commencer vide',
+                you: 'Toi',
+                adviceRed: '⚠️ Tu es dans le rouge ! Revois tes dépenses.',
+                adviceLowRemaining: '⚠️ Attention : il ne te reste que {remaining} pour les prochains jours.',
+                adviceGood: '💪 Ça va ! Il te reste encore {remaining}.',
+                aiSuggestionsTitle: '🤖 Suggestions IA',
+                aiSmartBadge: 'intelligent',
+                csvMappingTitle: '📋 Mapper les colonnes CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Instructions :</strong> Associe chaque colonne du CSV au bon champ. Montants positifs = <strong>revenus</strong>, négatifs = <strong>dépenses</strong>.',
+                csvMappingFieldsTitle: '🎯 Association des champs :',
+                showAllExpenses: 'Afficher toutes les dépenses de la période',
+                edit: 'Modifier'
             }
         };
         
@@ -308,35 +874,324 @@ class BudgetWise {
         this.loadData();
         this.setupEventListeners();
         this.applyTheme();
+        // NOTE: custom colors should NOT override theme defaults unless the user explicitly saved them.
+        // Otherwise we would "freeze" light colors as inline CSS variables and dark mode would barely change.
+        if (localStorage.getItem('budgetwise-custom-colors')) {
+            this.applyCustomColors();
+        } else {
+            this.clearThemeInlineOverrides();
+        }
+        this.setupColorPickers();
         this.updateUI();
         this.updateChart();
         this.setupVoice();
         this.applyLanguage();
         this.startOnboarding();
-        this.updateAllCategorySelects(); // Popola i select con le categorie
+        this.updateAllCategorySelects();
+        this.initTabs();
+
+        const toggle = document.getElementById('showAllExpensesToggle');
+        if (toggle) toggle.checked = !!this.showAllExpenses;
     }
 
     getDefaultPeriodStart() {
+        // Default: start from last salary income (if available), otherwise today
+        const salary = this.findLastSalaryIncome();
+        if (salary && salary.date) return this.normalizeIsoDate(salary.date);
         const today = new Date();
         return today.toISOString().split('T')[0];
     }
 
     getDefaultPeriodEnd() {
+        // Default: next salary date (one month after last salary), otherwise +28 days
+        const salary = this.findLastSalaryIncome();
+        if (salary && salary.date) {
+            const start = this.normalizeIsoDate(salary.date);
+            const next = this.addMonthsClamp(start, 1);
+            return next;
+        }
         const end = new Date();
         end.setDate(end.getDate() + 28);
         return end.toISOString().split('T')[0];
     }
 
-    t(key) {
-        return this.translations[this.data.language][key] || key;
+    normalizeIsoDate(dateStr) {
+        if (!dateStr) return '';
+        const s = String(dateStr).trim();
+        const m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+        if (m) {
+            const y = m[1];
+            const mm = String(m[2]).padStart(2, '0');
+            const dd = String(m[3]).padStart(2, '0');
+            return `${y}-${mm}-${dd}`;
+        }
+        return s;
+    }
+
+
+    // ==================== PERIODO BASATO SU STIPENDIO ====================
+    isSalaryIncome(inc) {
+        if (!inc) return false;
+        const desc = String(inc.desc || '').toLowerCase();
+        // Parole chiave comuni (puoi aggiungerne altre)
+        return /stipend|mensilit|payroll|salary|cedolin/.test(desc);
+    }
+
+    findLastSalaryIncome() {
+        if (!this.data.incomes || !Array.isArray(this.data.incomes)) return null;
+        const today = new Date();
+        const candidates = this.data.incomes
+            .filter(inc => inc && inc.date && this.isSalaryIncome(inc))
+            .map(inc => ({ ...inc, _d: new Date(this.normalizeIsoDate(inc.date)) }))
+            .filter(inc => !isNaN(inc._d.getTime()) && inc._d <= today)
+            .sort((a, b) => a._d - b._d);
+        return candidates.length ? candidates[candidates.length - 1] : null;
+    }
+
+    // Aggiunge mesi mantenendo il "giorno stipendio"; se il mese non ha quel giorno, usa l'ultimo giorno del mese
+    addMonthsClamp(isoDate, monthsToAdd) {
+        const d = new Date(this.normalizeIsoDate(isoDate));
+        if (isNaN(d.getTime())) return '';
+        const y = d.getFullYear();
+        const m = d.getMonth();
+        const day = d.getDate();
+        const targetMonth = m + (monthsToAdd || 0);
+        const ty = y + Math.floor(targetMonth / 12);
+        const tm = ((targetMonth % 12) + 12) % 12;
+        const lastDay = new Date(ty, tm + 1, 0).getDate();
+        const dd = Math.min(day, lastDay);
+        const out = new Date(ty, tm, dd);
+        return out.toISOString().split('T')[0];
+    }
+
+    ensureSalaryPeriod() {
+        const lastSalary = this.findLastSalaryIncome();
+        if (!lastSalary || !lastSalary.date) return;
+
+        const start = this.normalizeIsoDate(lastSalary.date);
+        const nextSalary = this.addMonthsClamp(start, 1);
+
+        // Aggiorna solo se non impostato o se ancora in default
+        if (!this.data.periodStart || !this.data.periodEnd) {
+            this.data.periodStart = start;
+            this.data.periodEnd = nextSalary;
+            return;
+        }
+
+        // Se il periodo attuale non è coerente (es. start==oggi e end==oggi+28), riallinea
+        const ps = this.normalizeIsoDate(this.data.periodStart);
+        const pe = this.normalizeIsoDate(this.data.periodEnd);
+
+        const looksDefault =
+            ps === new Date().toISOString().split('T')[0] &&
+            Math.abs((new Date(pe) - new Date(ps)) / (1000 * 60 * 60 * 24) - 28) < 2;
+
+        if (looksDefault || new Date(pe) <= new Date(ps)) {
+            this.data.periodStart = start;
+            this.data.periodEnd = nextSalary;
+        }
+    }
+
+    isDateInPeriod(isoDate) {
+        const d = new Date(this.normalizeIsoDate(isoDate));
+        const start = new Date(this.normalizeIsoDate(this.data.periodStart));
+        const end = new Date(this.normalizeIsoDate(this.data.periodEnd));
+        if ([d, start, end].some(x => isNaN(x.getTime()))) return false;
+        return d >= start && d < end;
+    }
+
+
+    // ==================== FIRST RUN / DEMO DATA ====================
+    isFirstRun() {
+        return localStorage.getItem('budgetwise-first-run-seen') !== 'true';
+    }
+
+    markFirstRunSeen() {
+        localStorage.setItem('budgetwise-first-run-seen', 'true');
+    }
+
+    getDemoCustomCategories() {
+        const lang = this.data.language || 'it';
+        const map = {
+            it: { home: 'Casa', kids: 'Bambini', work: 'Lavoro' },
+            en: { home: 'Home', kids: 'Kids', work: 'Work' },
+            es: { home: 'Casa', kids: 'Niños', work: 'Trabajo' },
+            fr: { home: 'Maison', kids: 'Enfants', work: 'Travail' }
+        };
+        return map[lang] || map.it;
+    }
+
+    ensureDemoCategories() {
+        const dc = this.getDemoCustomCategories();
+        const demoCats = [dc.home, dc.kids, dc.work];
+        let changed = false;
+
+        demoCats.forEach(cat => {
+            if (!this.getAllCategories().includes(cat)) {
+                this.customCategories.push(cat);
+                changed = true;
+            }
+        });
+
+        if (changed) {
+            this.saveCustomCategories();
+            this.updateAllCategorySelects();
+        }
+    }
+
+    getDemoData() {
+        const today = new Date();
+        const lang = this.data.language || 'it';
+        const demoText = {
+            it: {
+                income: 'Stipendio',
+                rent: 'Affitto',
+                phone: 'Telefono',
+                grocery: 'Spesa supermercato',
+                homeMaint: 'Manutenzione casa',
+                fuel: 'Benzina',
+                pharmacy: 'Farmacia',
+                pizza: 'Pizza',
+                daycare: 'Asilo',
+                tshirt: 'Maglietta',
+                coffee: 'Caffè',
+                workLunch: 'Pranzo lavoro'
+            },
+            en: {
+                income: 'Salary',
+                rent: 'Rent',
+                phone: 'Phone',
+                grocery: 'Groceries',
+                homeMaint: 'Home maintenance',
+                fuel: 'Fuel',
+                pharmacy: 'Pharmacy',
+                pizza: 'Pizza',
+                daycare: 'Daycare',
+                tshirt: 'T-shirt',
+                coffee: 'Coffee',
+                workLunch: 'Work lunch'
+            },
+            es: {
+                income: 'Salario',
+                rent: 'Alquiler',
+                phone: 'Teléfono',
+                grocery: 'Supermercado',
+                homeMaint: 'Mantenimiento del hogar',
+                fuel: 'Gasolina',
+                pharmacy: 'Farmacia',
+                pizza: 'Pizza',
+                daycare: 'Guardería',
+                tshirt: 'Camiseta',
+                coffee: 'Café',
+                workLunch: 'Almuerzo de trabajo'
+            },
+            fr: {
+                income: 'Salaire',
+                rent: 'Loyer',
+                phone: 'Téléphone',
+                grocery: 'Courses',
+                homeMaint: 'Entretien maison',
+                fuel: 'Carburant',
+                pharmacy: 'Pharmacie',
+                pizza: 'Pizza',
+                daycare: 'Crèche',
+                tshirt: 'T-shirt',
+                coffee: 'Café',
+                workLunch: 'Déjeuner de travail'
+            }
+        };
+        const T = demoText[lang] || demoText.it;
+        const dc = this.getDemoCustomCategories();
+        const iso = (d) => d.toISOString().split('T')[0];
+
+        const start = new Date(today);
+        const end = new Date(today);
+        end.setDate(end.getDate() + 30);
+
+        const makeDate = (offset) => {
+            const d = new Date(today);
+            d.setDate(d.getDate() - offset);
+            return iso(d);
+        };
+
+        const now = Date.now();
+
+        const demoVariable = {};
+        demoVariable[makeDate(0)] = [
+            { name: T.grocery, amount: 23.40, category: 'Alimentari', id: now + 1 },
+            { name: T.homeMaint, amount: 30.00, category: dc.home, id: now + 7 }
+        ];
+        demoVariable[makeDate(1)] = [
+            { name: T.fuel, amount: 35.00, category: 'Trasporti', id: now + 2 }
+        ];
+        demoVariable[makeDate(2)] = [
+            { name: T.pharmacy, amount: 12.90, category: 'Salute', id: now + 3 }
+        ];
+        demoVariable[makeDate(3)] = [
+            { name: T.pizza, amount: 18.00, category: 'Svago', id: now + 4 },
+            { name: T.daycare, amount: 120.00, category: dc.kids, id: now + 8 }
+        ];
+        demoVariable[makeDate(4)] = [
+            { name: T.tshirt, amount: 19.99, category: 'Abbigliamento', id: now + 5 }
+        ];
+        demoVariable[makeDate(5)] = [
+            { name: T.coffee, amount: 2.20, category: 'Altro', id: now + 6 },
+            { name: T.workLunch, amount: 14.00, category: dc.work, id: now + 9 }
+        ];
+
+        const farFuture = new Date(today);
+        farFuture.setFullYear(farFuture.getFullYear() + 5);
+
+        return {
+            incomes: [
+                { desc: T.income, amount: 2000, date: iso(today), id: now + 100 }
+            ],
+            fixedExpenses: [
+                { name: T.rent, amount: 650, day: 5, endDate: iso(farFuture), id: now + 200 },
+                { name: T.phone, amount: 15, day: 12, endDate: iso(farFuture), id: now + 201 }
+            ],
+            variableExpenses: demoVariable,
+            savingsPercent: 10,
+            savingsGoal: 1500,
+            threshold: 50,
+            language: this.data.language || 'it',
+            periodStart: iso(start),
+            periodEnd: iso(end)
+        };
+    }
+
+    loadDemoData() {
+        this.ensureDemoCategories();
+        this.data = this.getDemoData();
+        this.saveData();
+        this.updateAllCategorySelects();
+        this.updateUI();
+        this.updateChart();
+        this.applyLanguage();
+
+        localStorage.setItem('budgetwise-demo-loaded', 'true');
+        this.showToast(this.t('demoLoaded'), 'success');
+    }
+
+    t(key, vars) {
+        const lang = this.data.language || "it";
+        const dict = this.translations[lang] || this.translations.it || {};
+        let str = dict[key] ?? (this.translations.en ? (this.translations.en[key] ?? key) : key);
+        if (vars && typeof vars === "object") {
+            for (const [k, v] of Object.entries(vars)) {
+                str = String(str).replaceAll(`{${k}}`, String(v));
+            }
+        }
+        return str;
     }
 
     applyLanguage() {
         console.log('🌐 Cambio lingua a:', this.data.language);
         document.getElementById('languageSelect').value = this.data.language;
-        document.querySelector('.subtitle').textContent = this.data.language === 'it' 
-            ? 'Stipendio a stipendio — gestione intelligente con AI'
-            : 'Paycheck to paycheck — smart management with AI';
+        const subtitleEl = document.querySelector('.subtitle');
+        if (subtitleEl) subtitleEl.textContent = this.t('subtitle');
+        document.documentElement.lang = (this.data.language || 'it');
+        document.title = this.t('docTitle');
         
         const summaryLabels = document.querySelectorAll('.summary-label');
         if (summaryLabels.length >= 3) {
@@ -352,6 +1207,7 @@ class BudgetWise {
             else if (text.includes('📌')) h2.innerHTML = this.t('fixed');
             else if (text.includes('🧾')) h2.innerHTML = this.t('variable');
             else if (text.includes('📊')) h2.innerHTML = this.t('chart');
+            else if (text.includes('Suggerimenti')) h2.innerHTML = this.t('aiSuggestionsTitle');
             else if (text.includes('🤖')) h2.innerHTML = this.t('assistant');
             else if (text.includes('🎯')) h2.innerHTML = this.t('savings');
             else if (text.includes('⚙️')) h2.innerHTML = this.t('settings');
@@ -367,6 +1223,9 @@ class BudgetWise {
         document.getElementById('applySaveBtn').textContent = this.t('applySavings');
         document.getElementById('backupBtn').innerHTML = this.t('backup');
         document.getElementById('restoreBtn').innerHTML = this.t('restore');
+
+        const loadDemoBtn = document.getElementById('loadDemoBtn');
+        if (loadDemoBtn) loadDemoBtn.textContent = this.t('loadDemoBtn');
         document.getElementById('resetAllBtn').innerHTML = this.t('resetAll');
         document.getElementById('exportCalendarBtn').textContent = this.t('export');
         document.getElementById('sendChatBtn').textContent = this.t('send');
@@ -465,12 +1324,14 @@ class BudgetWise {
         }
         
         const dateHintFixed = document.getElementById('dateHintFixed');
-        if (dateHintFixed) dateHintFixed.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+        if (dateHintFixed) dateHintFixed.textContent = this.t('dateHint');
 
         const dateHintVariable = document.getElementById('dateHintVariable');
-        if (dateHintVariable) dateHintVariable.textContent = this.data.language === 'it' ? 'gg/mm/aaaa' : 'mm/dd/yyyy';
+        if (dateHintVariable) dateHintVariable.textContent = this.t('dateHint');
+
+        const showAllLabel = document.getElementById('showAllExpensesLabel');
+        if (showAllLabel) showAllLabel.textContent = this.t('showAllExpenses');
         
-        // Traduzioni sezione Import CSV
         const csvTitle = document.getElementById('csvTitle');
         if (csvTitle) csvTitle.textContent = this.t('csvTitle');
 
@@ -494,7 +1355,6 @@ class BudgetWise {
         const csvSeparatorLabel = document.getElementById('csvSeparatorLabel');
         if (csvSeparatorLabel) csvSeparatorLabel.textContent = this.t('csvSeparator');
 
-        // Traduci le opzioni dei select
         const delimiterSelect = document.getElementById('csvDelimiter');
         if (delimiterSelect) {
             const options = delimiterSelect.options;
@@ -516,8 +1376,125 @@ class BudgetWise {
 
         const csvPreviewTitle = document.getElementById('csvPreviewTitle');
         if (csvPreviewTitle) csvPreviewTitle.textContent = this.t('csvPreview');
-        
+
+        const aiWidgetTitle = document.getElementById('aiWidgetTitle');
+        if (aiWidgetTitle) aiWidgetTitle.textContent = this.t('aiSuggestionsTitle');
+        const aiWidgetBadge = document.getElementById('aiWidgetBadge');
+        if (aiWidgetBadge) aiWidgetBadge.textContent = this.t('aiSmartBadge');
+        const closeDetailBtn2 = document.getElementById('closeDetailBtn');
+        if (closeDetailBtn2) closeDetailBtn2.textContent = this.t('close');
+        const importReviewTitle = document.getElementById('importReviewTitle');
+        if (importReviewTitle) importReviewTitle.textContent = this.t('importReview');
+        const csvMappingTitle = document.getElementById('csvMappingTitle');
+        if (csvMappingTitle) csvMappingTitle.textContent = this.t('csvMappingTitle');
+        const csvMappingInstructions = document.getElementById('csvMappingInstructions');
+        if (csvMappingInstructions) csvMappingInstructions.innerHTML = this.t('csvMappingInstructionsHtml');
+        const csvMappingFieldsTitle = document.getElementById('csvMappingFieldsTitle');
+        if (csvMappingFieldsTitle) csvMappingFieldsTitle.textContent = this.t('csvMappingFieldsTitle');
+
+        const catSectionTitle = Array.from(document.querySelectorAll('h2')).find(h => h.textContent.includes('📂'));
+        if (catSectionTitle) catSectionTitle.textContent = this.t('categoriesSectionTitle');
+
+        const manageBtn = document.getElementById('manageCategoriesBtn');
+        if (manageBtn) manageBtn.textContent = this.t('manageCustomCategories');
+
+        const catOverlay = document.getElementById('categoryManagerOverlay');
+        if (catOverlay) {
+            const h3 = catOverlay.querySelector('h3');
+            if (h3) h3.textContent = this.t('manageCategories');
+
+            const h4s = catOverlay.querySelectorAll('h4');
+            if (h4s.length >= 2) {
+                h4s[0].textContent = this.t('defaultCategoriesTitle');
+                h4s[1].textContent = this.t('yourCategoriesTitle');
+            }
+
+            const newCatLabel = catOverlay.querySelector('label[for="newCategoryName"]');
+            if (newCatLabel) newCatLabel.textContent = this.t('newCategoryLabel');
+
+            const newCatInput = document.getElementById('newCategoryName');
+            if (newCatInput) newCatInput.placeholder = this.t('newCategoryPlaceholder');
+
+            const saveCatBtn = document.getElementById('saveCategoryBtn');
+            if (saveCatBtn) saveCatBtn.textContent = this.t('add');
+
+            const closeCatBtn = document.getElementById('closeCategoryManager');
+            if (closeCatBtn) closeCatBtn.textContent = this.t('close');
+        }
+
+        // Traduci i bottoni dei tab
+        const tabButtons = document.querySelectorAll('.tab-btn');
+        if (tabButtons.length >= 5) {
+            tabButtons[0].textContent = this.t('tabHome');
+            tabButtons[1].textContent = this.t('tabIncomes');
+            tabButtons[2].textContent = this.t('tabFixed');
+            tabButtons[3].textContent = this.t('tabVariable');
+            tabButtons[4].textContent = this.t('tabTools');
+        }
+
+        // Traduzioni per skip rows
+        const skipRowsLabel = document.getElementById('skipRowsLabel');
+        if (skipRowsLabel) skipRowsLabel.textContent = this.t('skipRowsLabel');
+        const headerRowManualLabel = document.getElementById('headerRowManualLabel');
+        if (headerRowManualLabel) headerRowManualLabel.textContent = this.t('headerRowManualLabel');
+        const skipHelp = document.getElementById('skipHelp');
+        if (skipHelp) skipHelp.textContent = this.t('skipHelp');
+
+        this.updateIncomeList();
+        this.updateFixedExpensesList();
+        this.updateVariableExpensesList();
+        this.updateFixedStatusHome();
+        this.updateChart();
+
+        this.updateAllCategorySelects();
+        const catOverlayOpen = document.getElementById('categoryManagerOverlay');
+        if (catOverlayOpen && catOverlayOpen.style.display === 'flex') this.refreshCategoryList();
+
         this.updatePeriodInfo();
+    }
+
+    initTabs() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        const sections = document.querySelectorAll('.section-card[data-tab]');
+
+        const showTab = (tabId) => {
+            sections.forEach(s => {
+                s.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+                s.style.opacity = '0';
+                s.style.transform = 'translateY(10px)';
+            });
+
+            setTimeout(() => {
+                sections.forEach(s => s.style.display = 'none');
+                const toShow = document.querySelectorAll(`.section-card[data-tab="${tabId}"]`);
+                toShow.forEach(s => {
+                    s.style.display = 'block';
+                    void s.offsetWidth;
+                    s.style.opacity = '1';
+                    s.style.transform = 'translateY(0)';
+                });
+
+                const guide = document.querySelector('.guide-message[data-tab]');
+                if (guide) {
+                    guide.style.display = (tabId === guide.dataset.tab) ? 'block' : 'none';
+                    if (guide.style.display === 'block') {
+                        guide.style.opacity = '1';
+                        guide.style.transform = 'translateY(0)';
+                    }
+                }
+
+                tabs.forEach(t => t.classList.remove('active'));
+                document.querySelector(`.tab-btn[data-tab="${tabId}"]`).classList.add('active');
+            }, 200);
+        };
+
+        tabs.forEach(btn => {
+            btn.addEventListener('click', () => {
+                showTab(btn.dataset.tab);
+            });
+        });
+
+        showTab('home');
     }
 
     updatePeriodInfo() {
@@ -535,13 +1512,20 @@ class BudgetWise {
     // ========== CALCOLI CON CONTROLLI ==========
     calculateTotalIncome() {
         if (!this.data.incomes || !Array.isArray(this.data.incomes)) return 0;
-        return this.data.incomes.reduce((sum, inc) => sum + (inc.amount || 0), 0);
+        // Somma solo le entrate nel periodo [periodStart, periodEnd]
+        return this.data.incomes.reduce((sum, inc) => {
+            const d = this.normalizeIsoDate(inc.date);
+            if (!d || !this.isDateInPeriod(d)) return sum;
+            return sum + (inc.amount || 0);
+        }, 0);
     }
 
     calculateTotalVariableExpenses() {
         if (!this.data.variableExpenses || typeof this.data.variableExpenses !== 'object') return 0;
         let total = 0;
-        Object.values(this.data.variableExpenses).forEach(day => {
+        Object.entries(this.data.variableExpenses).forEach(([date, day]) => {
+            const d = this.normalizeIsoDate(date);
+            if (!d || !this.isDateInPeriod(d)) return;
             if (Array.isArray(day)) {
                 day.forEach(exp => total += (exp.amount || 0));
             }
@@ -551,28 +1535,311 @@ class BudgetWise {
 
     calculateTotalFixedExpenses() {
         if (!this.data.fixedExpenses || !Array.isArray(this.data.fixedExpenses)) return 0;
-        
-        const today = new Date();
-        const currentMonth = today.getMonth();
-        const currentYear = today.getFullYear();
-        
-        return this.data.fixedExpenses.reduce((sum, exp) => {
-            if (!exp || !exp.endDate || !exp.day) return sum;
-            
-            const endDate = new Date(exp.endDate);
-            if (endDate < today) return sum;
-            
-            const paymentDate = new Date(currentYear, currentMonth, exp.day);
-            if (paymentDate > today) return sum;
-            
-            return sum + (exp.amount || 0);
-        }, 0);
+
+        const start = new Date(this.normalizeIsoDate(this.data.periodStart));
+        const end = new Date(this.normalizeIsoDate(this.data.periodEnd));
+        if ([start, end].some(d => isNaN(d.getTime()))) return 0;
+
+        // Scorre i mesi compresi nel periodo e include le scadenze che cadono nel periodo
+        const months = [];
+        const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+        const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+        while (cursor <= endMonth) {
+            months.push({ y: cursor.getFullYear(), m: cursor.getMonth() });
+            cursor.setMonth(cursor.getMonth() + 1);
+        }
+
+        let total = 0;
+
+        for (const exp of this.data.fixedExpenses) {
+            if (!exp || !exp.day) continue;
+
+            const expEnd = exp.endDate ? new Date(this.normalizeIsoDate(exp.endDate)) : null;
+
+            for (const mm of months) {
+                const lastDay = new Date(mm.y, mm.m + 1, 0).getDate();
+                const dueDay = Math.min(parseInt(exp.day, 10) || 1, lastDay);
+                const dueDate = new Date(mm.y, mm.m, dueDay);
+
+                if (dueDate < start || dueDate >= end) continue;
+                if (expEnd && dueDate > expEnd) continue;
+
+                total += (exp.amount || 0);
+            }
+        }
+
+        return total;
+    }
+
+
+    /**
+     * Ritorna la lista "flat" delle spese variabili nel periodo corrente
+     */
+    getVariableExpensesInPeriodFlat() {
+        const out = [];
+        if (!this.data.variableExpenses || typeof this.data.variableExpenses !== 'object') return out;
+        Object.entries(this.data.variableExpenses).forEach(([date, arr]) => {
+            const d = this.normalizeIsoDate(date);
+            if (!d || !this.isDateInPeriod(d)) return;
+            if (Array.isArray(arr)) {
+                arr.forEach(e => {
+                    if (!e) return;
+                    out.push({
+                        id: e.id,
+                        date: d,
+                        name: (e.name || '').toString(),
+                        category: e.category,
+                        amount: Number(e.amount || 0)
+                    });
+                });
+            }
+        });
+        return out;
+    }
+
+    normalizeMatchText(s) {
+        return (s || '')
+            .toString()
+            .toLowerCase()
+            .replace(/[\u0300-\u036f]/g, '') // diacritics
+            .replace(/[^a-z0-9\s]/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+
+    /**
+     * Verifica se una spesa variabile corrisponde ad una scadenza fissa (per non conteggiarla 2 volte)
+     * Matching "robusto ma prudente":
+     * - importo simile (tolleranza 1 cent)
+     * - data entro +/- 3 giorni
+     * - se possibile, match su token del nome
+     */
+    matchFixedOccurrenceToVariable(occ, vars, consumedIds) {
+        const occAmount = Number(occ.amount || 0);
+        const occDate = new Date(this.normalizeIsoDate(occ.dueDate));
+        if (isNaN(occDate.getTime())) return null;
+
+        const nameNorm = this.normalizeMatchText(occ.name);
+        const tokens = nameNorm.split(' ').filter(t => t.length >= 4);
+
+        const candidates = vars.filter(v => {
+            if (!v || consumedIds.has(v.id)) return false;
+            if (Math.abs(Math.abs(Number(v.amount || 0)) - Math.abs(occAmount)) > 0.01) return false;
+
+            const vd = new Date(this.normalizeIsoDate(v.date));
+            if (isNaN(vd.getTime())) return false;
+            const diffDays = Math.abs((vd - occDate) / (1000 * 60 * 60 * 24));
+            if (diffDays > 3) return false;
+
+            return true;
+        });
+
+        if (candidates.length === 0) return null;
+
+        // Se c'è un solo candidato, accettiamo.
+        if (candidates.length === 1) return candidates[0];
+
+        // Se più candidati: richiediamo match token sul nome (almeno 1 token)
+        if (tokens.length > 0) {
+            const best = candidates.find(c => {
+                const cn = this.normalizeMatchText(c.name);
+                return tokens.some(t => cn.includes(t));
+            });
+            if (best) return best;
+        }
+
+        // Fallback: il più vicino come data
+        candidates.sort((a, b) => {
+            const ad = new Date(this.normalizeIsoDate(a.date));
+            const bd = new Date(this.normalizeIsoDate(b.date));
+            return Math.abs(ad - occDate) - Math.abs(bd - occDate);
+        });
+        return candidates[0];
+    }
+
+    /**
+     * Calcola il totale delle spese fisse NON già presenti tra le variabili importate/inserite nel periodo.
+     * Evita il doppio conteggio: una fissa pagata (presente nel file banca) resta tra le variabili,
+     * e viene esclusa dal "forecast" delle fisse.
+     */
+    calculateTotalFixedExpensesUnpaid() {
+        if (!this.data.fixedExpenses || !Array.isArray(this.data.fixedExpenses)) return 0;
+
+        const start = new Date(this.normalizeIsoDate(this.data.periodStart));
+        const end = new Date(this.normalizeIsoDate(this.data.periodEnd));
+        if ([start, end].some(d => isNaN(d.getTime()))) return 0;
+
+        // mesi nel periodo
+        const months = [];
+        const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+        const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+        while (cursor <= endMonth) {
+            months.push({ y: cursor.getFullYear(), m: cursor.getMonth() });
+            cursor.setMonth(cursor.getMonth() + 1);
+        }
+
+        const vars = this.getVariableExpensesInPeriodFlat();
+        const consumed = new Set();
+
+        let total = 0;
+
+        for (const exp of this.data.fixedExpenses) {
+            if (!exp || !exp.day) continue;
+
+            const expEnd = exp.endDate ? new Date(this.normalizeIsoDate(exp.endDate)) : null;
+
+            for (const mm of months) {
+                const lastDay = new Date(mm.y, mm.m + 1, 0).getDate();
+                const dueDay = Math.min(parseInt(exp.day, 10) || 1, lastDay);
+                const dueDate = new Date(mm.y, mm.m, dueDay);
+
+                if (dueDate < start || dueDate >= end) continue;
+                if (expEnd && dueDate > expEnd) continue;
+
+                const occ = { name: exp.name, amount: exp.amount, dueDate: dueDate.toISOString().slice(0,10) };
+                const match = this.matchFixedOccurrenceToVariable(occ, vars, consumed);
+
+                if (match) {
+                    consumed.add(match.id);
+                    // già pagata/registrata: NON la sommiamo nelle fisse
+                } else {
+                    total += (exp.amount || 0);
+                }
+            }
+        }
+
+        return total;
+    }
+
+/**
+ * Ritorna le occorrenze delle spese fisse nel periodo corrente, marcate come
+ * "Pagata" se trovate tra le spese variabili (estratto conto) con match prudente.
+ * Regola periodo: start <= data < end
+ *
+ * @returns {Array<{name:string, amount:number, dueDate:string, paid:boolean, match?:{id:string,date:string,name:string,amount:number}}>}
+ */
+getFixedOccurrencesInPeriod() {
+    if (!this.data.fixedExpenses || !Array.isArray(this.data.fixedExpenses)) return [];
+
+    const start = new Date(this.normalizeIsoDate(this.data.periodStart));
+    const end = new Date(this.normalizeIsoDate(this.data.periodEnd));
+    if ([start, end].some(d => isNaN(d.getTime()))) return [];
+
+    // mesi nel periodo
+    const months = [];
+    const cursor = new Date(start.getFullYear(), start.getMonth(), 1);
+    const endMonth = new Date(end.getFullYear(), end.getMonth(), 1);
+    while (cursor <= endMonth) {
+        months.push({ y: cursor.getFullYear(), m: cursor.getMonth() });
+        cursor.setMonth(cursor.getMonth() + 1);
+    }
+
+    const vars = this.getVariableExpensesInPeriodFlat();
+    const consumed = new Set();
+
+    const occs = [];
+
+    for (const exp of this.data.fixedExpenses) {
+        if (!exp || !exp.day) continue;
+        const expEnd = exp.endDate ? new Date(this.normalizeIsoDate(exp.endDate)) : null;
+
+        for (const mm of months) {
+            const lastDay = new Date(mm.y, mm.m + 1, 0).getDate();
+            const dueDay = Math.min(parseInt(exp.day, 10) || 1, lastDay);
+            const dueDateObj = new Date(mm.y, mm.m, dueDay);
+
+            if (dueDateObj < start || dueDateObj >= end) continue;
+            if (expEnd && dueDateObj > expEnd) continue;
+
+            const dueDate = dueDateObj.toISOString().slice(0, 10);
+            const occ = { name: exp.name, amount: exp.amount, dueDate };
+            const match = this.matchFixedOccurrenceToVariable(occ, vars, consumed);
+
+            if (match) consumed.add(match.id);
+
+            occs.push({
+                name: (exp.name || '').toString(),
+                amount: Number(exp.amount || 0),
+                dueDate,
+                paid: !!match,
+                match: match ? { id: match.id, date: match.date, name: match.name, amount: match.amount } : null
+            });
+        }
+    }
+
+    // sort per data, poi per nome
+    occs.sort((a, b) => (a.dueDate || '').localeCompare(b.dueDate || '') || (a.name || '').localeCompare(b.name || ''));
+    return occs;
+}
+
+updateFixedStatusHome() {
+    const listEl = document.getElementById('fixedStatusHomeList');
+    if (!listEl) return;
+
+    const esc = (s) => (s ?? '').toString()
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+
+    const occs = this.getFixedOccurrencesInPeriod();
+    if (!occs || occs.length === 0) {
+        listEl.innerHTML = `<p class="chart-note">Nessuna spesa fissa nel periodo</p>`;
+        return;
+    }
+
+    const fmtDate = (iso) => {
+        try {
+            const d = new Date(this.normalizeIsoDate(iso));
+            if (isNaN(d.getTime())) return iso;
+            return d.toLocaleDateString(this.data.language === 'it' ? 'it-IT' : 'en-US', { day: '2-digit', month: '2-digit' });
+        } catch {
+            return iso;
+        }
+    };
+
+    listEl.innerHTML = occs.map(o => {
+        const statusTxt = o.paid ? '✅ Pagata' : '⏳ Prevista';
+        const pillClass = o.paid ? 'fixed-pill paid' : 'fixed-pill due';
+        const matchTxt = (o.paid && o.match) ? `Trovata: ${fmtDate(o.match.date)} • ${(o.match.name || '')}` : '';
+
+        return `
+            <div class="fixed-status-row">
+                <div class="fixed-status-left">
+                    <div class="fixed-status-name" title="${esc(o.name)}">${esc(o.name)}</div>
+                    <div class="fixed-status-sub">Scadenza: ${fmtDate(o.dueDate)}</div>
+                </div>
+                <div class="fixed-status-right">
+                    <div class="fixed-status-amount">${this.formatCurrency(o.amount)}</div>
+                    <div class="${pillClass}">${statusTxt}</div>
+                    ${matchTxt ? `<div class="fixed-match" title="${esc(matchTxt)}">${esc(matchTxt)}</div>` : ''}
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+
+
+    calculatePlannedSavings() {
+        const totalIncome = this.calculateTotalIncome();
+        const percent = this.data.savingsPercent || 0;
+        return (totalIncome * percent) / 100;
+    }
+
+    calculateProjectedSavingsEnd() {
+        const pot = this.data.savingsPot || 0;
+        const planned = this.calculatePlannedSavings();
+        const remaining = this.calculateRemaining(); // remaining budget after fixed + planned savings - variable spent
+        // Se vai in rosso, non aumentiamo il pot con un valore negativo
+        return pot + planned + Math.max(0, remaining);
     }
 
     calculateRemaining() {
         const totalIncome = this.calculateTotalIncome();
-        const totalFixed = this.calculateTotalFixedExpenses();
-        const savingsAmount = (totalIncome * (this.data.savingsPercent || 0)) / 100;
+        const totalFixed = this.calculateTotalFixedExpensesUnpaid();
+        const savingsAmount = this.calculatePlannedSavings();
         const budget = totalIncome - totalFixed - savingsAmount;
         return budget - this.calculateTotalVariableExpenses();
     }
@@ -607,7 +1874,6 @@ class BudgetWise {
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         const dateInput = document.getElementById('incomeDate').value;
         
-        // Se non c'è data, usa oggi
         const date = dateInput || new Date().toISOString().split('T')[0];
         
         if (!desc || !amount) {
@@ -615,11 +1881,10 @@ class BudgetWise {
             return;
         }
         
-        // Se è la PRIMA entrata, imposta il periodo
         if (!Array.isArray(this.data.incomes) || this.data.incomes.length === 0) {
             const startDate = new Date(date);
             const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 30); // 30 giorni di periodo
+            endDate.setDate(startDate.getDate() + 30);
             
             this.data.periodStart = startDate.toISOString().split('T')[0];
             this.data.periodEnd = endDate.toISOString().split('T')[0];
@@ -698,7 +1963,7 @@ class BudgetWise {
 
     // ========== SPESE VARIABILI ==========
     addVariableExpense() {
-        const date = document.getElementById('expenseDate').value;
+        const date = this.normalizeIsoDate(document.getElementById('expenseDate').value);
         const name = document.getElementById('expenseName').value.trim();
         const amount = parseFloat(document.getElementById('expenseAmount').value);
         const category = document.getElementById('expenseCategory').value;
@@ -762,8 +2027,10 @@ class BudgetWise {
     applySavings() {
         const percent = parseFloat(document.getElementById('savePercent').value) || 0;
         const goal = parseFloat(document.getElementById('saveGoal').value) || 0;
+        const pot = parseFloat(document.getElementById('savingsPotInput')?.value) || 0;
         this.data.savingsPercent = percent;
         this.data.savingsGoal = goal;
+        this.data.savingsPot = pot;
         this.saveData();
         this.updateUI();
         alert(this.t('savingsApplied'));
@@ -792,7 +2059,7 @@ class BudgetWise {
         return data;
     }
 
-    drawSparkline(canvasId, data, color = '#4361ee') {
+    drawSparkline(canvasId, data, color = '#0ea5e9') {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -830,7 +2097,21 @@ class BudgetWise {
         document.getElementById('addExpenseBtn').addEventListener('click', () => this.addVariableExpense());
         document.getElementById('resetDayBtn').addEventListener('click', () => this.resetDay());
         document.getElementById('expenseDate').valueAsDate = new Date();
+        document.getElementById('expenseDate').addEventListener('change', () => this.updateVariableExpensesList());
+
+        const showAllToggle = document.getElementById('showAllExpensesToggle');
+        if (showAllToggle) {
+            showAllToggle.checked = !!this.showAllExpenses;
+            showAllToggle.addEventListener('change', (e) => {
+                this.showAllExpenses = !!e.target.checked;
+                localStorage.setItem('budgetwise-show-all-expenses', this.showAllExpenses ? 'true' : 'false');
+                this.updateVariableExpensesList();
+            });
+        }
         document.getElementById('applySaveBtn').addEventListener('click', () => this.applySavings());
+
+        const loadDemoBtn = document.getElementById('loadDemoBtn');
+        if (loadDemoBtn) loadDemoBtn.addEventListener('click', () => this.loadDemoData());
         document.getElementById('backupBtn').addEventListener('click', () => this.backupData());
         document.getElementById('restoreBtn').addEventListener('click', () => document.getElementById('restoreFile').click());
         document.getElementById('restoreFile').addEventListener('change', (e) => this.restoreData(e));
@@ -862,6 +2143,8 @@ class BudgetWise {
             this.data.language = e.target.value;
             this.saveData();
             this.applyLanguage();
+            this.updateUI();
+            this.updateChart();
         });
         const closeDetailBtn = document.getElementById('closeDetailBtn');
         if (closeDetailBtn) {
@@ -870,7 +2153,6 @@ class BudgetWise {
             });
         }
         
-        // Gestione categorie
         const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
         if (manageCategoriesBtn) {
             manageCategoriesBtn.addEventListener('click', () => this.showCategoryManager());
@@ -888,21 +2170,28 @@ class BudgetWise {
     }
 
     updateUI() {
+        // Allinea automaticamente il periodo all'ultimo stipendio (se presente)
+        this.ensureSalaryPeriod();
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
+
+        // Piano risparmi (fondo separato dal budget)
+        const potEl = document.getElementById('savingsPot');
+        const projEl = document.getElementById('savingsProjected');
+        if (potEl) potEl.textContent = this.formatCurrency(this.data.savingsPot || 0);
+        if (projEl) projEl.textContent = `Fine periodo: ${this.formatCurrency(this.calculateProjectedSavingsEnd())}`;
+
 
         const remainingStatus = document.getElementById('remainingStatus');
         const remainingTrend = document.getElementById('remainingTrend');
         const remaining = this.calculateRemaining();
         if (remainingStatus) {
             remainingStatus.textContent = remaining >= 0 ? '✅' : '⚠️';
-            remainingStatus.title = remaining >= 0 
-                ? (this.data.language === 'it' ? 'Saldo positivo' : 'Positive balance')
-                : (this.data.language === 'it' ? 'Attenzione: saldo negativo' : 'Warning: negative balance');
+            remainingStatus.title = remaining >= 0 ? this.t('positiveBalance') : this.t('negativeBalance');
         }
         if (remainingTrend) {
-            remainingTrend.textContent = this.data.language === 'it' ? 'rispetto a ieri: 0%' : 'vs yesterday: 0%';
+            remainingTrend.textContent = this.t('vsYesterday0');
         }
 
         this.updatePeriodInfo();
@@ -912,6 +2201,8 @@ class BudgetWise {
 
         document.getElementById('savePercent').value = this.data.savingsPercent || 0;
         document.getElementById('saveGoal').value = this.data.savingsGoal || 0;
+        const potInput = document.getElementById('savingsPotInput');
+        if (potInput) potInput.value = this.data.savingsPot || 0;
         document.getElementById('thresholdInput').value = this.data.threshold || 50;
 
         const progress = this.calculateSavingsProgress();
@@ -959,7 +2250,7 @@ class BudgetWise {
 
         const last7Days = this.getLast7DaysData();
         const last7DaysBudget = this.getLast7DaysBudget();
-        this.drawSparkline('budgetSparkline', last7DaysBudget, '#4361ee');
+        this.drawSparkline('budgetSparkline', last7DaysBudget, '#0ea5e9');
         const remainingColor = this.calculateRemaining() >= 0 ? '#2dc653' : '#ef233c';
         this.drawSparkline('remainingSparkline', last7Days, remainingColor);
 
@@ -981,7 +2272,7 @@ class BudgetWise {
                         <span class="expense-name">${inc.desc || '?'}</span>
                         <span class="expense-category">${inc.date || ''}</span>
                     </div>
-                    <span class="expense-amount" style="color: var(--secondary)">+${this.formatCurrency(inc.amount || 0)}</span>
+                    <span class="expense-amount" style="color: var(--success)">+${this.formatCurrency(inc.amount || 0)}</span>
                     <div class="expense-actions">
                         <button class="delete-income-btn" data-id="${inc.id}">🗑️</button>
                     </div>
@@ -989,7 +2280,6 @@ class BudgetWise {
             `).join('');
         }
 
-        // Event listener per i pulsanti di eliminazione entrate
         document.querySelectorAll('.delete-income-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1048,7 +2338,6 @@ class BudgetWise {
             `;
         }).join('');
 
-        // Event listener per i pulsanti di eliminazione spese fisse
         document.querySelectorAll('.delete-fixed-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1059,33 +2348,68 @@ class BudgetWise {
     }
 
     updateVariableExpensesList() {
-        const date = document.getElementById('expenseDate').value;
         const container = document.getElementById('variableExpensesList');
-        const expenses = (this.data.variableExpenses && this.data.variableExpenses[date]) || [];
-        
-        if (expenses.length === 0) {
+        if (!container) return;
+
+        const selectedDateRaw = document.getElementById('expenseDate')?.value || '';
+        const selectedDate = this.normalizeIsoDate(selectedDateRaw);
+
+        let view = [];
+        if (this.showAllExpenses) {
+            const entries = (this.data.variableExpenses && typeof this.data.variableExpenses === 'object')
+                ? Object.entries(this.data.variableExpenses)
+                : [];
+
+            for (const [d, dayExpenses] of entries) {
+                if (!Array.isArray(dayExpenses)) continue;
+                for (const exp of dayExpenses) view.push({ date: this.normalizeIsoDate(d), exp });
+            }
+
+            view.sort((a, b) => {
+                const da = new Date(a.date);
+                const db = new Date(b.date);
+                if (db - da !== 0) return db - da;
+                return (b.exp?.id || 0) - (a.exp?.id || 0);
+            });
+        } else {
+            const expenses = (this.data.variableExpenses && this.data.variableExpenses[selectedDate]) || [];
+            if (Array.isArray(expenses)) view = expenses.map(exp => ({ date: selectedDate, exp }));
+        }
+
+        if (!view || view.length === 0) {
             container.innerHTML = `<p class="chart-note">${this.t('noVariable')}</p>`;
             return;
         }
-        
-        container.innerHTML = expenses.map(exp => {
+
+        container.innerHTML = view.map(({ date, exp }) => {
             const cat = exp.category || 'Altro';
             const catDisplay = this.getAllCategories().includes(cat) ? cat : 'Altro';
+            const dateBadge = this.showAllExpenses ? `<span class="expense-category">📅 ${date}</span>` : '';
             return `
                 <div class="expense-item">
                     <div class="expense-info">
                         <span class="expense-name">${exp.name || '?'}</span>
                         <span class="expense-category">${this.getCategoryEmoji(catDisplay)} ${catDisplay}</span>
+                        ${dateBadge}
                     </div>
                     <span class="expense-amount">${this.formatCurrency(exp.amount || 0)}</span>
                     <div class="expense-actions">
+                        <button class="edit-variable-btn" title="${this.t('edit')}" data-id="${exp.id}" data-date="${date}">✏️</button>
                         <button class="delete-variable-btn" data-id="${exp.id}" data-date="${date}">🗑️</button>
                     </div>
                 </div>
             `;
         }).join('');
 
-        // Event listener per i pulsanti di eliminazione spese variabili
+        document.querySelectorAll('.edit-variable-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(e.currentTarget.dataset.id);
+                const date = e.currentTarget.dataset.date;
+                this.editVariableExpense(date, id);
+            });
+        });
+
         document.querySelectorAll('.delete-variable-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -1096,43 +2420,101 @@ class BudgetWise {
         });
     }
 
+    editVariableExpense(date, id) {
+        date = this.normalizeIsoDate(date);
+        if (!this.data.variableExpenses || !this.data.variableExpenses[date]) return;
+        const idx = this.data.variableExpenses[date].findIndex(e => e.id === id);
+        if (idx === -1) return;
+
+        const exp = this.data.variableExpenses[date][idx];
+
+        const newName = prompt(this.data.language === 'it' ? 'Descrizione' : 'Description', exp.name || '');
+        if (newName === null) return;
+
+        const newAmountStr = prompt(this.data.language === 'it' ? 'Importo (€)' : 'Amount (€)', String(exp.amount ?? ''));
+        if (newAmountStr === null) return;
+        const newAmount = parseFloat(String(newAmountStr).replace(',', '.'));
+        if (!isFinite(newAmount) || newAmount <= 0) {
+            alert(this.t('fillFields'));
+            return;
+        }
+
+        const cats = this.getAllCategories();
+        const catHint = cats.join(', ');
+        const newCategory = prompt(
+            this.data.language === 'it' ? `Categoria (es. ${catHint})` : `Category (e.g. ${catHint})`,
+            exp.category || 'Altro'
+        );
+        if (newCategory === null) return;
+        const trimmedCat = String(newCategory).trim() || 'Altro';
+
+        if (!this.getAllCategories().includes(trimmedCat)) {
+            this.customCategories.push(trimmedCat);
+            this.saveCustomCategories();
+            this.updateAllCategorySelects();
+        }
+
+        exp.name = String(newName).trim() || exp.name;
+        exp.amount = newAmount;
+        exp.category = trimmedCat;
+
+        this.data.variableExpenses[date][idx] = exp;
+        this.saveData();
+        this.updateUI();
+        this.updateChart();
+        this.showToast(this.data.language === 'it' ? '✅ Spesa aggiornata' : '✅ Expense updated', 'success');
+    }
+
     updateChart() {
         const categories = {};
         const categoryExpenses = {};
-        
+
         if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
-            Object.values(this.data.variableExpenses).forEach(day => {
-                if (Array.isArray(day)) {
-                    day.forEach(expense => {
-                        const cat = expense.category || 'Altro';
-                        categories[cat] = (categories[cat] || 0) + (expense.amount || 0);
-                        if (!categoryExpenses[cat]) categoryExpenses[cat] = [];
-                        categoryExpenses[cat].push({ 
-                            name: expense.name || '?', 
-                            amount: expense.amount || 0, 
-                            date: day 
-                        });
+            Object.entries(this.data.variableExpenses).forEach(([date, dayExpenses]) => {
+                if (!Array.isArray(dayExpenses)) return;
+                dayExpenses.forEach(expense => {
+                    const cat = expense.category || 'Altro';
+                    const amt = Number(expense.amount || 0) || 0;
+                    categories[cat] = (categories[cat] || 0) + amt;
+
+                    if (!categoryExpenses[cat]) categoryExpenses[cat] = [];
+                    categoryExpenses[cat].push({
+                        name: expense.name || '?',
+                        amount: amt,
+                        date: date
                     });
-                }
+                });
             });
         }
 
+        const chartNote = document.getElementById('chartNote');
+        const categoryDetail = document.getElementById('categoryDetail');
+
         if (Object.keys(categories).length === 0) {
-            document.getElementById('chartNote').style.display = 'block';
-            document.getElementById('categoryDetail').style.display = 'none';
+            if (chartNote) chartNote.style.display = 'block';
+            if (categoryDetail) categoryDetail.style.display = 'none';
             if (this.chart) this.chart.destroy();
+            this.chart = null;
+            this.categoryExpenses = {};
             return;
         }
-        document.getElementById('chartNote').style.display = 'none';
+
+        if (chartNote) chartNote.style.display = 'none';
+
         if (this.chart) this.chart.destroy();
-        const ctx = document.getElementById('expenseChart').getContext('2d');
+        this.chart = null;
+
+        const canvas = document.getElementById('expenseChart');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+
         this.chart = new Chart(ctx, {
             type: 'pie',
             data: {
                 labels: Object.keys(categories),
                 datasets: [{
                     data: Object.values(categories),
-                    backgroundColor: ['#6366f1', '#818cf8', '#10b981', '#34d399', '#f59e0b', '#ef4444'],
+                    backgroundColor: ['#0ea5e9', '#38bdf8', '#22c55e', '#f59e0b', '#ef4444', '#0284c7'],
                     borderColor: 'transparent'
                 }]
             },
@@ -1140,14 +2522,20 @@ class BudgetWise {
                 responsive: true,
                 maintainAspectRatio: true,
                 plugins: {
-                    legend: { position: 'bottom', labels: { color: getComputedStyle(document.documentElement).getPropertyValue('--text-primary'), font: { size: 12 } } },
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: (getComputedStyle(document.documentElement).getPropertyValue('--text-primary') || '').trim(),
+                            font: { size: 12 }
+                        }
+                    },
                     tooltip: {
                         callbacks: {
                             label: (context) => {
                                 const label = context.label || '';
                                 const value = context.raw || 0;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((value / total) * 100).toFixed(1);
+                                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
                                 return `${label}: ${this.formatCurrency(value)} (${percentage}%)`;
                             }
                         }
@@ -1162,6 +2550,7 @@ class BudgetWise {
                 }
             }
         });
+
         this.categoryExpenses = categoryExpenses;
     }
 
@@ -1181,10 +2570,10 @@ class BudgetWise {
             ? `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'in più' : 'in meno'} rispetto al mese scorso`
             : `${trend} ${Math.abs(percentChange)}% ${difference >= 0 ? 'more' : 'less'} than last month`;
         titleEl.textContent = categoryName;
-        totalEl.textContent = this.data.language === 'it' ? `Totale: ${this.formatCurrency(total)}` : `Total: ${this.formatCurrency(total)}`;
+        totalEl.textContent = this.t('detailTotal', { total: this.formatCurrency(total) });
         comparisonEl.textContent = comparisonText;
         if (expenses.length === 0) {
-            listEl.innerHTML = `<p class="chart-note">${this.data.language === 'it' ? 'Nessuna spesa' : 'No expenses'}</p>`;
+            listEl.innerHTML = `<p class="chart-note">${this.t('noExpensesShort')}</p>`;
         } else {
             listEl.innerHTML = expenses.map(exp => `
                 <div class="detail-expense-item">
@@ -1197,7 +2586,15 @@ class BudgetWise {
     }
 
     formatCurrency(amount) {
-        return (amount || 0).toFixed(2).replace('.', ',') + ' €';
+        const value = Number(amount || 0);
+        const lang = this.data.language || 'it';
+        const localeMap = { it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR' };
+        const locale = localeMap[lang] || 'it-IT';
+        try {
+            return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(value);
+        } catch {
+            return `${value.toFixed(2)} €`;
+        }
     }
 
     highlightField(fieldId) {
@@ -1236,22 +2633,7 @@ class BudgetWise {
         const container = document.getElementById('chatMessages');
         const div = document.createElement('div');
         div.className = `chat-message ${sender}`;
-
-        const senderSpan = document.createElement('span');
-        senderSpan.className = 'message-sender';
-        senderSpan.textContent = sender === 'bot'
-            ? '🤖 ' + this.t('assistantName') + ':'
-            : '👤 ' + (this.data.language === 'it' ? 'Tu' : 'You') + ':';
-
-        const textSpan = document.createElement('span');
-        textSpan.className = 'message-text';
-        // XSS-safe: never inject user content as HTML
-        textSpan.textContent = String(text ?? '');
-
-        div.appendChild(senderSpan);
-        div.appendChild(document.createTextNode(' '));
-        div.appendChild(textSpan);
-
+        div.innerHTML = `<span class="message-sender">${sender === 'bot' ? '🤖 ' + this.t('assistantName') : '👤 ' + (this.data.language === 'it' ? 'Tu' : 'You')}:</span> <span class="message-text">${text}</span>`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
@@ -1261,7 +2643,7 @@ class BudgetWise {
         const remaining = this.calculateRemaining();
         const dailyBudget = this.calculateDailyBudget();
         const totalSpent = this.calculateTotalVariableExpenses();
-        const totalFixed = this.calculateTotalFixedExpenses();
+        const totalFixed = this.calculateTotalFixedExpensesUnpaid();
         const daysLeft = this.getDaysLeft();
         if (q.includes('risparmi') || q.includes('risparmiare') || q.includes('save')) {
             const match = q.match(/(\d+)/);
@@ -1307,15 +2689,11 @@ class BudgetWise {
         const remaining = this.calculateRemaining();
         const dailyBudget = this.calculateDailyBudget();
         if (remaining < 0) {
-            return this.data.language === 'it' ? "⚠️ Sei in rosso! Rivedi le spese." : "⚠️ You're in the red! Review your expenses.";
+            return this.t("adviceRed");
         } else if (remaining < dailyBudget * 7) {
-            return this.data.language === 'it'
-                ? `⚠️ Attenzione: ti rimangono solo ${this.formatCurrency(remaining)} per i prossimi giorni.`
-                : `⚠️ Warning: you only have ${this.formatCurrency(remaining)} left for the coming days.`;
+            return this.t("adviceLowRemaining", { remaining: this.formatCurrency(remaining) });
         } else {
-            return this.data.language === 'it'
-                ? `💪 Vai bene! Hai ancora ${this.formatCurrency(remaining)} di margine.`
-                : `💪 You're doing well! You still have ${this.formatCurrency(remaining)} left.`;
+            return this.t("adviceGood", { remaining: this.formatCurrency(remaining) });
         }
     }
 
@@ -1324,6 +2702,12 @@ class BudgetWise {
         document.documentElement.setAttribute('data-theme', isDark ? '' : 'dark');
         document.getElementById('themeToggle').textContent = isDark ? '🌙' : '☀️';
         localStorage.setItem('budgetwise-theme', isDark ? 'light' : 'dark');
+        // Riapplica eventuali colori custom (senza bloccare la dark mode)
+        if (localStorage.getItem('budgetwise-custom-colors')) {
+            this.applyCustomColors();
+        } else {
+            this.clearThemeInlineOverrides();
+        }
         this.updateChart();
     }
 
@@ -1334,9 +2718,160 @@ class BudgetWise {
         }
     }
 
-    saveTheme() {
-        const theme = document.documentElement.getAttribute('data-theme') || 'light';
-        localStorage.setItem('budgetwise-theme', theme);
+    getCurrentTheme() {
+        // Source of truth: data-theme attribute (html), fallback to localStorage
+        const attr = document.documentElement.getAttribute('data-theme');
+        if (attr === 'dark') return 'dark';
+        const saved = localStorage.getItem('budgetwise-theme');
+        return saved === 'dark' ? 'dark' : 'light';
+    }
+getCurrentThemeColors() {
+        const style = getComputedStyle(document.documentElement);
+        return {
+            accent: style.getPropertyValue('--accent').trim() || '#0ea5e9',
+            accentLight: style.getPropertyValue('--accent-light').trim() || '#38bdf8',
+            cardBg: style.getPropertyValue('--card-bg').trim() || '#ffffff',
+            textPrimary: style.getPropertyValue('--text-primary').trim() || '#0f172a',
+            textSecondary: style.getPropertyValue('--text-secondary').trim() || '#334155',
+            bg: style.getPropertyValue('--bg-color').trim() || '#f8fafc',
+            success: style.getPropertyValue('--success').trim() || '#10b981',
+            danger: style.getPropertyValue('--danger').trim() || '#ef4444',
+            warning: style.getPropertyValue('--warning').trim() || '#f59e0b',
+            border: style.getPropertyValue('--border').trim() || '#e2e8f0'
+        };
+    }
+
+    applyCustomColors() {
+        // Apply ONLY if user has custom colors saved.
+        if (!this.customColors) return;
+        const currentTheme = this.getCurrentTheme ? this.getCurrentTheme() : (localStorage.getItem('budgetwise-theme') === 'dark' ? 'dark' : 'light');
+        const savedTheme = this.customColorsTheme || localStorage.getItem('budgetwise-custom-colors-theme') || 'light';
+        const crossTheme = savedTheme !== currentTheme;
+        // Se i colori sono stati salvati in LIGHT, non devono bloccare la DARK mode.
+        const lockSensitive = crossTheme && currentTheme === 'dark';
+        document.documentElement.style.setProperty('--accent', this.customColors.accent);
+        document.documentElement.style.setProperty('--accent-light', this.customColors.accentLight);
+        if (!lockSensitive) document.documentElement.style.setProperty('--card-bg', this.customColors.cardBg);
+        if (!lockSensitive) document.documentElement.style.setProperty('--text-primary', this.customColors.textPrimary);
+        if (!lockSensitive) document.documentElement.style.setProperty('--text-secondary', this.customColors.textSecondary);
+        if (!lockSensitive) document.documentElement.style.setProperty('--bg-color', this.customColors.bg);
+document.documentElement.style.setProperty('--success', this.customColors.success);
+        document.documentElement.style.setProperty('--danger', this.customColors.danger);
+        document.documentElement.style.setProperty('--warning', this.customColors.warning);
+        if (!lockSensitive) document.documentElement.style.setProperty('--border', this.customColors.border);
+document.documentElement.style.setProperty('--accent-gradient', 
+            `linear-gradient(135deg, ${this.customColors.accent}, ${this.customColors.accentLight})`);
+        
+        this.syncColorPickers();
+    }
+
+    clearThemeInlineOverrides() {
+        const props = [
+            '--accent', '--accent-light', '--card-bg', '--text-primary', '--text-secondary',
+            '--bg-color', '--success', '--danger', '--warning', '--border', '--accent-gradient'
+        ];
+        props.forEach(p => document.documentElement.style.removeProperty(p));
+    }
+
+    syncColorPickers() {
+        const setField = (id, value) => {
+            const input = document.getElementById(id);
+            if (!input) return;
+
+            // <input type="color"> accetta solo #RRGGBB. Se troviamo valori tipo rgb/rgba li normalizziamo.
+            const normalizeToHex = (v) => {
+                if (!v) return '';
+                v = String(v).trim();
+
+                // già #RRGGBB
+                if (/^#[0-9a-fA-F]{6}$/.test(v)) return v;
+
+                // #RGB -> #RRGGBB
+                const short = v.match(/^#([0-9a-fA-F]{3})$/);
+                if (short) {
+                    const s = short[1];
+                    return '#' + s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+                }
+
+                // rgb()/rgba() -> #RRGGBB (ignora alpha)
+                const rgb = v.match(/^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(?:\s*,\s*(?:0|1|0?\.\d+))?\s*\)$/i);
+                if (rgb) {
+                    const r = Math.max(0, Math.min(255, parseInt(rgb[1], 10)));
+                    const g = Math.max(0, Math.min(255, parseInt(rgb[2], 10)));
+                    const b = Math.max(0, Math.min(255, parseInt(rgb[3], 10)));
+                    const toHex = (n) => n.toString(16).padStart(2, '0');
+                    return '#' + toHex(r) + toHex(g) + toHex(b);
+                }
+
+                return '';
+            };
+
+            // Se il campo è un color picker, settiamo solo valori validi
+            if (input.type === 'color') {
+                const hex = normalizeToHex(value);
+                if (hex) input.value = hex;
+                return;
+            }
+
+            // altrimenti set normale
+            input.value = value ?? '';
+        };
+        setField('colorAccent', this.customColors.accent);
+        setField('colorAccentLight', this.customColors.accentLight);
+        setField('colorCardBg', this.customColors.cardBg);
+        setField('colorTextPrimary', this.customColors.textPrimary);
+        setField('colorTextSecondary', this.customColors.textSecondary);
+        setField('colorBg', this.customColors.bg);
+        setField('colorSuccess', this.customColors.success);
+        setField('colorDanger', this.customColors.danger);
+        setField('colorWarning', this.customColors.warning);
+        setField('colorBorder', this.customColors.border);
+    }
+
+    saveCustomColors() {
+        localStorage.setItem('budgetwise-custom-colors', JSON.stringify(this.customColors));
+        const currentTheme = this.getCurrentTheme ? this.getCurrentTheme() : (localStorage.getItem('budgetwise-theme') === 'dark' ? 'dark' : 'light');
+        localStorage.setItem('budgetwise-custom-colors-theme', currentTheme);
+        this.customColorsTheme = currentTheme;
+    }
+
+    setupColorPickers() {
+        const colorInputs = [
+            'colorAccent', 'colorAccentLight', 'colorCardBg', 
+            'colorTextPrimary', 'colorTextSecondary', 'colorBg',
+            'colorSuccess', 'colorDanger', 'colorWarning', 'colorBorder'
+        ];
+        
+        colorInputs.forEach(id => {
+            const picker = document.getElementById(id);
+            if (picker) {
+                picker.addEventListener('input', (e) => {
+                    const value = e.target.value;
+                    // First time the user touches a picker, initialize from current theme defaults.
+                    if (!this.customColors) {
+                        this.customColors = this.getCurrentThemeColors();
+                    }
+                    const propName = id.replace('color', '').charAt(0).toLowerCase() + id.replace('color', '').slice(1);
+                    this.customColors[propName] = value;
+                    this.applyCustomColors();
+                    this.saveCustomColors();
+                });
+            }
+        });
+        
+        const resetBtn = document.getElementById('resetColorsBtn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                // Reset to theme defaults and remove inline overrides.
+                this.customColors = null;
+                localStorage.removeItem('budgetwise-custom-colors');
+                localStorage.removeItem('budgetwise-custom-colors-theme');
+                this.customColorsTheme = null;
+                this.clearThemeInlineOverrides();
+                this.syncColorPickers();
+                this.showToast(this.t('resetColors') || 'Colori ripristinati', 'success');
+            });
+        }
     }
 
     saveData() {
@@ -1349,7 +2884,6 @@ class BudgetWise {
             try {
                 const parsed = JSON.parse(saved);
                 
-                // Se ci sono entrate ma non c'è periodStart, lo impostiamo dalla prima entrata
                 if (parsed.incomes && parsed.incomes.length > 0 && !parsed.periodStart) {
                     const firstIncome = parsed.incomes.sort((a, b) => 
                         new Date(a.date) - new Date(b.date)
@@ -1363,7 +2897,6 @@ class BudgetWise {
                     parsed.periodEnd = endDate.toISOString().split('T')[0];
                 }
                 
-                // Gestione retrocompatibilità
                 if (parsed.income !== undefined && !parsed.incomes) {
                     parsed.incomes = [{
                         desc: this.data.language === 'it' ? 'Stipendio' : 'Salary',
@@ -1375,6 +2908,7 @@ class BudgetWise {
                 }
                 
                 this.data = parsed;
+                if (this.data.savingsPot === undefined) this.data.savingsPot = 0;
             } catch (e) {
                 console.warn('Errore nel caricamento dati, reset automatico');
                 this.resetAll();
@@ -1405,7 +2939,7 @@ class BudgetWise {
                 this.applyLanguage();
                 alert(this.t('dataRestored'));
             } catch {
-                alert('❌ File non valido');
+                alert(this.t('invalidFile'));
             }
         };
         reader.readAsText(file);
@@ -1424,11 +2958,18 @@ class BudgetWise {
                 variableExpenses: {},
                 savingsPercent: 0,
                 savingsGoal: 0,
+            savingsPot: 0,
                 threshold: 50,
                 language: this.data.language,
                 periodStart: today.toISOString().split('T')[0],
                 periodEnd: end.toISOString().split('T')[0]
             };
+            // Resetta anche i colori personalizzati
+            this.customColors = this.getCurrentThemeColors();
+            this.applyCustomColors();
+            this.saveCustomColors();
+            this.syncColorPickers();
+
             this.updateUI();
             this.updateChart();
             this.applyLanguage();
@@ -1443,7 +2984,7 @@ class BudgetWise {
                 if (exp && exp.endDate && new Date(exp.endDate) >= new Date()) {
                     ics += "BEGIN:VEVENT\n";
                     ics += `SUMMARY:💰 ${exp.name || 'Spesa'}\n`;
-                    ics += `DESCRIPTION:${this.data.language === 'it' ? 'Spesa fissa' : 'Fixed expense'} ${this.formatCurrency(exp.amount || 0)} - ${this.data.language === 'it' ? 'Ogni giorno' : 'Every day'} ${exp.day || '?'}\n`;
+                    ics += `DESCRIPTION:${this.t('fixedExpense')} ${this.formatCurrency(exp.amount || 0)} - ${this.t('everyMonthOnDay')} ${exp.day || '?'}\n`;
                     const nextDate = this.getNextPaymentDate(exp.day || 1);
                     ics += `DTSTART;VALUE=DATE:${nextDate.replace(/-/g, '')}\n`;
                     ics += `RRULE:FREQ=MONTHLY;UNTIL=${(exp.endDate || '').replace(/-/g, '')}\n`;
@@ -1478,9 +3019,8 @@ class BudgetWise {
     learnCategory(description, category) {
         if (!description || !category) return;
         
-        // Estrai parola chiave (prima parola della descrizione)
         const keyword = description.toLowerCase().split(' ')[0].replace(/[^a-z0-9]/gi, '');
-        if (keyword.length < 3) return; // Ignora parole troppo corte
+        if (keyword.length < 3) return;
         
         this.categoryRules[keyword] = category;
         localStorage.setItem('budgetwise-category-rules', JSON.stringify(this.categoryRules));
@@ -1490,14 +3030,13 @@ class BudgetWise {
     suggestCategory(description) {
         const lowerDesc = description.toLowerCase();
         
-        // Cerca nelle regole apprese
         for (const [keyword, category] of Object.entries(this.categoryRules)) {
             if (lowerDesc.includes(keyword)) {
                 return category;
             }
         }
         
-        return 'Altro'; // Default
+        return 'Altro';
     }
 
     // ========== GESTIONE CATEGORIE PERSONALIZZATE ==========
@@ -1526,9 +3065,20 @@ class BudgetWise {
         const customList = document.getElementById('customCategoriesList');
         
         if (defaultList) {
-            defaultList.innerHTML = this.defaultCategories.map(cat => 
-                `<div class="category-item default"><span>${cat}</span></div>`
-            ).join('');
+            defaultList.innerHTML = this.defaultCategories.map(cat => {
+                let translationKey = '';
+                switch(cat) {
+                    case 'Alimentari': translationKey = 'categoryAlimentari'; break;
+                    case 'Trasporti': translationKey = 'categoryTrasporti'; break;
+                    case 'Svago': translationKey = 'categorySvago'; break;
+                    case 'Salute': translationKey = 'categorySalute'; break;
+                    case 'Abbigliamento': translationKey = 'categoryAbbigliamento'; break;
+                    case 'Altro': translationKey = 'categoryAltro'; break;
+                    default: translationKey = cat;
+                }
+                const displayName = this.t(translationKey);
+                return `<div class="category-item default"><span>${displayName}</span></div>`;
+            }).join('');
         }
         
         if (customList) {
@@ -1620,8 +3170,6 @@ class BudgetWise {
         if (mainSelect) {
             mainSelect.innerHTML = optionsHtml;
         }
-        
-        // Se ci sono select di revisione aperti, li aggiorniamo? (opzionale)
     }
     
     getCategoryEmoji(category) {
@@ -1715,7 +3263,7 @@ class BudgetWise {
     }
 
     // ========== MAPPATURA CAMPI CSV ==========
-    async showMappingDialog(file, delimiter) {
+    async showMappingDialog(file, delimiter, skipRows = 0, headerRow = 1) {
         return new Promise((resolve) => {
             const overlay = document.getElementById('csvMappingOverlay');
             const headersRow = document.getElementById('csvMappingHeaders');
@@ -1731,16 +3279,42 @@ class BudgetWise {
             const reader = new FileReader();
             reader.onload = (e) => {
                 const text = e.target.result;
-                const lines = text.split('\n').filter(line => line.trim());
+                const lines = text.split('\n').filter(line => line.trim() !== '');
+                
                 if (lines.length === 0) {
                     resolve(null);
                     return;
                 }
                 
-                const headers = lines[0].split(delimiter).map(h => h.trim());
-                const previewData = lines.slice(1, 6).map(line => 
-                    line.split(delimiter).map(cell => cell.trim())
-                );
+                // Salta le righe iniziali
+                const startLine = Math.min(skipRows, lines.length - 1);
+                let headerLine = startLine;
+                
+                // Se headerRow è > 0, la riga di intestazione è startLine + (headerRow - 1)
+                if (headerRow > 0) {
+                    headerLine = startLine + (headerRow - 1);
+                    if (headerLine >= lines.length) {
+                        alert(`Riga intestazione ${headerRow} non trovata. Uso la prima riga disponibile.`);
+                        headerLine = startLine;
+                    }
+                }
+                
+                // Estrai intestazione
+                let headers = [];
+                if (headerRow > 0) {
+                    headers = lines[headerLine].split(delimiter).map(h => h.trim());
+                } else {
+                    // Nessuna intestazione: crea colonne fittizie
+                    const sampleLine = lines[startLine] || '';
+                    headers = sampleLine.split(delimiter).map((_, i) => `Colonna ${i+1}`);
+                }
+                
+                // Prepara dati per anteprima (dopo l'intestazione)
+                const previewData = [];
+                const dataStartLine = headerLine + 1;
+                for (let i = dataStartLine; i < Math.min(dataStartLine + 5, lines.length); i++) {
+                    previewData.push(lines[i].split(delimiter).map(cell => cell.trim()));
+                }
                 
                 overlay.style.display = 'flex';
                 
@@ -1751,16 +3325,16 @@ class BudgetWise {
                 ).join('');
                 
                 const fieldOptions = [
-                    { value: 'date', label: '📅 Data' },
-                    { value: 'description', label: '📝 Descrizione' },
-                    { value: 'amount', label: '💰 Importo' },
-                    { value: 'category', label: '🏷️ Categoria' },
-                    { value: 'ignore', label: '❌ Ignora' }
+                    { value: 'date', label: this.t('csvFieldDate') },
+                    { value: 'description', label: this.t('csvFieldDescription') },
+                    { value: 'amount', label: this.t('csvFieldAmount') },
+                    { value: 'category', label: this.t('csvFieldCategory') },
+                    { value: 'ignore', label: this.t('csvFieldIgnore') }
                 ];
                 
                 fieldsDiv.innerHTML = headers.map((header, index) => `
                     <div style="display: flex; align-items: center; gap: 15px; background: var(--bg-color); padding: 12px; border-radius: 16px;">
-                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">Colonna ${index + 1}: "${header || 'vuota'}"</span>
+                        <span style="min-width: 150px; font-weight: 600; color: var(--accent);">${this.t("csvColumnN", { n: (index + 1) })}: "${header || this.t("empty")}"</span>
                         <select id="mapping-${index}" class="csv-mapping-select" style="flex: 1;">
                             ${fieldOptions.map(opt => {
                                 let selected = '';
@@ -1796,7 +3370,7 @@ class BudgetWise {
                     });
                     
                     if (mapping.dateCol === -1 || mapping.descCol === -1 || mapping.amountCol === -1) {
-                        alert('❌ Devi mappare Data, Descrizione e Importo!');
+                        alert(this.t('csvMappingRequired'));
                         return;
                     }
                     
@@ -1809,11 +3383,14 @@ class BudgetWise {
                     resolve(null);
                 };
                 
-                confirmBtn.replaceWith(confirmBtn.cloneNode(true));
-                cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+                // Clona per evitare listener duplicati
+                const newConfirm = confirmBtn.cloneNode(true);
+                const newCancel = cancelBtn.cloneNode(true);
+                confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+                cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
                 
-                document.getElementById('confirmMappingBtn').addEventListener('click', onConfirm);
-                document.getElementById('cancelMappingBtn').addEventListener('click', onCancel);
+                newConfirm.addEventListener('click', onConfirm);
+                newCancel.addEventListener('click', onCancel);
             };
             
             reader.onerror = () => {
@@ -1823,115 +3400,414 @@ class BudgetWise {
             reader.readAsText(file);
         });
     }
-    
-    // ========== IMPORT CSV CON MAPPATURA ==========
-    async parseCSV(file, delimiter, dateFormat) {
-        console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat);
-        
-        const mapping = await this.showMappingDialog(file, delimiter);
+
+    // ========== IMPORT CSV CON MAPPATURA E REVISIONE ==========
+    async parseCSV(file, delimiter, dateFormat, skipRows = 0, headerRow = 1) {
+        console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat, 'skipRows:', skipRows, 'headerRow:', headerRow);
+
+        const mapping = await this.showMappingDialog(file, delimiter, skipRows, headerRow);
         if (!mapping) {
-            alert('⏸️ Import annullato');
-            return;
+            alert(this.t('importCancelled'));
+            return { cancelled: true, added: 0, incomes: 0 };
         }
-        
-        const reader = new FileReader();
-        reader.onload = async (e) => {
-            const text = e.target.result;
-            const lines = text.split('\n').filter(line => line.trim()).slice(1);
-            const importedExpenses = [];
-            
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                if (!line) continue;
-                
-                const parts = line.split(delimiter);
-                if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol)) continue;
-                
-                let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
-                let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
-                let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
-                let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
-                
-                if (!dateStr || !description || !amountStr) continue;
-                
-                if (dateFormat === 'DD/MM/YYYY') {
-                    const parts = dateStr.split(/[\/\-]/);
-                    if (parts.length === 3) {
-                        const [d, m, y] = parts;
-                        if (d && m && y) dateStr = `${y}-${m}-${d}`;
-                        else continue;
-                    } else continue;
-                } else if (dateFormat === 'MM/DD/YYYY') {
-                    const parts = dateStr.split(/[\/\-]/);
-                    if (parts.length === 3) {
-                        const [m, d, y] = parts;
-                        if (m && d && y) dateStr = `${y}-${m}-${d}`;
-                        else continue;
-                    } else continue;
+
+        return await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                try {
+                    const text = e.target.result;
+                    const allLines = String(text).split('\n').filter(line => line.trim() !== '');
+
+                    // Salta le righe iniziali
+                    const startLine = Math.min(skipRows, allLines.length - 1);
+
+                    // Determina dove iniziano i dati (dopo l'intestazione)
+                    let dataStartLine = startLine;
+                    if (headerRow > 0) {
+                        dataStartLine = startLine + headerRow; // Salta anche l'intestazione
+                    }
+
+                    const lines = allLines.slice(dataStartLine);
+                    const importedExpenses = [];
+                    const tempIncomes = [];
+
+                    for (let i = 0; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        const parts = line.split(delimiter);
+                        if (parts.length <= Math.max(mapping.dateCol, mapping.descCol, mapping.amountCol)) continue;
+
+                        let dateStr = parts[mapping.dateCol] ? parts[mapping.dateCol].trim() : '';
+                        let description = parts[mapping.descCol] ? parts[mapping.descCol].trim() : '';
+                        let amountStr = parts[mapping.amountCol] ? parts[mapping.amountCol].trim() : '';
+                        let category = mapping.categoryCol !== -1 && parts[mapping.categoryCol] ? parts[mapping.categoryCol].trim() : '';
+
+                        if (!dateStr || !description || !amountStr) continue;
+
+                        if (dateFormat === 'DD/MM/YYYY') {
+                            const parts = dateStr.split(/[\/\-]/);
+                            if (parts.length === 3) {
+                                const [d, m, y] = parts;
+                                if (d && m && y) dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                                else continue;
+                            } else continue;
+                        } else if (dateFormat === 'MM/DD/YYYY') {
+                            const parts = dateStr.split(/[\/\-]/);
+                            if (parts.length === 3) {
+                                const [m, d, y] = parts;
+                                if (m && d && y) dateStr = `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                                else continue;
+                            } else continue;
+                        }
+
+                        dateStr = this.normalizeIsoDate(dateStr);
+                        if (!dateStr) continue;
+
+                        let amount = parseFloat(String(amountStr).replace(',', '.').replace(/[^0-9.-]/g, ''));
+                        if (isNaN(amount)) continue;
+
+                        if (!category) category = this.suggestCategory(description);
+
+                        if (amount > 0) {
+                            tempIncomes.push({
+                                desc: description,
+                                amount: amount,
+                                date: dateStr,
+                                id: Date.now() + i
+                            });
+                        } else {
+                            amount = Math.abs(amount);
+                            importedExpenses.push({
+                                name: description,
+                                amount: amount,
+                                date: dateStr,
+                                category: category || 'Altro',
+                                id: Date.now() + i
+                            });
+                        }
+                    }
+
+                    let addedExpenses = 0;
+                    let addedIncomes = 0;
+
+                    if (importedExpenses.length > 0) {
+                        const reviewed = await this.showImportReview(importedExpenses);
+
+                        if (reviewed.length > 0) {
+                            for (const exp of reviewed) {
+                                if (!this.data.variableExpenses) this.data.variableExpenses = {};
+                                if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
+                                this.data.variableExpenses[exp.date].push({
+                                    name: exp.name,
+                                    amount: exp.amount,
+                                    category: exp.category,
+                                    id: exp.id
+                                });
+                            }
+
+                            addedExpenses = reviewed.length;
+
+                            if (tempIncomes.length > 0) {
+                                if (!this.data.incomes) this.data.incomes = [];
+                                this.data.incomes.push(...tempIncomes);
+                                addedIncomes = tempIncomes.length;
+                            }
+
+                            this.saveData();
+                            this.updateUI();
+                            this.updateChart();
+
+                            const mostRecent = reviewed
+                                .map(e => this.normalizeIsoDate(e.date))
+                                .sort()
+                                .slice(-1)[0];
+                            const dateInput = document.getElementById('expenseDate');
+                            if (dateInput && mostRecent) dateInput.value = mostRecent;
+                            this.updateVariableExpensesList();
+
+                            this.showToast(
+                                this.data.language === 'it'
+                                    ? `✅ Importate ${addedExpenses} spese${addedIncomes ? ` e ${addedIncomes} entrate` : ''}!`
+                                    : `✅ Imported ${addedExpenses} expenses${addedIncomes ? ` and ${addedIncomes} incomes` : ''}!`,
+                                'success'
+                            );
+
+                            resolve({ cancelled: false, added: addedExpenses, incomes: addedIncomes });
+                            return;
+                        } else {
+                            alert(this.t('importCancelled'));
+                            resolve({ cancelled: true, added: 0, incomes: 0 });
+                            return;
+                        }
+                    } else if (tempIncomes.length > 0) {
+                        if (!this.data.incomes) this.data.incomes = [];
+                        this.data.incomes.push(...tempIncomes);
+                        addedIncomes = tempIncomes.length;
+                        this.saveData();
+                        this.updateUI();
+                        this.updateChart();
+
+                        this.showToast(
+                            this.data.language === 'it'
+                                ? `✅ Importate ${addedIncomes} entrate!`
+                                : `✅ Imported ${addedIncomes} incomes!`,
+                            'success'
+                        );
+
+                        resolve({ cancelled: false, added: 0, incomes: addedIncomes });
+                        return;
+                    } else {
+                        this.showToast(
+                            this.data.language === 'it'
+                                ? '⚠️ Nessun movimento valido trovato nel file'
+                                : '⚠️ No valid transactions found in the file',
+                            'info'
+                        );
+                        resolve({ cancelled: false, added: 0, incomes: 0 });
+                        return;
+                    }
+                } catch (err) {
+                    console.error('❌ Errore durante import CSV:', err);
+                    alert(this.t('csvImportError'));
+                    reject(err);
                 }
-                
-                let amount = parseFloat(amountStr.replace(',', '.').replace(/[^0-9.-]/g, ''));
-                if (isNaN(amount)) continue;
-                
-                if (!category) category = this.suggestCategory(description);
-                
-                if (amount > 0) {
-                    if (!this.data.incomes) this.data.incomes = [];
-                    this.data.incomes.push({
-                        desc: description,
-                        amount: amount,
-                        date: dateStr,
-                        id: Date.now() + i
-                    });
-                } else {
-                    amount = Math.abs(amount);
-                    importedExpenses.push({
-                        name: description,
-                        amount: amount,
-                        date: dateStr,
-                        category: category || 'Altro',
-                        id: Date.now() + i
-                    });
+            };
+
+            reader.onerror = () => {
+                console.error('❌ Errore lettura file');
+                alert(this.t('fileReadError'));
+                reject(new Error('File read error'));
+            };
+
+            reader.readAsText(file);
+        });
+    }
+
+    // ========== IMPORT EXCEL ==========
+    async parseExcel(file, sheetIndex = 0, headerRow = 0) {
+        console.log('📥 Inizio import Excel:', file.name, 'foglio:', sheetIndex, 'headerRow:', headerRow);
+
+        // Legge Excel
+        const arrayBuffer = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => resolve(e.target.result);
+            reader.onerror = () => reject(new Error('Errore durante la lettura del file'));
+            reader.readAsArrayBuffer(file);
+        });
+
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+
+        const safeSheetIndex = (sheetIndex >= 0 && sheetIndex < workbook.SheetNames.length) ? sheetIndex : 0;
+        const sheetName = workbook.SheetNames[safeSheetIndex];
+        const worksheet = workbook.Sheets[sheetName];
+
+        const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+        if (!rows || rows.length === 0) throw new Error('Il file Excel è vuoto');
+
+        const cellToString = (cell) => {
+            if (cell === null || cell === undefined) return '';
+            if (cell instanceof Date && !isNaN(cell.getTime())) {
+                const y = cell.getFullYear();
+                const m = String(cell.getMonth() + 1).padStart(2, '0');
+                const d = String(cell.getDate()).padStart(2, '0');
+                return `${y}-${m}-${d}`;
+            }
+            // Seriali data Excel
+            if (typeof cell === 'number' && isFinite(cell) && XLSX?.SSF?.parse_date_code) {
+                const dc = XLSX.SSF.parse_date_code(cell);
+                if (dc && dc.y >= 1900 && dc.y <= 2100 && dc.m >= 1 && dc.m <= 12 && dc.d >= 1 && dc.d <= 31) {
+                    const y = dc.y;
+                    const m = String(dc.m).padStart(2, '0');
+                    const d = String(dc.d).padStart(2, '0');
+                    return `${y}-${m}-${d}`;
                 }
             }
-            
+            return String(cell).replace(/[\t ]+/g, ' ').trim();
+        };
+
+        const normalizeHeader = (h) => String(h || '').trim().toLowerCase();
+
+        // Autodetect header row se headerRow è 0 o non valido:
+        // cerchiamo una riga che contenga colonne tipo Data/Descrizione/Entrate-Uscite
+        let hr = (headerRow >= 0 && headerRow < rows.length) ? headerRow : 0;
+        if (headerRow === 0) {
+            let bestIdx = 0;
+            let bestScore = -1;
+            for (let i = 0; i < Math.min(rows.length, 50); i++) {
+                const r = (rows[i] || []).map(cellToString).map(normalizeHeader);
+                if (!r.length) continue;
+
+                const hasDataOp = r.includes('data_operazione') || r.includes('data operazione') || r.includes('data');
+                const hasDesc = r.includes('descrizione') || r.includes('descrizione_completa') || r.includes('descrizione completa');
+                const hasUsc = r.includes('uscite') || r.includes('addebiti') || r.includes('debit');
+                const hasEnt = r.includes('entrate') || r.includes('accrediti') || r.includes('credit');
+
+                const score = (hasDataOp ? 2 : 0) + (hasDesc ? 2 : 0) + (hasUsc ? 1 : 0) + (hasEnt ? 1 : 0);
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestIdx = i;
+                }
+            }
+            if (bestScore >= 3) hr = bestIdx;
+        }
+
+        const headersRaw = (rows[hr] || []).map(cellToString);
+        const headers = headersRaw.map(normalizeHeader);
+
+        const idx = (nameList) => {
+            for (const n of nameList) {
+                const key = normalizeHeader(n);
+                const i = headers.indexOf(key);
+                if (i !== -1) return i;
+            }
+            return -1;
+        };
+
+        // Formato estratto conto tipo il tuo (Data_Operazione, Entrate, Uscite, Descrizione, Moneymap...)
+        const iDate = idx(['data_operazione', 'data operazione', 'data']);
+        const iEnt = idx(['entrate', 'accrediti', 'credit']);
+        const iUsc = idx(['uscite', 'addebiti', 'debit']);
+        const iDescFull = idx(['descrizione_completa', 'descrizione completa']);
+        const iDesc = idx(['descrizione']);
+        const iCat = idx(['moneymap', 'categoria', 'category']);
+
+        const dataRows = rows
+            .slice(hr + 1)
+            .filter(row => Array.isArray(row) && row.some(cell => String(cell ?? '').trim() !== ''));
+
+        // Se riconosciamo questo formato, importiamo direttamente (senza dialog mappatura)
+        const recognizedBankFormat = (iDate !== -1) && (iDesc !== -1 || iDescFull !== -1) && (iEnt !== -1 || iUsc !== -1);
+
+        if (recognizedBankFormat) {
+            const importedExpenses = [];
+            const tempIncomes = [];
+
+            for (let r = 0; r < dataRows.length; r++) {
+                const row = dataRows[r] || [];
+                let dateStr = cellToString(row[iDate]);
+                dateStr = this.normalizeIsoDate(dateStr);
+                if (!dateStr) continue;
+
+                const description = cellToString(row[iDescFull !== -1 ? iDescFull : iDesc]);
+                if (!description) continue;
+
+                const catRaw = (iCat !== -1) ? cellToString(row[iCat]) : '';
+                let category = catRaw || this.suggestCategory(description);
+
+                const parseNum = (v) => {
+                    if (v === null || v === undefined || v === '') return null;
+                    if (typeof v === 'number' && isFinite(v)) return v;
+                    const s = String(v).replace(',', '.').replace(/[^0-9.-]/g, '');
+                    const n = parseFloat(s);
+                    return isNaN(n) ? null : n;
+                };
+
+                const usc = (iUsc !== -1) ? parseNum(row[iUsc]) : null;
+                const ent = (iEnt !== -1) ? parseNum(row[iEnt]) : null;
+
+                // Nel tuo file le uscite sono già negative (es: -16.50). Manteniamo il segno.
+                let amount = null;
+                if (usc !== null && usc !== 0) amount = usc;
+                else if (ent !== null && ent !== 0) amount = ent;
+                else continue;
+
+                if (amount > 0) {
+                    tempIncomes.push({ desc: description, amount: amount, date: dateStr, id: Date.now() + r });
+                } else {
+                    importedExpenses.push({ name: description, amount: Math.abs(amount), date: dateStr, category: category || 'Altro', id: Date.now() + r });
+                }
+            }
+
+            // Riutilizza lo stesso flusso di salvataggio/revisione usato dal CSV
+            let addedExpenses = 0;
+            let addedIncomes = 0;
+
             if (importedExpenses.length > 0) {
                 const reviewed = await this.showImportReview(importedExpenses);
                 if (reviewed.length > 0) {
                     for (const exp of reviewed) {
                         if (!this.data.variableExpenses) this.data.variableExpenses = {};
                         if (!this.data.variableExpenses[exp.date]) this.data.variableExpenses[exp.date] = [];
-                        this.data.variableExpenses[exp.date].push({
-                            name: exp.name,
-                            amount: exp.amount,
-                            category: exp.category,
-                            id: exp.id
-                        });
+                        this.data.variableExpenses[exp.date].push({ name: exp.name, amount: exp.amount, category: exp.category, id: exp.id });
                     }
-                    this.saveData();
-                    this.updateUI();
-                    this.updateChart();
-                    alert(`✅ Importate ${reviewed.length} spese!`);
+                    addedExpenses = reviewed.length;
                 } else {
-                    alert('⏸️ Import annullato');
+                    alert(this.t('importCancelled'));
+                    return { cancelled: true, added: 0, incomes: 0 };
                 }
-            } else {
-                this.saveData();
-                this.updateUI();
-                this.updateChart();
-                alert('✅ File importato con successo!');
             }
-        };
-        reader.onerror = () => {
-            console.error('❌ Errore lettura file');
-            alert('❌ Errore durante la lettura del file');
-        };
-        reader.readAsText(file);
+
+            if (tempIncomes.length > 0) {
+                if (!this.data.incomes) this.data.incomes = [];
+                this.data.incomes.push(...tempIncomes);
+                addedIncomes = tempIncomes.length;
+            }
+
+            if (addedExpenses === 0 && addedIncomes === 0) {
+                this.showToast(
+                    this.data.language === 'it'
+                        ? '⚠️ Nessun movimento valido trovato nel file'
+                        : '⚠️ No valid transactions found in the file',
+                    'info'
+                );
+                return { cancelled: false, added: 0, incomes: 0 };
+            }
+
+            this.saveData();
+            this.updateUI();
+            this.updateChart();
+
+            if (addedExpenses > 0) {
+                const mostRecent = importedExpenses
+                    .map(e => this.normalizeIsoDate(e.date))
+                    .sort()
+                    .slice(-1)[0];
+                const dateInput = document.getElementById('expenseDate');
+                if (dateInput && mostRecent) dateInput.value = mostRecent;
+                this.updateVariableExpensesList();
+            }
+
+            this.showToast(
+                this.data.language === 'it'
+                    ? `✅ Importate ${addedExpenses} spese${addedIncomes ? ` e ${addedIncomes} entrate` : ''}!`
+                    : `✅ Imported ${addedExpenses} expenses${addedIncomes ? ` and ${addedIncomes} incomes` : ''}!`,
+                'success'
+            );
+
+            return { cancelled: false, added: addedExpenses, incomes: addedIncomes };
+        }
+
+        // Fallback: converte in TSV e usa la mappatura manuale
+        const headersForTsv = headersRaw.map(cellToString).join('\t');
+        const tsvLines = [headersForTsv];
+
+        for (const row of dataRows) {
+            tsvLines.push((row || []).map(cellToString).join('\t'));
+        }
+
+        const virtualFile = new File(
+            [tsvLines.join('\n')],
+            file.name.replace(/\.[^/.]+$/, '') + '_converted.tsv',
+            { type: 'text/tab-separated-values' }
+        );
+
+        return await this.parseCSV(virtualFile, '\t', 'ISO', 0, 1);
     }
+
+
+    async importFromVirtualCSV(file, delimiter, dateFormat, originalName) {
+        console.log('🔄 Conversione da Excel a CSV per:', originalName);
+        return await this.parseCSV(file, delimiter, dateFormat);
+    }
+
 
     // ========== ONBOARDING GUIDATO ==========
     startOnboarding() {
         if (localStorage.getItem('budgetwise-onboarding-completed') === 'true') return;
+        if (!this.isFirstRun()) return;
 
         const steps = [
             { text: this.t('onboardingStep1'), highlight: "#addIncomeBtn" },
@@ -1983,17 +3859,30 @@ class BudgetWise {
         card.innerHTML = `
             <div style="font-size: 3.5rem; margin-bottom: 10px;">✨</div>
             <h3 style="margin: 0 0 5px; color: var(--accent); font-size: 2rem; font-weight: 800;">${this.t('onboardingWelcome')}</h3>
-            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.data.language === 'it' ? 'Segui la guida passo-passo' : 'Follow the guide'}</p>
-            
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-bottom: 25px; opacity: 0.9;">${this.t('onboardingSubtitle')}</p>
+
             <div style="background: var(--bg-color); padding: 15px; border-radius: 16px; margin-bottom: 25px; border-left: 4px solid var(--accent); text-align: left;">
                 <p id="onboarding-description" style="margin: 0; color: var(--text-primary); font-size: 1.1rem; font-weight: 500;"></p>
             </div>
-            
-            <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 20px;">
-                <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">${this.t('onboardingNext')} →</button>
-                <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">✕ ${this.t('onboardingSkip')}</button>
+
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom: 14px;">
+                <button id="onboarding-next" class="btn-primary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; font-weight: 700;">
+                    ${this.t('onboardingNext')}
+                </button>
+                <button id="onboarding-skip" class="btn-secondary" style="padding: 14px 32px; font-size: 1.1rem; border-radius: 50px; min-width: 140px; background: transparent; border: 2px solid var(--border);">
+                    ✕ ${this.t('onboardingSkip')}
+                </button>
             </div>
-            
+
+            <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom: 14px;">
+                <button id="onboarding-demo" class="btn-secondary" style="padding: 12px 20px; border-radius: 50px; min-width: 180px;">
+                    ${this.t('onboardingDemo')}
+                </button>
+                <button id="onboarding-empty" class="btn-text" style="padding: 12px 14px;">
+                    ${this.t('onboardingEmpty')}
+                </button>
+            </div>
+
             <div style="display: flex; align-items: center; gap: 10px; margin-top: 10px;">
                 <span style="font-size: 0.9rem; color: var(--text-secondary); min-width: 40px;"><span id="onboarding-counter" style="font-weight: 700; color: var(--accent);">1</span>/${steps.length}</span>
                 <div style="flex: 1; height: 6px; background: var(--border); border-radius: 6px; overflow: hidden;">
@@ -2015,29 +3904,38 @@ class BudgetWise {
                 }
                 .onboarding-highlight {
                     animation: targetGlow 2s infinite !important;
-                    box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6) !important;
+                    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.8), 0 0 30px rgba(124, 58, 237, 0.6) !important;
                 }
                 @keyframes targetGlow {
-                    0% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6); }
-                    50% { box-shadow: 0 0 0 8px rgba(67, 97, 238, 1), 0 0 50px rgba(67, 97, 238, 0.9); }
-                    100% { box-shadow: 0 0 0 4px rgba(67, 97, 238, 0.8), 0 0 30px rgba(67, 97, 238, 0.6); }
+                    0% { box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.8), 0 0 30px rgba(124, 58, 237, 0.6); }
+                    50% { box-shadow: 0 0 0 8px rgba(124, 58, 237, 1), 0 0 50px rgba(124, 58, 237, 0.9); }
+                    100% { box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.8), 0 0 30px rgba(124, 58, 237, 0.6); }
                 }
             `;
             document.head.appendChild(style);
         }
 
+        const closeOnboarding = () => {
+            localStorage.setItem('budgetwise-onboarding-completed', 'true');
+            this.markFirstRunSeen();
+            overlay.style.opacity = '0';
+            setTimeout(() => overlay.remove(), 250);
+            document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
+        };
+
         const showStep = () => {
             const step = steps[stepIndex];
-            document.getElementById('onboarding-description').textContent = step.text;
-            document.getElementById('onboarding-counter').innerText = stepIndex + 1;
-            
+            const descEl = document.getElementById('onboarding-description');
+            if (descEl) descEl.textContent = step.text;
+
+            const counterEl = document.getElementById('onboarding-counter');
+            if (counterEl) counterEl.innerText = String(stepIndex + 1);
+
             const progress = ((stepIndex + 1) / steps.length) * 100;
             const progressBar = document.getElementById('onboarding-progress');
             if (progressBar) progressBar.style.width = progress + '%';
 
-            document.querySelectorAll('.onboarding-highlight').forEach(el => {
-                el.classList.remove('onboarding-highlight');
-            });
+            document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
 
             const target = document.querySelector(step.highlight);
             if (target) {
@@ -2046,28 +3944,32 @@ class BudgetWise {
             }
         };
 
-        document.getElementById('onboarding-next').addEventListener('click', () => {
-            stepIndex++;
-            if (stepIndex < steps.length) {
-                showStep();
-            } else {
-                localStorage.setItem('budgetwise-onboarding-completed', 'true');
-                overlay.style.opacity = '0';
-                setTimeout(() => overlay.remove(), 300);
-                document.querySelectorAll('.onboarding-highlight').forEach(el => {
-                    el.classList.remove('onboarding-highlight');
-                });
-            }
-        });
-
-        document.getElementById('onboarding-skip').addEventListener('click', () => {
-            localStorage.setItem('budgetwise-onboarding-completed', 'true');
-            overlay.style.opacity = '0';
-            setTimeout(() => overlay.remove(), 300);
-            document.querySelectorAll('.onboarding-highlight').forEach(el => {
-                el.classList.remove('onboarding-highlight');
+        const nextBtn = document.getElementById('onboarding-next');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                stepIndex++;
+                if (stepIndex < steps.length) showStep();
+                else closeOnboarding();
             });
-        });
+        }
+
+        const skipBtn = document.getElementById('onboarding-skip');
+        if (skipBtn) {
+            skipBtn.addEventListener('click', () => closeOnboarding());
+        }
+
+        const demoBtn = document.getElementById('onboarding-demo');
+        if (demoBtn) {
+            demoBtn.addEventListener('click', () => {
+                this.loadDemoData();
+                closeOnboarding();
+            });
+        }
+
+        const emptyBtn = document.getElementById('onboarding-empty');
+        if (emptyBtn) {
+            emptyBtn.addEventListener('click', () => closeOnboarding());
+        }
 
         showStep();
     }
@@ -2095,7 +3997,8 @@ class BudgetWise {
     startVoiceInput(type = 'variable') {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         const recognition = new SpeechRecognition();
-        recognition.lang = this.data.language === 'it' ? 'it-IT' : 'en-US';
+        const localeMap = { it: 'it-IT', en: 'en-US', es: 'es-ES', fr: 'fr-FR' };
+        recognition.lang = localeMap[this.data.language] || 'it-IT';
         recognition.interimResults = true;
 
         let button, statusElement;
@@ -2113,7 +4016,7 @@ class BudgetWise {
         if (!button) return;
 
         button.classList.add('listening');
-        statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Parlare...' : 'Speak...');
+        statusElement.textContent = '🎤 ' + this.t('voiceSpeak');
 
         recognition.onresult = (event) => {
             const result = event.results[event.results.length - 1];
@@ -2121,7 +4024,7 @@ class BudgetWise {
             if (result.isFinal) {
                 if (type === 'fixed') this.processFixedVoiceCommand(transcript);
                 else this.processVoiceCommand(transcript);
-                statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+                statusElement.textContent = '🎤 ' + this.t('voiceTap');
             } else {
                 statusElement.textContent = `🔊 ${transcript}...`;
             }
@@ -2129,9 +4032,9 @@ class BudgetWise {
 
         recognition.onerror = () => {
             button.classList.remove('listening');
-            statusElement.textContent = '❌ ' + (this.data.language === 'it' ? 'Errore' : 'Error');
+            statusElement.textContent = '❌ ' + this.t('error');
             setTimeout(() => {
-                statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+                statusElement.textContent = '🎤 ' + this.t('voiceTap');
             }, 2000);
         };
 
@@ -2144,7 +4047,7 @@ class BudgetWise {
         setTimeout(() => {
             recognition.stop();
             button.classList.remove('listening');
-            statusElement.textContent = '🎤 ' + (this.data.language === 'it' ? 'Tocca per parlare' : 'Tap to speak');
+            statusElement.textContent = '🎤 ' + this.t('voiceTap');
         }, timeoutDuration);
     }
 
@@ -2155,9 +4058,7 @@ class BudgetWise {
             let description = transcript.replace(amountMatch[0], '').replace(/euro|€|euros/gi, '').trim();
             document.getElementById('expenseName').value = description || (this.data.language === 'it' ? 'Spesa' : 'Expense');
             document.getElementById('expenseAmount').value = amount;
-            alert(this.data.language === 'it' 
-                ? `✅ Rilevato: ${description || 'Spesa'} €${amount}`
-                : `✅ Detected: ${description || 'Expense'} €${amount}`);
+            alert(this.t('voiceDetected', { desc: (description || this.t('genericExpense')), amount: amount }));
         }
     }
 
@@ -2191,9 +4092,7 @@ class BudgetWise {
         document.getElementById('fixedAmount').value = amount;
         document.getElementById('fixedDay').value = day;
         document.getElementById('fixedEndDate').value = endDate;
-        alert(this.data.language === 'it'
-            ? `✅ Spesa fissa rilevata: ${name} €${amount} giorno ${day}`
-            : `✅ Fixed expense detected: ${name} €${amount} day ${day}`);
+        alert(this.t('voiceFixedDetected', { name, amount: amount, day }));
     }
 
     // ========== AI WIDGET ==========
@@ -2284,69 +4183,64 @@ class BudgetWise {
     }
 
     setupAiActions() {
-        document.getElementById('applyAiSuggestion').addEventListener('click', (e) => {
-            const type = e.target.dataset.type;
-            const amount = parseFloat(e.target.dataset.amount);
-            
-            if (type === 'reduce' && amount > 0) {
+        const applyBtn = document.getElementById('applyAiSuggestion');
+        const dismissBtn = document.getElementById('dismissAiSuggestion');
+        const aiAction = document.getElementById('aiAction');
+        const aiWidget = document.getElementById('aiWidget');
+
+        if (!applyBtn) return;
+
+        const cleanApplyBtn = applyBtn.cloneNode(true);
+        applyBtn.parentNode.replaceChild(cleanApplyBtn, applyBtn);
+
+        if (dismissBtn) {
+            const cleanDismissBtn = dismissBtn.cloneNode(true);
+            dismissBtn.parentNode.replaceChild(cleanDismissBtn, dismissBtn);
+            cleanDismissBtn.addEventListener('click', () => {
+                if (aiWidget) aiWidget.style.display = 'none';
+            });
+        }
+
+        cleanApplyBtn.addEventListener('click', (e) => {
+            const type = e.currentTarget.dataset.type || '';
+            const amount = parseFloat(e.currentTarget.dataset.amount || '0');
+
+            const bumpGoal = (extra) => {
                 const currentGoal = this.data.savingsGoal || 0;
-                document.getElementById('saveGoal').value = currentGoal + amount;
+                const newGoal = currentGoal + (extra || 0);
+                const goalInput = document.getElementById('saveGoal');
+                if (goalInput) goalInput.value = newGoal;
+
                 this.showToast(
                     this.data.language === 'it'
-                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                        : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
+                        ? `🎯 Obiettivo aumentato a ${this.formatCurrency(newGoal)}`
+                        : `🎯 Goal increased to ${this.formatCurrency(newGoal)}`,
                     'success'
                 );
-            } 
-            else if (type === 'transport') {
+            };
+
+            if (type === 'reduce' && amount > 0) {
+                bumpGoal(amount);
+            } else if (type === 'transport' && amount > 0) {
                 const message = this.data.language === 'it'
                     ? `🚗 Prova a usare mezzi pubblici o car pooling per risparmiare ${this.formatCurrency(amount)} al mese. Vuoi fissare un obiettivo?`
                     : `🚗 Try using public transport or car pooling to save ${this.formatCurrency(amount)} per month. Want to set a goal?`;
-                
-                if (confirm(message)) {
-                    const currentGoal = this.data.savingsGoal || 0;
-                    document.getElementById('saveGoal').value = currentGoal + amount;
-                    this.showToast(
-                        this.data.language === 'it'
-                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                        'success'
-                    );
-                }
-            }
-            else if (type === 'leisure') {
+
+                if (confirm(message)) bumpGoal(amount);
+            } else if (type === 'leisure' && amount > 0) {
                 const message = this.data.language === 'it'
                     ? `🎮 Limitando le uscite a 2 a settimana, potresti risparmiare ${this.formatCurrency(amount)}. Vuoi fissare un obiettivo?`
                     : `🎮 Limiting to 2 outings per week could save you ${this.formatCurrency(amount)}. Want to set a goal?`;
-                
-                if (confirm(message)) {
-                    const currentGoal = this.data.savingsGoal || 0;
-                    document.getElementById('saveGoal').value = currentGoal + amount;
-                    this.showToast(
-                        this.data.language === 'it'
-                            ? `🎯 Obiettivo aumentato a ${this.formatCurrency(currentGoal + amount)}`
-                            : `🎯 Goal increased to ${this.formatCurrency(currentGoal + amount)}`,
-                        'success'
-                    );
-                }
-            }
-            else {
-                this.showToast(
-                    this.data.language === 'it'
-                        ? '🔍 Funzionalità in sviluppo'
-                        : '🔍 Feature in development',
-                    'info'
-                );
-            }
-            
-            document.getElementById('aiAction').style.display = 'none';
-            setTimeout(() => {
-                document.getElementById('aiWidget').style.display = 'none';
-            }, 2000);
-        });
 
-        document.getElementById('dismissAiSuggestion').addEventListener('click', () => {
-            document.getElementById('aiWidget').style.display = 'none';
+                if (confirm(message)) bumpGoal(amount);
+            } else {
+                this.showToast(this.t('featureInDev'), 'info');
+            }
+
+            if (aiAction) aiAction.style.display = 'none';
+            setTimeout(() => {
+                if (aiWidget) aiWidget.style.display = 'none';
+            }, 2000);
         });
     }
 }
@@ -2359,29 +4253,175 @@ const app = new BudgetWise();
 window.app = app;
 
 // ============================================
-// FIX: Pulsante Importa CSV
+// ============================================
+// GESTIONE IMPORT CSV/EXCEL
 // ============================================
 setTimeout(function() {
     const btn = document.getElementById('importCsvBtn');
-    if (!btn || !window.app) return;
+    const fileInput = document.getElementById('csvFile');
+    const fileNameSpan = document.getElementById('csvFileName');
+    const skipRowsInput = document.getElementById('skipRows');
+    const headerRowInput = document.getElementById('headerRowManual');
+    const sheetSelect = document.getElementById('excelSheet');
+    const excelHeaderSelect = document.getElementById('excelHeaderRow');
+    const advancedToggle = document.getElementById('importAdvancedToggle');
+    const advancedWrap = document.getElementById('importAdvanced');
     
-    btn.addEventListener('click', function() {
-        document.getElementById('csvFile').click();
+    if (!btn || !fileInput || !window.app) {
+        console.error('Elementi import non trovati');
+        return;
+    }
+
+    // Variabile per tenere traccia del file Excel in attesa
+    window._pendingExcelFile = null;
+
+    // Toggle opzioni avanzate (default: nascoste)
+    if (advancedToggle && advancedWrap) {
+        advancedToggle.addEventListener('click', () => {
+            const isOpen = advancedWrap.style.display !== 'none';
+            advancedWrap.style.display = isOpen ? 'none' : 'block';
+            advancedToggle.textContent = isOpen ? '⚙️ Opzioni avanzate' : '✕ Nascondi opzioni';
+        });
+    }
+
+    btn.addEventListener('click', function(ev) {
+        // Se non è stato selezionato nessun file, apri il picker.
+        // Se invece c'è già un file (o un Excel in attesa), il click avvierà l'import (handler sotto).
+        const hasSelected = (fileInput && fileInput.files && fileInput.files[0]) || window._pendingExcelFile;
+        if (!hasSelected) {
+            ev.preventDefault();
+            ev.stopImmediatePropagation();
+            fileInput.click();
+            return;
+        }
+        // altrimenti: lascia proseguire il click → handler import
     });
-    
-    document.getElementById('csvFile').addEventListener('change', function(e) {
+
+fileInput.addEventListener('change', async function(e) {
         const file = e.target.files[0];
         if (!file) return;
         
-        document.getElementById('csvFileName').textContent = file.name;
+        fileNameSpan.textContent = file.name;
         
-        const delimiter = document.getElementById('csvSeparator').value;
-        const dateFormat = document.getElementById('csvDelimiter').value;
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        const isExcel = ['xls', 'xlsx'].includes(fileExt);
         
-        if (window.app.parseCSV) {
-            window.app.parseCSV(file, delimiter, dateFormat);
+        if (isExcel) {
+            // Abilita il select dei fogli
+            if (sheetSelect) {
+                sheetSelect.innerHTML = '<option value="">Caricamento...</option>';
+                sheetSelect.disabled = true;
+            }
+            
+            try {
+                // Leggi i nomi dei fogli
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        if (sheetSelect) {
+                            sheetSelect.innerHTML = workbook.SheetNames.map((name, index) => 
+                                `<option value="${index}">${index+1}. ${name}</option>`
+                            ).join('');
+                            sheetSelect.disabled = false;
+                            sheetSelect.value = '0';
+                        }
+                        
+                        // Salva il file per dopo
+                        window._pendingExcelFile = file;
+	                        // UX: niente alert bloccanti. Se l'utente non apre le opzioni avanzate,
+	                        // importeremo automaticamente il primo foglio con rilevazione intestazione.
+                        
+                    } catch (err) {
+                        alert('❌ Errore nella lettura del file Excel: ' + err.message);
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+                
+            } catch (error) {
+                alert('❌ Errore nella lettura del file Excel: ' + error.message);
+            }
         } else {
-            alert('❌ Funzione parseCSV non trovata!');
+            // CSV: reset selettore fogli
+            if (sheetSelect) {
+                sheetSelect.innerHTML = '<option value="">Carica un file Excel</option>';
+                sheetSelect.disabled = true;
+            }
+            window._pendingExcelFile = null;
         }
     });
+
+    // Gestione click pulsante Importa
+    btn.addEventListener('click', async function() {
+        const file = fileInput.files[0];
+        const pendingFile = window._pendingExcelFile;
+        
+        if (!file && !pendingFile) {
+            alert('❌ Seleziona prima un file CSV o Excel');
+            return;
+        }
+        
+        const fileToImport = pendingFile || file;
+	        const fileExt = fileToImport.name.split('.').pop().toLowerCase();
+        const isExcel = ['xls', 'xlsx'].includes(fileExt);
+        
+        try {
+            if (isExcel) {
+	                // Excel: 1-click. Se le opzioni avanzate non sono usate, importiamo
+	                // il primo foglio (0) e lasciamo che parseExcel rilevi l'intestazione.
+	                const sheetIndex = (sheetSelect && !sheetSelect.disabled && sheetSelect.value !== '')
+	                    ? parseInt(sheetSelect.value)
+	                    : 0;
+	                const headerRow = excelHeaderSelect
+	                    ? parseInt(excelHeaderSelect.value || '-1')
+	                    : -1;
+                
+                btn.textContent = '⏳ Importazione...';
+                btn.disabled = true;
+                
+                await window.app.parseExcel(fileToImport, sheetIndex, headerRow);
+                
+                // Resetta dopo import riuscito
+                window._pendingExcelFile = null;
+                fileInput.value = '';
+                fileNameSpan.textContent = 'Nessun file selezionato';
+                if (sheetSelect) {
+                    sheetSelect.innerHTML = '<option value="">Carica un file Excel</option>';
+                    sheetSelect.disabled = true;
+                }
+                
+            } else {
+                // Import CSV
+                const delimiter = document.getElementById('csvSeparator').value;
+                const dateFormat = document.getElementById('csvDelimiter').value;
+                const skipRows = parseInt(skipRowsInput?.value || '0');
+                const headerRow = parseInt(headerRowInput?.value || '1');
+                
+                btn.textContent = '⏳ Importazione...';
+                btn.disabled = true;
+                
+                await window.app.parseCSV(fileToImport, delimiter, dateFormat, skipRows, headerRow);
+                
+                fileInput.value = '';
+                fileNameSpan.textContent = 'Nessun file selezionato';
+            }
+            
+            // Esito già gestito da parseCSV/parseExcel (toast/messaggi)
+            
+        } catch (error) {
+            alert('❌ Errore durante l\'import: ' + (error?.message || String(error)));
+            console.error(error);
+	        } finally {
+	            // Ripristina etichetta originale (con traduzioni)
+	            try {
+	                btn.innerHTML = window.app?.t ? window.app.t('csvImportBtn') : '📥 Importa CSV / Excel';
+	            } catch {
+	                btn.textContent = '📥 Importa CSV / Excel';
+	            }
+            btn.disabled = false;
+        }
+    });
+    
 }, 2000);

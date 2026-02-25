@@ -1,71 +1,145 @@
-// Service Worker per BudgetWise - v3
-const CACHE_NAME = 'budgetwise-v4';
-const urlsToCache = [
-    './',
-    './index.html',
-    './style.css',
-    './app.js',
-    './manifest.json',
-    './icon-192.png',
-    './icon-512.png'
+// BudgetWise Service Worker - Production Safe
+// Works for browser + installed PWA (GitHub Pages friendly)
+
+const CACHE_VERSION = "v14";                 // bump ad ogni release
+const CACHE_NAME = "budgetwise-cache-20260225v14";
+
+const CORE_ASSETS = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js?v=20260225v14",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
 ];
 
-// Installazione
-self.addEventListener('install', event => {
-    console.log('🆕 Service Worker v3 in installazione...');
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('✅ Cache v3 aperta');
-                return cache.addAll(urlsToCache);
-            })
-            .then(() => {
-                console.log('✅ Cache v3 popolata');
-                return self.skipWaiting();
-            })
-            .catch(error => {
-                console.error('❌ Errore cache:', error);
-            })
-    );
+// Utility: cache only same-origin http(s)
+function isCacheableRequest(request) {
+  try {
+    const url = new URL(request.url);
+
+    // Only http/https
+    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+
+    // Only same-origin (avoid cdn/fonts/chrome-extension/etc.)
+    if (url.origin !== self.location.origin) return false;
+
+    // Only GET
+    if (request.method !== "GET") return false;
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.addAll(CORE_ASSETS);
+      await self.skipWaiting();
+    })().catch(() => {})
+  );
 });
 
-// Attivazione e pulizia cache vecchie
-self.addEventListener('activate', event => {
-    console.log('⚡ Service Worker v3 attivato');
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('🗑️ Cache vecchia rimossa:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        }).then(() => {
-            console.log('✅ Cache pulita, prendo controllo');
-            return self.clients.claim();
-        })
-    );
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    (async () => {
+      // Remove old caches
+      const keys = await caches.keys();
+      await Promise.all(
+        keys.map((k) => (k.startsWith("budgetwise-") && k !== CACHE_NAME ? caches.delete(k) : null))
+      );
+
+      await self.clients.claim();
+    })().catch(() => {})
+  );
 });
 
-// Strategia di fetch: Network First, fallback su cache
-self.addEventListener('fetch', event => {
-    if (event.request.method !== 'GET') return;
+// Strategy:
+// - CORE assets: Stale-While-Revalidate (fast, updates in background)
+// - Other same-origin GET: Network-First fallback cache
+self.addEventListener("fetch", (event) => {
+  const req = event.request;
+  if (!isCacheableRequest(req)) return;
 
+  const url = new URL(req.url);
+    const file = url.pathname.split("/").pop() || "";
+  const isCore =
+    CORE_ASSETS.includes("./" + file) ||
+    CORE_ASSETS.includes(url.pathname) ||
+    file === "style.css" ||
+    file === "app.js" ||
+    file === "manifest.json" ||
+    file.startsWith("icon-");
+  
+
+   // 🔥 index.html: Network-First (evita “app vecchia” dopo release)
+  const isIndex =
+    url.pathname.endsWith("/index.html") ||
+    url.pathname.endsWith("/") ||
+    url.pathname === self.location.pathname; // safety
+
+  if (isIndex) {
     event.respondWith(
-        fetch(event.request)
-            .then(response => {
-                if (response && response.status === 200) {
-                    const responseClone = response.clone();
-                    caches.open(CACHE_NAME).then(cache => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return response;
-            })
-            .catch(() => {
-                return caches.match(event.request);
-            })
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        try {
+          const res = await fetch(req);
+          if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+          return res;
+        } catch {
+          const cached = await cache.match(req);
+          if (cached) return cached;
+          return new Response("Offline", { status: 503 });
+        }
+      })()
     );
+    return;
+  }
+
+  // ✅ CORE assets (css/js/icons/manifest): Stale-While-Revalidate
+  if (isCore) {
+    event.respondWith(
+      (async () => {
+        const cache = await caches.open(CACHE_NAME);
+        const cached = await cache.match(req);
+
+        const fetchPromise = fetch(req)
+          .then((res) => {
+            if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+            return res;
+          })
+          .catch(() => null);
+
+        return cached || (await fetchPromise) || new Response("Offline", { status: 503 });
+      })()
+    );
+    return;
+  }
+
+  // Network First for other requests
+  event.respondWith(
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      try {
+        const res = await fetch(req);
+        if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+        return res;
+      } catch {
+        const cached = await cache.match(req);
+        if (cached) return cached;
+        return new Response("Offline", { status: 503 });
+      }
+    })()
+  );
+});
+
+// Optional: allow page to request immediate activation
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting().catch(() => {});
+  }
 });

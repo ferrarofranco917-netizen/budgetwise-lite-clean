@@ -6,20 +6,26 @@
     <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#6366f1">
+    <meta name="theme-color" content="#16181b">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="BudgetWise">
     <meta name="description" content="Gestisci le tue finanze da stipendio a stipendio con l'assistente AI">
     <meta name="format-detection" content="telephone=no">
     
-    <!-- Google Fonts - Inter -->
+    <!-- Geist / Dark Premium (Inter fallback per numeri) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- SheetJS per leggere file Excel -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     
     <!-- Meta tags social -->
     <meta property="og:title" content="BudgetWise 2.0">
@@ -36,7 +42,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="32x32" href="icon-192.png">
     <link rel="icon" type="image/png" sizes="16x16" href="icon-192.png">
-    <link rel="mask-icon" href="icon-512.png" color="#6366f1">
+    <link rel="mask-icon" href="icon-512.png" color="#38bdf8">
     
     <!-- Forza aggiornamento cache -->
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -80,36 +86,55 @@
                     <span class="summary-label" id="daysLabel">Giorni rimasti</span>
                     <span class="summary-value" id="daysLeft">28</span>
                 </div>
+                <div class="summary-item">
+                    <span class="summary-label" id="savingsPotLabel">Piano risparmi</span>
+                    <span class="summary-value" id="savingsPot">0,00 €</span>
+                    <small class="trend-indicator" id="savingsProjected"></small>
+                </div>
             </div>
             <div class="period-info" id="periodInfo">
                 📅 Periodo: 2026-02-22 → 2026-03-22
             </div>
         </div>
-        
-        <!-- Indicatore periodo attivo -->
-        <div class="period-info" id="periodInfo">
-            📅 Periodo: <span id="periodStart"></span> → <span id="periodEnd"></span>
-        </div>
         <div class="period-source" id="periodSource"></div>
+
+        <!-- TAB BAR -->
+        <div class="tab-bar">
+            <button class="tab-btn active" data-tab="home">🏠 Home</button>
+            <button class="tab-btn" data-tab="incomes">🏦 Entrate</button>
+            <button class="tab-btn" data-tab="fixed">📌 Fisse</button>
+            <button class="tab-btn" data-tab="variable">🧾 Variabili</button>
+            <button class="tab-btn" data-tab="tools">🛠️ Strumenti</button>
+        </div>
         
-        <!-- GUIDA -->
-        <div class="guide-message" id="guideMessage">
+        <!-- GUIDA (HOME) -->
+        <div class="guide-message" id="guideMessage" data-tab="home">
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-        <!-- ==================== ENTRATE MULTIPLE CON DATA ==================== -->
-        <div class="section-card">
+        <!-- FISSE NEL PERIODO (HOME) -->
+        <div class="section-card" data-tab="home" id="fixedStatusHome">
+            <div class="section-header">
+                <h2 id="fixedStatusHomeTitle">📌 Fisse nel periodo</h2>
+                <span class="badge" id="fixedStatusHomeBadge">pagate / previste</span>
+            </div>
+            <div class="section-content">
+                <div id="fixedStatusHomeList" class="fixed-status-list">
+                    <p class="chart-note">Nessuna spesa fissa nel periodo</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ENTRATE -->
+        <div class="section-card" data-tab="incomes">
             <div class="section-header">
                 <h2 id="incomesTitle">🏦 Entrate del periodo</h2>
                 <span class="badge" id="badge">multiplo</span>
             </div>
             <div class="section-content">
-                <!-- Lista entrate -->
                 <div id="incomeList" class="expenses-list">
                     <p class="chart-note">Nessuna entrata</p>
                 </div>
-                
-                <!-- Form inserimento con DATA -->
                 <div class="input-group-row">
                     <div class="input-with-mic" style="flex: 2;">
                         <input type="text" id="incomeDesc" placeholder="Descrizione (es. Stipendio)">
@@ -124,22 +149,18 @@
                         <input type="date" id="incomeDate" class="date-input" value="">
                     </div>
                 </div>
-                
                 <button class="btn-secondary" id="addIncomeBtn">➕ Aggiungi entrata</button>
                 <p class="help-text">📊 <span id="totalIncomeLabel">Totale entrate</span>: <span id="totalIncomeDisplay">0,00 €</span></p>
             </div>
         </div>
         
-        <!-- ==================== SPESE FISSE ==================== -->
-        <div class="section-card">
+        <!-- SPESE FISSE -->
+        <div class="section-card" data-tab="fixed">
             <h2 id="fixedTitle">📌 Spese fisse mensili</h2>
             <div class="section-content">
-                <!-- Lista spese fisse -->
                 <div id="fixedExpensesList" class="expenses-list">
                     <p class="chart-note">Nessuna spesa fissa</p>
                 </div>
-                
-                <!-- Form -->
                 <div class="input-group-row">
                     <input type="text" id="fixedName" placeholder="Nome (es. Mutuo)" style="flex: 2;">
                     <input type="number" id="fixedAmount" placeholder="Importo €" step="0.01" style="flex: 1;">
@@ -155,22 +176,19 @@
                         <small class="date-hint" id="dateHintFixed"></small>
                     </div>
                 </div>
-                
-                <!-- Microfono unico -->
                 <div class="voice-fixed-container">
                     <button id="micFixedBtn" class="voice-fixed-btn">
                         🎤 <span id="micFixedText">Inserisci spesa fissa con voce</span>
                     </button>
                     <div id="fixedVoiceStatus" class="voice-status">🎤 Tocca e di' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")</div>
                 </div>
-                
                 <button class="btn-secondary" id="addFixedBtn">➕ Aggiungi spesa fissa</button>
                 <p class="help-text" id="fixedHelp">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
             </div>
         </div>
 
-        <!-- ==================== SPESE VARIABILI ==================== -->
-        <div class="section-card">
+        <!-- SPESE VARIABILI -->
+        <div class="section-card" data-tab="variable">
             <h2 id="variableTitle">🧾 Spese variabili</h2>
             <div class="section-content">
                 <div class="date-selector">
@@ -178,13 +196,15 @@
                     <input type="date" id="expenseDate" class="date-input">
                     <small class="date-hint" id="dateHintVariable"></small>
                 </div>
-                
-                <!-- Lista spese variabili -->
+                <div class="toggle-row" id="showAllExpensesRow">
+                    <label class="toggle-label">
+                        <input type="checkbox" id="showAllExpensesToggle">
+                        <span id="showAllExpensesLabel">Mostra tutte le spese del periodo</span>
+                    </label>
+                </div>
                 <div id="variableExpensesList" class="expenses-list">
                     <p class="chart-note">Nessuna spesa in questo giorno</p>
                 </div>
-                
-                <!-- Input variabili -->
                 <div class="voice-input-container">
                     <div class="input-group-row">
                         <input type="text" id="expenseName" placeholder="Cosa hai comprato?">
@@ -198,8 +218,6 @@
                             <option value="Altro">📦 Altro</option>
                         </select>
                     </div>
-                    
-                    <!-- Microfono variabili -->
                     <div class="voice-row">
                         <button id="voiceBtn" class="voice-btn">
                             🎤 <span id="voiceBtnText">Inserisci con voce</span>
@@ -207,54 +225,13 @@
                         <div id="voiceStatus" class="voice-status">🎤 Tocca per parlare</div>
                     </div>
                 </div>
-                
                 <button class="btn-secondary" id="addExpenseBtn">➕ Aggiungi spesa</button>
                 <button class="btn-danger" id="resetDayBtn">🗑️ Cancella spese del giorno</button>
             </div>
         </div>
 
-        <!-- IMPORT CSV -->
-        <div class="section-card">
-            <h2 id="csvTitle">📥 Importa movimenti bancari</h2>
-            <div class="section-content">
-                <p class="subtitle" id="csvSubtitle" style="margin-bottom: 15px;">
-                    Scarica l'estratto conto dalla tua banca in formato CSV
-                </p>
-                
-                <div class="input-group">
-                    <label for="csvFile" id="csvChooseFileLabel">Scegli il file</label>
-                    <input type="file" id="csvFile" accept=".csv,.txt" style="display: none;">
-                    <div class="file-name" id="csvFileName">Nessun file selezionato</div>
-                    <button class="btn-secondary" id="importCsvBtn">📥 Importa CSV</button>
-                </div>
-
-                <div class="input-group-row">
-                    <div class="input-group half">
-                        <label for="csvDelimiter" id="csvDateFormatLabel">Formato data</label>
-                        <select id="csvDelimiter">
-                            <option value="DD/MM/YYYY">GG/MM/AAAA</option>
-                            <option value="MM/DD/YYYY">MM/DD/AAAA</option>
-                        </select>
-                    </div>
-                    <div class="input-group half">
-                        <label for="csvSeparator" id="csvSeparatorLabel">Separatore</label>
-                        <select id="csvSeparator">
-                            <option value=",">Virgola (,)</option>
-                            <option value=";">Punto e virgola (;)</option>
-                            <option value="\t">Tabulazione</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div id="csvPreview" class="csv-preview" style="display: none; margin-top: 20px;">
-                    <h3 id="csvPreviewTitle">Anteprima</h3>
-                    <div id="previewContent"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================== GRAFICO ==================== -->
-        <div class="section-card">
+        <!-- GRAFICO (HOME) -->
+        <div class="section-card" data-tab="home">
             <h2 id="chartTitle">📊 Distribuzione spese</h2>
             <div class="section-content">
                 <canvas id="expenseChart" width="400" height="300"></canvas>
@@ -271,8 +248,8 @@
             <button id="closeDetailBtn" class="btn-secondary">Chiudi</button>
         </div>
 
-        <!-- ==================== ASSISTENTE ==================== -->
-        <div class="section-card">
+        <!-- ASSISTENTE (HOME) -->
+        <div class="section-card" data-tab="home">
             <h2 id="assistantTitle">🤖 Assistente Finanziario AI</h2>
             <div class="section-content">
                 <div class="chat-container">
@@ -296,11 +273,11 @@
             </div>
         </div>
 
-        <!-- ==================== WIDGET AI PERSONALIZZATO ==================== -->
-        <div class="section-card" id="aiWidget" style="display: none;">
+        <!-- WIDGET AI (HOME) -->
+        <div class="section-card" id="aiWidget" data-tab="home" style="display: none;">
             <div class="section-header">
-                <h2>🤖 Suggerimenti AI</h2>
-                <span class="badge">intelligente</span>
+                <h2 id="aiWidgetTitle">🤖 Suggerimenti AI</h2>
+                <span class="badge" id="aiWidgetBadge">intelligente</span>
             </div>
             <div class="section-content">
                 <div id="aiSuggestion" class="ai-suggestion">
@@ -314,8 +291,8 @@
             </div>
         </div>
 
-        <!-- ==================== RISPARMIO ==================== -->
-        <div class="section-card">
+        <!-- RISPARMIO (TOOLS) -->
+        <div class="section-card" data-tab="tools">
             <h2 id="savingsTitle">🎯 Obiettivo risparmio</h2>
             <div class="section-content">
                 <div class="input-group">
@@ -326,9 +303,11 @@
                     <label for="saveGoal" id="goalLabel">Obiettivo (€)</label>
                     <input type="number" id="saveGoal" placeholder="1000" step="100">
                 </div>
+                <div class="input-group">
+                    <label for="savingsPotInput" id="savingsPotInputLabel">Fondo risparmi iniziale (€)</label>
+                    <input type="number" id="savingsPotInput" placeholder="1000" step="10">
+                </div>
                 <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
-                
-                <!-- NUOVA BARRA EMOZIONALE -->
                 <div class="savings-container">
                     <div class="savings-pig">
                         <span class="pig-emoji">🐷</span>
@@ -342,24 +321,97 @@
             </div>
         </div>
 
-        <!-- ==================== IMPOSTAZIONI ==================== -->
-        <div class="section-card">
+                <!-- IMPORT CSV/EXCEL (TOOLS) -->
+        <div class="section-card" data-tab="tools">
+            <h2 id="csvTitle">📥 Importa movimenti bancari</h2>
+            <div class="section-content">
+                <p class="subtitle" id="csvSubtitle" style="margin-bottom: 15px;">
+                    Scarica l'estratto conto dalla tua banca in formato CSV o Excel
+                </p>
+                <div class="input-group">
+                    <label for="csvFile" id="csvChooseFileLabel">Scegli file CSV o Excel</label>
+                    <input type="file" id="csvFile" accept=".csv,.txt,.xls,.xlsx" style="display: none;">
+                    <div class="file-name" id="csvFileName">Nessun file selezionato</div>
+                    <div class="import-actions">
+                        <button class="btn-secondary" id="importCsvBtn">📥 Importa CSV / Excel</button>
+                        <button class="btn-link" id="importAdvancedToggle" type="button">⚙️ Opzioni avanzate</button>
+                    </div>
+                </div>
+                <div id="importAdvanced" class="import-advanced" style="display:none;">
+                <div class="input-group-row">
+                    <div class="input-group half">
+                        <label for="csvDelimiter" id="csvDateFormatLabel">Formato data</label>
+                        <select id="csvDelimiter">
+                            <option value="DD/MM/YYYY">GG/MM/AAAA</option>
+                            <option value="MM/DD/YYYY">MM/DD/AAAA</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label for="csvSeparator" id="csvSeparatorLabel">Separatore</label>
+                        <select id="csvSeparator">
+                            <option value=",">Virgola (,)</option>
+                            <option value=";">Punto e virgola (;)</option>
+                            <option value="\t">Tabulazione</option>
+                        </select>
+                    </div>
+                </div>
+                                <!-- NUOVI CONTROLLI PER GESTIRE RIGHE INIZIALI -->
+                <div class="input-group-row" style="margin-top: 10px;">
+                    <div class="input-group half">
+                        <label for="skipRows" id="skipRowsLabel">Salta righe iniziali</label>
+                        <input type="number" id="skipRows" min="0" max="20" value="0" class="date-input">
+                    </div>
+                    <div class="input-group half">
+                        <label for="headerRowManual" id="headerRowManualLabel">Riga intestazione (0 = nessuna)</label>
+                        <input type="number" id="headerRowManual" min="0" max="20" value="1" class="date-input">
+                    </div>
+                </div>
+                <p class="help-text" id="skipHelp">📌 Per file Fineco: salta le prime righe fino a trovare le colonne</p>
+                <!-- NUOVE OPZIONI PER EXCEL -->
+                <div class="input-group-row" style="margin-top: 15px;">
+                    <div class="input-group half">
+                        <label for="excelSheet" id="excelSheetLabel">Foglio Excel</label>
+                        <select id="excelSheet" class="language-select" disabled>
+                            <option value="">Carica un file Excel</option>
+                        </select>
+                    </div>
+                    <div class="input-group half">
+                        <label for="excelHeaderRow" id="excelHeaderLabel">Riga intestazione</label>
+                        <select id="excelHeaderRow" class="language-select">
+                            <option value="0">Riga 1</option>
+                            <option value="1">Riga 2</option>
+                            <option value="2">Riga 3</option>
+                            <option value="-1" selected>Nessuna (auto)</option>
+                        </select>
+                    </div>
+                </div>
+                <p class="help-text" id="excelHelp">📌 I file Excel vengono convertiti automaticamente</p>
+                </div>
+                
+                <div id="csvPreview" class="csv-preview" style="display: none; margin-top: 20px;">
+                    <h3 id="csvPreviewTitle">Anteprima</h3>
+                    <div id="previewContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- IMPOSTAZIONI (TOOLS) -->
+        <div class="section-card" data-tab="tools">
             <h2 id="settingsTitle">⚙️ Impostazioni</h2>
             <div class="section-content">
                 <div class="setting-item">
                     <label for="thresholdInput" id="thresholdLabel">🔔 Soglia avviso (€)</label>
                     <input type="number" id="thresholdInput" value="50" step="5">
                 </div>
-                
-                <!-- MENU LINGUA -->
                 <div class="setting-item">
                     <label for="languageSelect" id="languageLabel">🌍 Lingua / Language</label>
                     <select id="languageSelect" class="language-select">
                         <option value="it">🇮🇹 Italiano</option>
                         <option value="en">🇬🇧 English</option>
+                        <option value="es">🇪🇸 Español</option>
+                        <option value="fr">🇫🇷 Français</option>
                     </select>
                 </div>
-                
                 <div class="setting-item">
                     <label id="backupLabel">📅 Backup dati</label>
                     <div class="button-group">
@@ -369,40 +421,98 @@
                     </div>
                 </div>
                 <button class="btn-danger" id="resetAllBtn">⚠️ Reset completo</button>
+                <button class="btn-secondary" id="loadDemoBtn">✨ Carica dati demo</button>
             </div>
         </div>
-<!-- ==================== GESTIONE CATEGORIE ==================== -->
-<div class="section-card">
-    <h2>📂 Gestione categorie</h2>
-    <div class="section-content">
-        <button id="manageCategoriesBtn" class="btn-secondary">➕ Gestisci categorie personalizzate</button>
-    </div>
-</div>
 
-<!-- MODALE GESTIONE CATEGORIE -->
-<div id="categoryManagerOverlay" class="modal-overlay" style="display: none;">
-    <div class="modal-content" style="max-width: 500px;">
-        <h3>📂 Gestisci categorie</h3>
+        <!-- GESTIONE CATEGORIE (TOOLS) -->
+        <div class="section-card" data-tab="tools">
+            <h2 id="categoriesSectionTitle">📂 Gestione categorie</h2>
+            <div class="section-content">
+                <button id="manageCategoriesBtn" class="btn-secondary">
+                    <span id="manageCustomCategoriesText">➕ Gestisci categorie personalizzate</span>
+                </button>
+            </div>
+        </div>
+<!-- PERSONALIZZAZIONE COLORI (TOOLS) -->
+<div class="section-card" data-tab="tools">
+    <h2>🎨 Personalizza colori</h2>
+    <div class="section-content">
+        <p style="margin-bottom: 15px; color: var(--text-secondary);">Scegli i tuoi colori preferiti per l'app. Le modifiche sono immediate.</p>
         
-        <h4>Categorie predefinite</h4>
-        <div id="defaultCategoriesList" class="categories-list"></div>
-        
-        <h4>Le tue categorie</h4>
-        <div id="customCategoriesList" class="categories-list"></div>
-        
-        <div class="input-group" style="margin-top: 20px;">
-            <label for="newCategoryName">Nuova categoria</label>
-            <div style="display: flex; gap: 8px;">
-                <input type="text" id="newCategoryName" placeholder="es. Viaggi">
-                <button id="saveCategoryBtn" class="btn-primary" style="width: auto;">Aggiungi</button>
+        <div class="color-grid">
+            <div class="color-item">
+                <label>Colore principale (accento)</label>
+                <input type="color" id="colorAccent" value="#0ea5e9">
+            </div>
+            <div class="color-item">
+                <label>Colore secondario (accent-light)</label>
+                <input type="color" id="colorAccentLight" value="#38bdf8">
+            </div>
+            <div class="color-item">
+                <label>Sfondo card</label>
+                <input type="color" id="colorCardBg" value="#ffffff">
+            </div>
+            <div class="color-item">
+                <label>Testo primario</label>
+                <input type="color" id="colorTextPrimary" value="#0f172a">
+            </div>
+            <div class="color-item">
+                <label>Testo secondario</label>
+                <input type="color" id="colorTextSecondary" value="#334155">
+            </div>
+            <div class="color-item">
+                <label>Sfondo generale</label>
+                <input type="color" id="colorBg" value="#f8fafc">
+            </div>
+            <div class="color-item">
+                <label>Successo (entrate)</label>
+                <input type="color" id="colorSuccess" value="#10b981">
+            </div>
+            <div class="color-item">
+                <label>Pericolo (spese)</label>
+                <input type="color" id="colorDanger" value="#ef4444">
+            </div>
+            <div class="color-item">
+                <label>Avviso</label>
+                <input type="color" id="colorWarning" value="#f59e0b">
+            </div>
+            <div class="color-item">
+                <label>Bordi</label>
+                <input type="color" id="colorBorder" value="#e2e8f0">
             </div>
         </div>
         
         <div class="button-group" style="margin-top: 20px;">
-            <button id="closeCategoryManager" class="btn-secondary">Chiudi</button>
+            <button id="resetColorsBtn" class="btn-secondary">↩️ Ripristina colori predefiniti</button>
         </div>
     </div>
 </div>
+        <!-- MODALE GESTIONE CATEGORIE -->
+        <div id="categoryManagerOverlay" class="modal-overlay" style="display: none;">
+            <div class="modal-content" style="max-width: 500px;">
+                <h3 id="manageCategoriesTitle">📂 Gestisci categorie</h3>
+                <h4 id="defaultCategoriesTitle">Categorie predefinite</h4>
+                <div id="defaultCategoriesList" class="categories-list"></div>
+                <h4 id="customCategoriesTitle">Le tue categorie</h4>
+                <div id="customCategoriesList" class="categories-list"></div>
+                <div class="input-group" style="margin-top: 20px;">
+                    <label for="newCategoryName" id="newCategoryLabel">Nuova categoria</label>
+                    <div style="display: flex; gap: 8px;">
+                        <input type="text" id="newCategoryName" placeholder="">
+                        <button id="saveCategoryBtn" class="btn-primary" style="width: auto;">
+                            <span id="addCategoryBtnText">Aggiungi</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="button-group" style="margin-top: 20px;">
+                    <button id="closeCategoryManager" class="btn-secondary">
+                        <span id="closeCategoryManagerText">Chiudi</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- FOOTER -->
         <div class="footer">
             <p id="footerText">BudgetWise 2.0 — Gestione intelligente delle tue finanze</p>
@@ -411,37 +521,31 @@
         </div>
     </div>
 
-    <!-- Service Worker -->
+    <!-- Service Worker e check icone -->
     <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js')
-                    .then(registration => {
-                        console.log('✅ ServiceWorker registrato:', registration.scope);
-                    })
-                    .catch(error => {
-                        console.log('❌ ServiceWorker errore:', error);
-                    });
-            });
+      window.addEventListener("load", async () => {
+        fetch("./icon-192.png")
+          .then(() => console.log("✅ Icona 192px OK"))
+          .catch(() => console.warn("⚠️ Icona 192px non trovata"));
+        fetch("./icon-512.png")
+          .then(() => console.log("✅ Icona 512px OK"))
+          .catch(() => console.warn("⚠️ Icona 512px non trovata"));
+        if (!("serviceWorker" in navigator)) return;
+        try {
+          const reg = await navigator.serviceWorker.register("./sw.js?v=20260225v14", { scope: "./" });
+          console.log("✅ ServiceWorker registrato:", reg.scope);
+          await reg.update().catch(() => {});
+        } catch (err) {
+          console.log("❌ ServiceWorker errore:", err);
         }
-
-        // Verifica icone
-        window.addEventListener('load', () => {
-            fetch('icon-192.png')
-                .then(() => console.log('✅ Icona 192px OK'))
-                .catch(() => console.warn('⚠️ Icona 192px non trovata'));
-            fetch('icon-512.png')
-                .then(() => console.log('✅ Icona 512px OK'))
-                .catch(() => console.warn('⚠️ Icona 512px non trovata'));
-        });
+      });
     </script>
-
-    <script src="app.js"></script>
+    <script src="app.js?v=20260225v14"></script>
     
     <!-- REVISIONE IMPORT CSV -->
     <div id="importReviewOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10000; display: none; align-items: center; justify-content: center;">
         <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 24px; max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-            <h3 style="margin-bottom: 20px; color: var(--text-primary);">📋 Revisione spese importate</h3>
+            <h3 id="importReviewTitle" style="margin-bottom: 20px; color: var(--text-primary);">📋 Revisione spese importate</h3>
             <div id="importReviewList" style="margin-bottom: 20px;"></div>
             <div class="button-group" style="display: flex; gap: 10px; justify-content: flex-end;">
                 <button id="confirmImportBtn" class="btn-primary" style="padding: 12px 24px;">✅ Conferma</button>
@@ -453,16 +557,13 @@
     <!-- MAPPATURA IMPORT CSV -->
     <div id="csvMappingOverlay" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10001; align-items: center; justify-content: center;">
         <div class="modal-content" style="background: var(--card-bg); padding: 30px; border-radius: 24px; max-width: 800px; width: 95%; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
-            <h3 style="margin-bottom: 20px; color: var(--accent);">📋 Mappa le colonne del file CSV</h3>
-            
+            <h3 id="csvMappingTitle" style="margin-bottom: 20px; color: var(--accent);">📋 Mappa le colonne del file CSV</h3>
             <div style="margin-bottom: 20px; padding: 15px; background: var(--bg-color); border-radius: 16px; border-left: 4px solid var(--accent);">
-                <p style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
+                <p id="csvMappingInstructions" style="margin: 0; color: var(--text-secondary); font-size: 0.95rem;">
                     <strong>📌 Istruzioni:</strong> Associa ogni colonna del tuo file al campo corrispondente.
                     Le righe con importo positivo saranno considerate <strong>entrate</strong>, quelle negative <strong>spese</strong>.
                 </p>
             </div>
-
-            <!-- Tabella anteprima -->
             <div style="overflow-x: auto; margin-bottom: 25px; border: 1px solid var(--border); border-radius: 16px;">
                 <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
                     <thead>
@@ -471,13 +572,10 @@
                     <tbody id="csvMappingPreview"></tbody>
                 </table>
             </div>
-
-            <!-- Mappatura campi -->
             <div style="margin-bottom: 25px;">
-                <h4 style="margin-bottom: 15px; color: var(--text-primary);">🎯 Associazione campi:</h4>
+                <h4 id="csvMappingFieldsTitle" style="margin-bottom: 15px; color: var(--text-primary);">🎯 Associazione campi:</h4>
                 <div id="csvMappingFields" style="display: flex; flex-direction: column; gap: 12px;"></div>
             </div>
-
             <div class="button-group" style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
                 <button id="confirmMappingBtn" class="btn-primary" style="padding: 14px 32px;">✅ Conferma e importa</button>
                 <button id="cancelMappingBtn" class="btn-secondary" style="padding: 14px 32px;">✕ Annulla</button>
@@ -486,4 +584,3 @@
     </div>
 </body>
 </html>
-

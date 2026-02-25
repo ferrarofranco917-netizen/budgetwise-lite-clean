@@ -2,30 +2,45 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
+/* Dark Premium - Light mode */
 :root {
-    --bg-color: #f8f9fa;
+    --bg-color: #f1f5f9;
     --card-bg: #ffffff;
-    --text-primary: #2b2d42;
-    --text-secondary: #4a4e69;
-    --accent: #4361ee;
-    --accent-light: #4895ef;
-    --danger: #ef233c;
-    --success: #2dc653;
-    --warning: #ff9e00;
-    --border: #e9ecef;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --accent: #0ea5e9;
+    --accent-light: #38bdf8;
+    --accent-gradient: linear-gradient(135deg, #0284c7, #0ea5e9);
+    --danger: #ef4444;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --border: #e2e8f0;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    --surface: var(--bg-color);
+    --surface-2: var(--bg-color);
+    --muted: var(--text-secondary);
 }
 
+/* Dark Premium - Dark mode (grigi scuri, accent blu) */
 [data-theme="dark"] {
-    --bg-color: #1a1b2f;
-    --card-bg: #2b2d42;
-    --text-primary: #edf2fb;
-    --text-secondary: #a9b7d9;
-    --border: #4a4e69;
-    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    --bg-color: #0c0d0e;
+    --card-bg: #16181b;
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --accent: #38bdf8;
+    --accent-light: #7dd3fc;
+    --accent-gradient: linear-gradient(135deg, #0284c7, #38bdf8);
+    --danger: #f87171;
+    --success: #4ade80;
+    --warning: #fbbf24;
+    --border: rgba(255, 255, 255, 0.08);
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 255, 255, 0.05);
+    --surface: var(--card-bg);
+    --surface-2: rgba(255, 255, 255, 0.03);
+    --muted: var(--text-secondary);
 }
 
 body {
@@ -36,7 +51,50 @@ body {
     padding: 16px;
 }
 
-/* Stili per gli hint delle date - COMPLETO (prima era solo una riga) */
+/* Animazioni di ingresso */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.summary-card, .section-card, .guide-message {
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.section-card:nth-of-type(1) { animation-delay: 0.1s; }
+.section-card:nth-of-type(2) { animation-delay: 0.2s; }
+.section-card:nth-of-type(3) { animation-delay: 0.3s; }
+.section-card:nth-of-type(4) { animation-delay: 0.4s; }
+.section-card:nth-of-type(5) { animation-delay: 0.5s; }
+.section-card:nth-of-type(6) { animation-delay: 0.6s; }
+.section-card:nth-of-type(7) { animation-delay: 0.7s; }
+.section-card:nth-of-type(8) { animation-delay: 0.8s; }
+.section-card:nth-of-type(9) { animation-delay: 0.9s; }
+
+@keyframes gentlePulse {
+    0% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.95; transform: scale(1.02); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+.guide-message {
+    background: var(--accent-gradient);
+    color: white;
+    padding: 16px 20px;
+    border-radius: 16px;
+    margin-bottom: 20px;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Stili per gli hint delle date */
 .date-hint {
     display: block;
     font-size: 0.8rem;
@@ -117,16 +175,27 @@ h1 {
 /* Card */
 .summary-card, .section-card {
     background: var(--card-bg);
-    border-radius: 20px;
+    border-radius: 16px;
     padding: 20px;
     margin-bottom: 20px;
     box-shadow: var(--shadow);
     border: 1px solid var(--border);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.summary-card:hover, .section-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    transform: translateY(-1px);
+}
+
+[data-theme="dark"] .summary-card:hover,
+[data-theme="dark"] .section-card:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 1px rgba(255, 255, 255, 0.08);
 }
 
 .summary-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 12px;
     margin-bottom: 12px;
 }
@@ -147,9 +216,12 @@ h1 {
 
 .summary-value {
     display: block;
-    font-size: 1.4rem;
-    font-weight: 700;
+    font-size: 1.5rem;
+    font-weight: 600;
     color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+    letter-spacing: -0.02em;
 }
 
 .period-info {
@@ -158,23 +230,6 @@ h1 {
     color: var(--text-secondary);
     padding-top: 12px;
     border-top: 1px dashed var(--border);
-}
-
-.guide-message {
-    background: linear-gradient(135deg, var(--accent-light), var(--accent));
-    color: white;
-    padding: 16px 20px;
-    border-radius: 16px;
-    margin-bottom: 20px;
-    font-weight: 500;
-    box-shadow: var(--shadow);
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.9; }
-    100% { opacity: 1; }
 }
 
 .section-header {
@@ -192,13 +247,15 @@ h2 {
 }
 
 .badge {
-    background: var(--accent);
+    background: var(--accent-gradient);
     color: white;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 30px;
     font-size: 0.7rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 5px rgba(14, 165, 233, 0.25);
 }
 
 /* Form elements */
@@ -233,7 +290,7 @@ input, select, button {
 input:focus, select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
 
 .input-group-row input, .input-group-row select {
@@ -255,15 +312,17 @@ input:focus, select:focus {
 }
 
 .btn-primary {
-    background: var(--accent);
+    background: var(--accent-gradient);
     color: white;
     width: 100%;
     padding: 14px;
+    box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.25);
 }
 
 .btn-primary:hover {
-    background: var(--accent-light);
+    background: linear-gradient(135deg, #0284c7, #0ea5e9);
     transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(14, 165, 233, 0.35);
 }
 
 .btn-secondary {
@@ -273,8 +332,37 @@ input:focus, select:focus {
     width: 100%;
 }
 
+/* Import UX */
+.import-actions{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  justify-content:flex-start;
+  flex-wrap:wrap;
+}
+
+.btn-link{
+  background: transparent;
+  border: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.btn-link:hover{
+  background: color-mix(in srgb, var(--bg-color) 70%, transparent);
+  color: var(--text-primary);
+}
+
+.import-advanced{
+  margin-top: 10px;
+}
+
 .btn-secondary:hover {
     background: var(--border);
+    border-color: var(--accent);
 }
 
 .btn-danger {
@@ -282,10 +370,13 @@ input:focus, select:focus {
     color: white;
     width: 100%;
     margin-top: 8px;
+    box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.3);
 }
 
 .btn-danger:hover {
-    background: #d9042b;
+    background: #dc2626;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.4);
 }
 
 .btn-text {
@@ -318,6 +409,13 @@ input:focus, select:focus {
     border-radius: 12px;
     margin-bottom: 8px;
     border-left: 4px solid var(--accent);
+    transition: all 0.2s ease;
+}
+
+.expense-item:hover {
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+    border-left-width: 6px;
 }
 
 .expense-info {
@@ -342,6 +440,8 @@ input:focus, select:focus {
 .expense-amount {
     font-weight: 700;
     color: var(--danger);
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
 }
 
 .expense-amount[style*="color: var(--success)"] {
@@ -401,7 +501,7 @@ input:focus, select:focus {
     align-items: center;
     justify-content: center;
     transition: all 0.3s;
-    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
     flex-shrink: 0;
 }
 
@@ -429,7 +529,7 @@ input:focus, select:focus {
 }
 
 .voice-fixed-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    background: var(--accent-gradient);
     color: white;
     border: none;
     border-radius: 50px;
@@ -447,7 +547,7 @@ input:focus, select:focus {
 
 .voice-fixed-btn:hover {
     transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
 }
 
 .voice-fixed-btn.listening {
@@ -470,7 +570,7 @@ input:focus, select:focus {
 }
 
 .voice-btn {
-    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    background: var(--accent-gradient);
     color: white;
     border: none;
     border-radius: 50px;
@@ -488,7 +588,7 @@ input:focus, select:focus {
 
 .voice-btn:hover {
     transform: scale(1.02);
-    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
 }
 
 .voice-btn.listening {
@@ -564,7 +664,7 @@ input:focus, select:focus {
 
 .chat-message.user {
     align-self: flex-end;
-    background: var(--accent-light);
+    background: var(--accent-gradient);
     color: white;
 }
 
@@ -610,7 +710,7 @@ input:focus, select:focus {
     justify-content: center;
     transition: all 0.3s;
     flex-shrink: 0;
-    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
 }
 
 .chat-voice-btn:hover {
@@ -624,7 +724,7 @@ input:focus, select:focus {
 }
 
 .chat-send-btn {
-    background: var(--accent);
+    background: var(--accent-gradient);
     color: white;
     border: none;
     border-radius: 30px;
@@ -633,11 +733,12 @@ input:focus, select:focus {
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.2s;
+    box-shadow: 0 2px 5px rgba(14, 165, 233, 0.2);
 }
 
 .chat-send-btn:hover {
-    background: var(--accent-light);
     transform: scale(1.02);
+    box-shadow: 0 4px 10px rgba(14, 165, 233, 0.25);
 }
 
 .chat-suggestions {
@@ -659,9 +760,10 @@ input:focus, select:focus {
 }
 
 .suggestion-chip:hover {
-    background: var(--accent-light);
+    background: var(--accent-gradient);
     color: white;
-    border-color: var(--accent-light);
+    border-color: var(--accent);
+    transform: translateY(-2px);
 }
 
 /* Grafico */
@@ -689,7 +791,7 @@ input:focus, select:focus {
 
 .progress-bar {
     height: 100%;
-    background: linear-gradient(90deg, var(--accent-light), var(--accent));
+    background: var(--accent-gradient);
     color: white;
     text-align: center;
     line-height: 30px;
@@ -706,24 +808,6 @@ input:focus, select:focus {
     font-size: 0.9rem;
 }
 
-/* Responsive */
-@media (max-width: 600px) {
-    body {
-        padding: 8px;
-    }
-    
-    .summary-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .input-group-row {
-        flex-direction: column;
-    }
-    
-    h1 {
-        font-size: 1.5rem;
-    }
-}
 /* Stato salute e trend */
 .status-icon {
     font-size: 1.2rem;
@@ -737,14 +821,16 @@ input:focus, select:focus {
     margin-top: 2px;
     font-style: italic;
 }
+
 /* Dettaglio categoria */
 .category-detail {
     margin-top: 20px;
     padding: 20px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
+    background: var(--bg-color);
+    border-radius: 24px;
     border: 1px solid var(--border);
-    animation: slideIn 0.3s ease;
+    animation: fadeInUp 0.3s ease;
+    box-shadow: var(--shadow);
 }
 
 .category-detail h3 {
@@ -768,10 +854,15 @@ input:focus, select:focus {
     display: flex;
     justify-content: space-between;
     padding: 8px 12px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border-radius: 12px;
     margin-bottom: 5px;
     border-left: 3px solid var(--accent);
+    transition: transform 0.2s ease;
+}
+
+.detail-expense-item:hover {
+    transform: translateX(4px);
 }
 
 .detail-expense-item .expense-name {
@@ -787,6 +878,7 @@ input:focus, select:focus {
     width: 100%;
     margin-top: 10px;
 }
+
 /* Sparkline container */
 .sparkline-container {
     width: 100%;
@@ -805,6 +897,7 @@ input:focus, select:focus {
     height: 100%;
     display: block;
 }
+
 /* Timeline spese fisse */
 .fixed-expense-item {
     transition: all 0.2s;
@@ -812,17 +905,17 @@ input:focus, select:focus {
 }
 
 .fixed-expense-item.future {
-    border-left-color: #2dc653 !important; /* verde */
+    border-left-color: #2dc653 !important;
     background: rgba(45, 198, 83, 0.05);
 }
 
 .fixed-expense-item.warning {
-    border-left-color: #ff9e00 !important; /* giallo */
+    border-left-color: #ff9e00 !important;
     background: rgba(255, 158, 0, 0.05);
 }
 
 .fixed-expense-item.expired {
-    border-left-color: #ef233c !important; /* rosso */
+    border-left-color: #ef233c !important;
     background: rgba(239, 35, 60, 0.05);
     opacity: 0.8;
 }
@@ -851,12 +944,13 @@ input:focus, select:focus {
     background: #ef233c;
     color: white;
 }
+
 /* Barra risparmio emozionale */
 .savings-container {
     margin-top: 20px;
     padding: 20px;
-    background: var(--bg-secondary);
-    border-radius: var(--radius-lg);
+    background: var(--bg-color);
+    border-radius: 24px;
     text-align: center;
 }
 
@@ -864,7 +958,7 @@ input:focus, select:focus {
     position: relative;
     width: 100%;
     height: 80px;
-    background: var(--bg-tertiary);
+    background: var(--border);
     border-radius: 40px 40px 20px 20px;
     overflow: hidden;
     margin-bottom: 15px;
@@ -904,8 +998,8 @@ input:focus, select:focus {
     color: var(--accent);
     margin: 10px 0;
     padding: 10px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border-radius: 16px;
     border-left: 4px solid var(--accent);
 }
 
@@ -914,20 +1008,22 @@ input:focus, select:focus {
     color: var(--text-secondary);
     font-style: italic;
     padding: 8px;
-    background: var(--bg-primary);
-    border-radius: var(--radius-md);
+    background: var(--card-bg);
+    border-radius: 16px;
 }
+
 /* Widget AI */
 .ai-suggestion {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 16px;
-    background: linear-gradient(135deg, var(--accent-light), var(--accent));
+    background: var(--accent-gradient);
     color: white;
-    border-radius: var(--radius-lg);
+    border-radius: 24px;
     margin-bottom: 12px;
-    animation: slideIn 0.3s ease;
+    animation: fadeInUp 0.3s ease;
+    box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.25);
 }
 
 .ai-icon {
@@ -954,7 +1050,7 @@ input:focus, select:focus {
     color: var(--accent);
     border: none;
     padding: 8px 16px;
-    border-radius: var(--radius-md);
+    border-radius: 30px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
@@ -977,6 +1073,110 @@ input:focus, select:focus {
 
 #dismissAiSuggestion:hover {
     opacity: 1;
+}
+/* ========== STILI PER I SELETTORI DI COLORE ========== */
+
+/* Contenitore di ogni riga colore (già inline nel HTML, ma possiamo rafforzare) */
+.setting-item {
+    margin-bottom: 16px;
+}
+
+.setting-item label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* Wrapper per il picker e il campo testo (già in flex nel HTML) */
+.setting-item > div[style*="display: flex"] {
+    display: flex !important;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Stile per l'input color nativo - lo rendiamo più grande e accattivante */
+.setting-item input[type="color"] {
+    width: 60px;
+    height: 40px;
+    padding: 2px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: var(--card-bg);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.setting-item input[type="color"]:hover {
+    border-color: var(--accent);
+    transform: scale(1.02);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.setting-item input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.setting-item input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
+}
+
+/* Stile per il campo di testo affiancato (codice esadecimale) */
+.setting-item input[type="text"][id*="Text"] {
+    flex: 1;
+    min-width: 100px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-family: 'Inter', monospace;  /* Usa monospace per i codici colore */
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.setting-item input[type="text"][id*="Text"]:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.setting-item input[type="text"][id*="Text"]:hover {
+    border-color: var(--accent-light);
+}
+
+/* Bottone ripristina colori */
+#resetColorsBtn {
+    margin-top: 8px;
+    width: 100%;
+    background: var(--bg-color);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+#resetColorsBtn:hover {
+    background: var(--border);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+}
+
+/* Responsive: su schermi piccoli, impila i campi */
+@media (max-width: 480px) {
+    .setting-item > div[style*="display: flex"] {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .setting-item input[type="color"] {
+        width: 100%;
+        height: 50px;
+    }
 }
 /* ========== REVISIONE IMPORT CSV ========== */
 .modal-overlay {
@@ -1002,7 +1202,7 @@ input:focus, select:focus {
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s ease;
+    animation: fadeInUp 0.3s ease;
 }
 
 .review-item {
@@ -1011,6 +1211,11 @@ input:focus, select:focus {
     padding: 16px;
     margin-bottom: 12px;
     border-left: 4px solid var(--accent);
+    transition: transform 0.2s ease;
+}
+
+.review-item:hover {
+    transform: translateX(4px);
 }
 
 .review-info {
@@ -1036,6 +1241,8 @@ input:focus, select:focus {
     color: var(--danger);
     min-width: 80px;
     text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
 }
 
 .review-category {
@@ -1063,7 +1270,7 @@ input:focus, select:focus {
 .review-select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
 
 .review-hint {
@@ -1073,92 +1280,6 @@ input:focus, select:focus {
     margin-left: 4px;
 }
 
-/* Responsive */
-@media (max-width: 480px) {
-    .review-info {
-        flex-direction: column;
-        gap: 4px;
-    }
-    
-    .review-amount {
-        text-align: left;
-    }
-    
-    .modal-content {
-        padding: 20px;
-    }
-}
-
-/* ========== MAPPATURA CSV ========== */
-.csv-mapping-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.csv-mapping-table th {
-    background: var(--accent);
-    color: white;
-    padding: 12px;
-    font-weight: 600;
-    text-align: left;
-}
-
-.csv-mapping-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--border);
-    background: var(--card-bg);
-}
-
-.csv-mapping-table tr:last-child td {
-    border-bottom: none;
-}
-
-.csv-mapping-select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 12px;
-    border: 2px solid var(--border);
-    background: var(--bg-color);
-    color: var(--text-primary);
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.csv-mapping-select:hover {
-    border-color: var(--accent);
-}
-
-.csv-mapping-select:focus {
-    outline: none;
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-}
-
-.mapping-preview-row {
-    background: var(--bg-color);
-    font-family: monospace;
-    font-size: 0.9rem;
-}
-
-.preview-cell {
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.mapping-hint {
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-    margin-top: 4px;
-    font-style: italic;
-}
-
 /* ========== MAPPATURA CSV ========== */
 .csv-mapping-select {
     width: 100%;
@@ -1179,7 +1300,7 @@ input:focus, select:focus {
 .csv-mapping-select:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+    box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
 }
 
 .preview-cell {
@@ -1195,6 +1316,8 @@ input:focus, select:focus {
     padding: 12px;
     font-weight: 600;
     text-align: left;
+    background: var(--accent);
+    color: white;
 }
 
 #csvMappingPreview td {
@@ -1206,6 +1329,7 @@ input:focus, select:focus {
 #csvMappingPreview tr:last-child td {
     border-bottom: none;
 }
+
 /* ========== GESTIONE CATEGORIE ========== */
 .categories-list {
     margin: 15px 0;
@@ -1224,15 +1348,18 @@ input:focus, select:focus {
     margin: 4px 0;
     background: var(--bg-color);
     border-radius: 8px;
+    transition: transform 0.2s ease;
+}
+
+.category-item:hover {
+    transform: translateX(4px);
 }
 
 .category-item.default {
-    background: var(--bg-color);
     border-left: 3px solid var(--accent);
 }
 
 .category-item.custom {
-    background: var(--bg-color);
     border-left: 3px solid var(--success);
 }
 
@@ -1243,6 +1370,7 @@ input:focus, select:focus {
     cursor: pointer;
     margin-left: 4px;
     padding: 4px;
+    transition: transform 0.2s;
 }
 
 .category-item button:hover {
@@ -1255,3 +1383,143 @@ input:focus, select:focus {
     text-align: center;
     padding: 15px;
 }
+
+/* Toggle row (es. mostra tutte le spese del periodo) */
+.toggle-row {
+    margin: 10px 0 8px;
+}
+
+.toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.toggle-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+}
+
+/* ========== TAB BAR ========== */
+.tab-bar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 8px 0 16px;
+    margin-bottom: 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-bar::-webkit-scrollbar {
+    height: 4px;
+}
+
+.tab-bar::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+.tab-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.tab-btn:hover {
+    background: var(--border);
+    border-color: var(--accent);
+}
+
+.tab-btn.active {
+    background: var(--accent);
+    color: #0c0d0e;
+    border-color: var(--accent);
+}
+
+[data-theme="dark"] .tab-btn.active {
+    color: #0c0d0e;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    body {
+        padding: 8px;
+    }
+    
+    .summary-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-group-row {
+        flex-direction: column;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+.color-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin: 15px 0;
+}
+.color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.color-item label {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+.color-item input[type="color"] {
+    width: 100%;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+}
+/* Stili per i selettori Excel */
+#excelSheet:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.help-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    font-style: italic;
+}
+/* Stili per i nuovi input numerici */
+#skipRows, #headerRowManual {
+    width: 100%;
+}
+
+/* ===== Fixed status list (Home) ===== */
+.fixed-status-list{display:flex;flex-direction:column;gap:10px;}
+.fixed-status-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:10px 12px;border:1px solid var(--border);background:var(--surface-2);border-radius:14px;}
+.fixed-status-left{min-width:0;display:flex;flex-direction:column;gap:2px;}
+.fixed-status-name{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fixed-status-sub{font-size:12px;color:var(--muted);}
+.fixed-status-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;}
+.fixed-status-amount{font-weight:700;}
+.fixed-pill{font-size:12px;padding:3px 8px;border-radius:999px;border:1px solid var(--border);}
+.fixed-pill.paid{background:rgba(34,197,94,0.12);}
+.fixed-pill.due{background:rgba(245,158,11,0.12);}
+.fixed-match{font-size:11px;color:var(--muted);max-width:160px;text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
