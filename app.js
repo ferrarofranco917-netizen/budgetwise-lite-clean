@@ -25,8 +25,9 @@ class BudgetWise {
         this.chart = null;
         this.categoryExpenses = {};
         
-        // ========== REGOLE CATEGORIE APPRESE ==========
-        this.categoryRules = JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {};
+        // ========== REGOLE CATEGORIE APPRESE (chiave -> { category, confidence }) ==========
+        this.categoryRules = this.migrateCategoryRules(JSON.parse(localStorage.getItem('budgetwise-category-rules')) || {});
+        this.CATEGORY_CONFIDENCE_THRESHOLD = 3; // >= 3 → auto-applica
         
         // ========== CATEGORIE PERSONALIZZATE ==========
         this.defaultCategories = ['Alimentari', 'Trasporti', 'Svago', 'Salute', 'Abbigliamento', 'Altro'];
@@ -156,6 +157,7 @@ class BudgetWise {
                 importCancel: '✕ Annulla',
                 importCategory: 'Categoria',
                 importLearn: '📌 L\'app ricorderà questa scelta',
+                importSuggested: 'Suggerito: {cat} (conferma per imparare)',
                 
                 // Traduzioni CSV
                 csvTitle: '📥 Importa movimenti bancari',
@@ -365,6 +367,7 @@ class BudgetWise {
                 importCancel: '✕ Cancel',
                 importCategory: 'Category',
                 importLearn: '📌 The app will remember this choice',
+                importSuggested: 'Suggested: {cat} (confirm to learn)',
                 
                 // Traduzioni CSV
                 csvTitle: '📥 Import bank statements',
@@ -570,6 +573,7 @@ class BudgetWise {
                 importCancel: '✕ Cancelar',
                 importCategory: 'Categoría',
                 importLearn: '📌 La app recordará esta elección',
+                importSuggested: 'Sugerido: {cat} (confirma para aprender)',
                 csvTitle: '📥 Importar movimientos bancarios',
                 csvSubtitle: 'Descarga tu extracto en formato CSV',
                 csvChooseFile: 'Elegir archivo',
@@ -769,6 +773,7 @@ class BudgetWise {
                 importCancel: '✕ Annuler',
                 importCategory: 'Catégorie',
                 importLearn: '📌 L’app se souviendra de ce choix',
+                importSuggested: 'Suggéré: {cat} (confirmer pour apprendre)',
                 csvTitle: '📥 Importer des opérations bancaires',
                 csvSubtitle: 'Télécharge ton relevé en CSV',
                 csvChooseFile: 'Choisir un fichier',
@@ -1979,6 +1984,7 @@ updateFixedStatusHome() {
         if (!this.data.variableExpenses[date]) this.data.variableExpenses[date] = [];
 
         this.data.variableExpenses[date].push({ name, amount, category, id: Date.now() });
+        this.learnCategory(name, category);
 
         this.saveData();
         this.updateUI();
@@ -3015,28 +3021,84 @@ document.documentElement.style.setProperty('--accent-gradient',
         alert(this.t('calendarExported'));
     }
 
-    // ========== IMPARARE CATEGORIE ==========
-    learnCategory(description, category) {
-        if (!description || !category) return;
-        
-        const keyword = description.toLowerCase().split(' ')[0].replace(/[^a-z0-9]/gi, '');
-        if (keyword.length < 3) return;
-        
-        this.categoryRules[keyword] = category;
-        localStorage.setItem('budgetwise-category-rules', JSON.stringify(this.categoryRules));
-        console.log(`📌 Appreso: "${keyword}" → ${category}`);
-    }
-
-    suggestCategory(description) {
-        const lowerDesc = description.toLowerCase();
-        
-        for (const [keyword, category] of Object.entries(this.categoryRules)) {
-            if (lowerDesc.includes(keyword)) {
-                return category;
+    // ========== IMPARARE CATEGORIE (AI locale) ==========
+    /** Migra regole vecchie { keyword: "Cat" } → { keyword: { category, confidence } } */
+    migrateCategoryRules(raw) {
+        const migrated = {};
+        for (const [key, val] of Object.entries(raw)) {
+            if (typeof val === 'string') {
+                migrated[key] = { category: val, confidence: 1 };
+            } else if (val && typeof val.category === 'string') {
+                migrated[key] = { category: val.category, confidence: Math.max(1, val.confidence || 1) };
             }
         }
-        
-        return 'Altro';
+        return migrated;
+    }
+
+    /** Normalizza descrizione: minuscole, rimozione numeri/codici, estrae token principali */
+    normalizeDescriptionForLearning(description) {
+        if (!description || typeof description !== 'string') return [];
+        let s = description
+            .toLowerCase()
+            .replace(/[\u0300-\u036f]/g, '') // diacritics
+            .replace(/\d+/g, ' ')            // numeri
+            .replace(/[^a-z0-9\s]/gi, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+        const tokens = s.split(' ').filter(t => t.length >= 3);
+        const seen = new Set();
+        const out = [];
+        for (const t of tokens) {
+            if (!seen.has(t)) { seen.add(t); out.push(t); }
+        }
+        // Opzionale: IBAN/RID/SEPA per ricorrenti
+        const lower = description.toLowerCase();
+        if (/\bibb\b|iban|rid|sepa|addebito|sdd|abbonamento\b/i.test(lower)) {
+            const ric = 'ricorrente';
+            if (!seen.has(ric)) { seen.add(ric); out.push(ric); }
+        }
+        return out;
+    }
+
+    learnCategory(description, category) {
+        if (!description || !category) return;
+        const tokens = this.normalizeDescriptionForLearning(description);
+        for (const keyword of tokens) {
+            if (keyword.length < 3) continue;
+            const existing = this.categoryRules[keyword];
+            if (existing && existing.category === category) {
+                existing.confidence = Math.min(10, (existing.confidence || 1) + 1);
+            } else {
+                this.categoryRules[keyword] = { category, confidence: 1 };
+            }
+        }
+        localStorage.setItem('budgetwise-category-rules', JSON.stringify(this.categoryRules));
+        console.log(`📌 Appreso: "${tokens.slice(0, 3).join(', ')}" → ${category}`);
+    }
+
+    /**
+     * Suggerisce categoria da descrizione.
+     * @returns {{ category: string, confidence: number }} category + confidenza (0 = nessun match)
+     */
+    suggestCategory(description) {
+        const lowerDesc = description.toLowerCase();
+        const isRicorrente = /\bibb\b|iban|rid|sepa|addebito|sdd|abbonamento\b/i.test(description || '');
+        let best = { category: 'Altro', confidence: 0 };
+        for (const [keyword, rule] of Object.entries(this.categoryRules)) {
+            if (keyword.length < 3) continue;
+            const matches = (keyword === 'ricorrente' && isRicorrente) || lowerDesc.includes(keyword);
+            if (!matches) continue;
+            const conf = (rule && rule.confidence) || 1;
+            if (conf > best.confidence) {
+                best = { category: (rule && rule.category) || 'Altro', confidence: conf };
+            }
+        }
+        return best;
+    }
+
+    /** Per retrocompatibilità: restituisce solo la stringa categoria (come prima) */
+    suggestCategoryString(description) {
+        return this.suggestCategory(description).category;
     }
 
     // ========== GESTIONE CATEGORIE PERSONALIZZATE ==========
@@ -3200,7 +3262,11 @@ document.documentElement.style.setProperty('--accent-gradient',
                 `<option value="${cat}">${this.getCategoryEmoji(cat)} ${cat}</option>`
             ).join('');
             
-            listEl.innerHTML = importedExpenses.map((exp, index) => `
+            listEl.innerHTML = importedExpenses.map((exp, index) => {
+                const hint = exp._suggested
+                    ? this.t('importSuggested').replace('{cat}', exp._suggested)
+                    : this.t('importLearn');
+                return `
                 <div class="review-item" data-index="${index}">
                     <div class="review-info">
                         <span class="review-date">${exp.date}</span>
@@ -3211,10 +3277,11 @@ document.documentElement.style.setProperty('--accent-gradient',
                         <select class="review-select" data-index="${index}">
                             ${options}
                         </select>
-                        <small class="review-hint">${this.t('importLearn')}</small>
+                        <small class="review-hint">${hint}</small>
                     </div>
                 </div>
-            `).join('');
+            `;
+            }).join('');
             
             importedExpenses.forEach((exp, index) => {
                 const select = document.querySelector(`.review-select[data-index="${index}"]`);
@@ -3233,13 +3300,9 @@ document.documentElement.style.setProperty('--accent-gradient',
                 selects.forEach(select => {
                     const index = select.dataset.index;
                     const newCategory = select.value;
-                    const oldCategory = importedExpenses[index].category;
-                    
                     importedExpenses[index].category = newCategory;
-                    
-                    if (newCategory !== oldCategory) {
-                        this.learnCategory(importedExpenses[index].name, newCategory);
-                    }
+                    // Impara sempre dalla conferma (aumenta confidenza o crea nuova regola)
+                    this.learnCategory(importedExpenses[index].name, newCategory);
                 });
                 
                 cleanup();
@@ -3468,7 +3531,14 @@ document.documentElement.style.setProperty('--accent-gradient',
                         let amount = parseFloat(String(amountStr).replace(',', '.').replace(/[^0-9.-]/g, ''));
                         if (isNaN(amount)) continue;
 
-                        if (!category) category = this.suggestCategory(description);
+                        let _suggested = null;
+                        if (!category) {
+                            const sug = this.suggestCategory(description);
+                            category = sug.confidence >= this.CATEGORY_CONFIDENCE_THRESHOLD ? sug.category : 'Altro';
+                            if (sug.confidence > 0 && sug.confidence < this.CATEGORY_CONFIDENCE_THRESHOLD) {
+                                _suggested = sug.category;
+                            }
+                        }
 
                         if (amount > 0) {
                             tempIncomes.push({
@@ -3479,13 +3549,9 @@ document.documentElement.style.setProperty('--accent-gradient',
                             });
                         } else {
                             amount = Math.abs(amount);
-                            importedExpenses.push({
-                                name: description,
-                                amount: amount,
-                                date: dateStr,
-                                category: category || 'Altro',
-                                id: Date.now() + i
-                            });
+                            const exp = { name: description, amount: amount, date: dateStr, category: category || 'Altro', id: Date.now() + i };
+                            if (_suggested) exp._suggested = _suggested;
+                            importedExpenses.push(exp);
                         }
                     }
 
@@ -3695,7 +3761,15 @@ document.documentElement.style.setProperty('--accent-gradient',
                 if (!description) continue;
 
                 const catRaw = (iCat !== -1) ? cellToString(row[iCat]) : '';
-                let category = catRaw || this.suggestCategory(description);
+                let category = catRaw;
+                let _suggested = null;
+                if (!category) {
+                    const sug = this.suggestCategory(description);
+                    category = sug.confidence >= this.CATEGORY_CONFIDENCE_THRESHOLD ? sug.category : 'Altro';
+                    if (sug.confidence > 0 && sug.confidence < this.CATEGORY_CONFIDENCE_THRESHOLD) {
+                        _suggested = sug.category;
+                    }
+                }
 
                 const parseNum = (v) => {
                     if (v === null || v === undefined || v === '') return null;
@@ -3717,7 +3791,9 @@ document.documentElement.style.setProperty('--accent-gradient',
                 if (amount > 0) {
                     tempIncomes.push({ desc: description, amount: amount, date: dateStr, id: Date.now() + r });
                 } else {
-                    importedExpenses.push({ name: description, amount: Math.abs(amount), date: dateStr, category: category || 'Altro', id: Date.now() + r });
+                    const exp = { name: description, amount: Math.abs(amount), date: dateStr, category: category || 'Altro', id: Date.now() + r };
+                    if (_suggested) exp._suggested = _suggested;
+                    importedExpenses.push(exp);
                 }
             }
 
