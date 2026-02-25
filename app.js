@@ -703,7 +703,6 @@ class BudgetWise {
                 aiSuggestionsTitle: '🤖 اقتراحات الذكاء الاصطناعي',
                 aiSmartBadge: 'ذكي'
             },
-            },
             en: {
                 plannedSavingsLabel: 'Planned savings',
                 plannedSavingsShortHint: '💡 +{p}%',
