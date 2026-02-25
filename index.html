@@ -233,8 +233,11 @@
         <!-- GRAFICO (HOME) -->
         <div class="section-card" data-tab="home">
             <h2 id="chartTitle">📊 Distribuzione spese</h2>
-            <div class="section-content">
-                <canvas id="expenseChart" width="400" height="300"></canvas>
+            <div class="section-content chart-wrapper">
+                <div class="chart-container">
+                    <canvas id="expenseChart" width="400" height="300"></canvas>
+                </div>
+                <div id="chartLegend" class="chart-legend"></div>
                 <p class="chart-note" id="chartNote">Aggiungi spese per vedere il grafico</p>
             </div>
         </div>

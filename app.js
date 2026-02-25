@@ -2496,9 +2496,14 @@ updateFixedStatusHome() {
         const chartNote = document.getElementById('chartNote');
         const categoryDetail = document.getElementById('categoryDetail');
 
+        const chartContainer = document.querySelector('.chart-container');
+        const legendEl = document.getElementById('chartLegend');
+
         if (Object.keys(categories).length === 0) {
             if (chartNote) chartNote.style.display = 'block';
             if (categoryDetail) categoryDetail.style.display = 'none';
+            if (chartContainer) chartContainer.style.display = 'none';
+            if (legendEl) { legendEl.innerHTML = ''; legendEl.style.display = 'none'; }
             if (this.chart) this.chart.destroy();
             this.chart = null;
             this.categoryExpenses = {};
@@ -2506,6 +2511,8 @@ updateFixedStatusHome() {
         }
 
         if (chartNote) chartNote.style.display = 'none';
+        if (chartContainer) chartContainer.style.display = '';
+        if (legendEl) legendEl.style.display = '';
 
         if (this.chart) this.chart.destroy();
         this.chart = null;
@@ -2514,27 +2521,52 @@ updateFixedStatusHome() {
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
 
+        const labels = Object.keys(categories);
+        const values = Object.values(categories);
+        const totalExpenses = values.reduce((a, b) => a + b, 0);
+        const colors = ['#0ea5e9', '#38bdf8', '#22c55e', '#f59e0b', '#ef4444', '#0284c7', '#8b5cf6', '#ec4899'];
+
+        const bw = this;
+        const centerTextPlugin = {
+            id: 'centerText',
+            afterDraw: (chart) => {
+                const { ctx, chartArea } = chart;
+                if (!chartArea || chart.config.type !== 'doughnut') return;
+                const centerX = (chartArea.left + chartArea.right) / 2;
+                const centerY = (chartArea.top + chartArea.bottom) / 2;
+                const textColor = (getComputedStyle(document.documentElement).getPropertyValue('--text-secondary') || '#94a3b8').trim();
+                const textColorBold = (getComputedStyle(document.documentElement).getPropertyValue('--text-primary') || '#f8fafc').trim();
+                ctx.save();
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.font = '13px Inter, system-ui, sans-serif';
+                ctx.fillStyle = textColor;
+                ctx.fillText(bw.data.language === 'it' ? 'Totale spese' : 'Total expenses', centerX, centerY - 14);
+                ctx.font = 'bold 22px Inter, system-ui, sans-serif';
+                ctx.fillStyle = textColorBold;
+                ctx.fillText(bw.formatCurrency(totalExpenses), centerX, centerY + 6);
+                ctx.restore();
+            }
+        };
+
         this.chart = new Chart(ctx, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
-                labels: Object.keys(categories),
+                labels: labels,
                 datasets: [{
-                    data: Object.values(categories),
-                    backgroundColor: ['#0ea5e9', '#38bdf8', '#22c55e', '#f59e0b', '#ef4444', '#0284c7'],
-                    borderColor: 'transparent'
+                    data: values,
+                    backgroundColor: labels.map((_, i) => colors[i % colors.length]),
+                    borderColor: 'transparent',
+                    hoverOffset: 4
                 }]
             },
             options: {
+                cutout: '70%',
                 responsive: true,
                 maintainAspectRatio: true,
+                layout: { padding: 8 },
                 plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: (getComputedStyle(document.documentElement).getPropertyValue('--text-primary') || '').trim(),
-                            font: { size: 12 }
-                        }
-                    },
+                    legend: { display: false },
                     tooltip: {
                         callbacks: {
                             label: (context) => {
@@ -2542,7 +2574,14 @@ updateFixedStatusHome() {
                                 const value = context.raw || 0;
                                 const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                 const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : '0.0';
-                                return `${label}: ${this.formatCurrency(value)} (${percentage}%)`;
+                                const catName = labels[context.dataIndex];
+                                const count = (categoryExpenses[catName] || []).length;
+                                const nTrans = bw.data.language === 'it' ? 'transazioni' : 'transactions';
+                                return [
+                                    `${label}: ${bw.formatCurrency(value)}`,
+                                    `${percentage}%`,
+                                    `${count} ${nTrans}`
+                                ];
                             }
                         }
                     }
@@ -2554,8 +2593,28 @@ updateFixedStatusHome() {
                         this.showCategoryDetail(categoryName, categoryExpenses[categoryName] || []);
                     }
                 }
-            }
+            },
+            plugins: [centerTextPlugin]
         });
+
+        if (legendEl) {
+            legendEl.innerHTML = labels.map((label, i) => {
+                const amt = values[i] || 0;
+                const pct = totalExpenses > 0 ? ((amt / totalExpenses) * 100).toFixed(0) : '0';
+                const col = colors[i % colors.length];
+                return `<div class="chart-legend-item" data-index="${i}" role="button" tabindex="0">
+                    <span class="chart-legend-dot" style="background:${col}"></span>
+                    <span class="chart-legend-label">${label}</span>
+                    <span class="chart-legend-value">${this.formatCurrency(amt)} (${pct}%)</span>
+                </div>`;
+            }).join('');
+            legendEl.querySelectorAll('.chart-legend-item').forEach((el, i) => {
+                el.addEventListener('click', () => {
+                    const catName = labels[i];
+                    this.showCategoryDetail(catName, categoryExpenses[catName] || []);
+                });
+            });
+        }
 
         this.categoryExpenses = categoryExpenses;
     }
