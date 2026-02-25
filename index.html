@@ -67,6 +67,7 @@
                 <div class="summary-item">
                     <span class="summary-label" id="budgetLabel">Budget giornaliero</span>
                     <span class="summary-value" id="dailyBudget">0,00 €</span>
+                    <small class="trend-indicator" id="plannedSavingsBadge"></small>
                     <div class="sparkline-container">
                         <canvas id="budgetSparkline" width="100" height="30"></canvas>
                     </div>
@@ -230,7 +231,16 @@
             </div>
         </div>
 
-        <!-- GRAFICO (HOME) -->
+        <div class="section-card" data-tab="home">
+            <h2>📈 Burn Rate del periodo</h2>
+            <div class="section-content chart-wrapper">
+                <div class="line-chart-container">
+                    <canvas id="burnRateChart" width="800" height="280"></canvas>
+                </div>
+                <p class="chart-note" id="burnRateNote">Serve almeno un'entrata per calcolare l'andamento</p>
+            </div>
+        </div>
+
         <div class="section-card" data-tab="home">
             <h2 id="chartTitle">📊 Distribuzione spese</h2>
             <div class="section-content chart-wrapper">
@@ -290,6 +300,36 @@
                 <div id="aiAction" class="ai-action" style="display: none;">
                     <button id="applyAiSuggestion" class="btn-secondary"></button>
                     <button id="dismissAiSuggestion" class="btn-text">✕</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPORT SETTIMANALE (HOME) -->
+        <div class="section-card" data-tab="home">
+            <h2 id="weeklyReportTitle">📝 Report settimanale</h2>
+            <div class="section-content">
+                <p id="weeklyReportText" class="subtitle"></p>
+                <div class="button-group" style="margin-top: 8px;">
+                    <button id="regenerateReportBtn" class="btn-secondary">Rigenera report</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SFIDE (HOME) -->
+        <div class="section-card" data-tab="home">
+            <h2 id="challengesTitle">🎮 Sfide</h2>
+            <div class="section-content">
+                <div id="challengeBox" class="challenge-box">
+                    <p id="challengeName">Sfida attiva</p>
+                    <p id="challengeDesc"></p>
+                    <div class="progress-emotional" id="challengeProgressContainer" style="display: none;">
+                        <div class="progress-fill" id="challengeProgressBar" style="width: 0%;"></div>
+                    </div>
+                    <p id="challengeProgressText"></p>
+                    <p id="challengeRewardText"></p>
+                    <div class="button-group" style="margin-top: 8px;">
+                        <button id="claimRewardBtn" class="btn-primary" style="display: none;">🎁 Ritira ricompensa</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -413,7 +453,19 @@
                         <option value="en">🇬🇧 English</option>
                         <option value="es">🇪🇸 Español</option>
                         <option value="fr">🇫🇷 Français</option>
+                        <option value="de">🇩🇪 Deutsch</option>
+                        <option value="pt">🇵🇹 Português</option>
+                        <option value="nl">🇳🇱 Nederlands</option>
+                        <option value="el">🇬🇷 Ελληνικά</option>
+                        <option value="ar">🇸🇦 العربية</option>
                     </select>
+                </div>
+                <div class="setting-item">
+                    <label id="autoLangLabel">🌍 Auto (consigliato)</label>
+                    <label class="toggle-label" style="display:flex; align-items:center; gap:8px;">
+                        <input type="checkbox" id="autoLangToggle">
+                        <span class="help-text" style="margin:0;">Usa la lingua del sistema automaticamente</span>
+                    </label>
                 </div>
                 <div class="setting-item">
                     <label id="backupLabel">📅 Backup dati</label>

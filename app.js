@@ -23,6 +23,7 @@ class BudgetWise {
         this.data.periodEnd = this.getDefaultPeriodEnd();
         
         this.chart = null;
+        this.burnChart = null;
         this.categoryExpenses = {};
         
         // ========== REGOLE CATEGORIE APPRESE (chiave -> { category, confidence }) ==========
@@ -51,8 +52,18 @@ class BudgetWise {
 // ========== TRADUZIONI ==========
         this.translations = {
             it: {
+                plannedSavingsLabel: 'Risparmio pianificato',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Se porti il risparmio al {p}%, arrivi {m} mesi prima',
                 resetColors: 'Ripristina colori predefiniti',
                 budget: 'Budget giornaliero',
+                weeklyReportTitle: '📝 Report settimanale',
+                regenerateReport: 'Rigenera report',
+                challengesTitle: '🎮 Sfide',
+                challengeReduceDescTpl: 'Spendi {pct}% in meno nelle spese variabili per {weeks} settimane',
+                challengeRewardAddTpl: 'Ricompensa: aggiungi {amount} al fondo risparmi',
+                claimReward: '🎁 Ritira ricompensa',
+                challengeProgressTpl: 'Settimane completate: {done}/{target}',
                 remaining: 'Rimanenza',
                 days: 'Giorni rimasti',
                 period: 'Periodo',
@@ -62,6 +73,8 @@ class BudgetWise {
                 fixed: '📌 Spese fisse mensili',
                 variable: '🧾 Spese variabili',
                 chart: '📊 Distribuzione spese',
+                burnRateTitle: '📈 Burn Rate del periodo',
+                burnRateNote: 'Serve almeno un\'entrata per calcolare l\'andamento',
                 assistant: '🤖 Assistente Finanziario AI',
                 savings: '🎯 Obiettivo risparmio',
                 settings: '⚙️ Impostazioni',
@@ -260,9 +273,450 @@ class BudgetWise {
                 yourCategoriesTitle: 'Le tue categorie',
                 close: 'Chiudi',
             },
+            de: {
+                plannedSavingsLabel: 'Geplante Ersparnis',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Mit {p}% Ersparnis erreichst du das Ziel {m} Monate früher',
+                resetColors: 'Standardfarben zurücksetzen',
+                budget: 'Tagesbudget',
+                weeklyReportTitle: '📝 Wochenbericht',
+                regenerateReport: 'Bericht neu erstellen',
+                challengesTitle: '🎮 Herausforderungen',
+                challengeReduceDescTpl: 'Gib {pct}% weniger für Variable aus über {weeks} Wochen',
+                challengeRewardAddTpl: 'Belohnung: {amount} zum Sparkonto hinzufügen',
+                claimReward: '🎁 Belohnung abholen',
+                challengeProgressTpl: 'Abgeschlossene Wochen: {done}/{target}',
+                remaining: 'Verbleibend',
+                days: 'Verbleibende Tage',
+                period: 'Zeitraum',
+                totalIncome: 'Gesamteinnahmen',
+                startGuide: '👋 Beginne unten mit dem Hinzufügen deiner Einnahmen!',
+                incomes: '🏦 Einnahmen im Zeitraum',
+                fixed: '📌 Monatliche Fixkosten',
+                variable: '🧾 Variable Ausgaben',
+                chart: '📊 Ausgabenverteilung',
+                burnRateTitle: '📈 Burn Rate des Zeitraums',
+                burnRateNote: 'Füge mindestens eine Einnahme hinzu, um den Verlauf zu berechnen',
+                assistant: '🤖 KI-Finanzassistent',
+                savings: '🎯 Sparziel',
+                settings: '⚙️ Einstellungen',
+                languageLabel: '🌍 Sprache',
+                thresholdLabel: '🔔 Warnschwelle (€)',
+                backupLabel: '📅 Datensicherung',
+                badge: 'mehrfach',
+                addIncome: '➕ Einnahme hinzufügen',
+                addFixed: '➕ Fixkosten hinzufügen',
+                addExpense: '➕ Ausgabe hinzufügen',
+                resetDay: '🗑️ Tagesausgaben löschen',
+                applySavings: 'Sparen anwenden',
+                backup: '💾 Backup herunterladen',
+                restore: '📂 Wiederherstellen',
+                resetAll: '⚠️ Komplett zurücksetzen',
+                export: '📅 In Kalender exportieren',
+                send: 'Senden',
+                docTitle: '💰 BudgetWise 2.0 - Intelligente Finanzverwaltung',
+                subtitle: 'Von Gehalt zu Gehalt — intelligente Verwaltung mit KI',
+                positiveBalance: 'Positiver Saldo',
+                negativeBalance: 'Warnung: negativer Saldo',
+                onboardingWelcome: '👋 Willkommen bei BudgetWise',
+                onboardingStep1: 'Füge unten dein erstes Gehalt oder Einkommen hinzu.',
+                onboardingStep2: '📌 Füge eine monatliche Fixkosten hinzu (z. B. Miete, Rechnungen).',
+                onboardingStep3: '🧾 Erfass eine variable Ausgabe wie Einkäufe.',
+                onboardingStep4: '📊 Prüfe dein Tagesbudget in der oberen Karte.',
+                onboardingStep5: '🤖 Frage den KI-Assistenten oder teste die Spracheingabe.',
+                onboardingStep6: '📥 Du kannst auch Bankbewegungen im CSV- oder Excel-Format importieren.',
+                onboardingNext: 'Weiter →',
+                onboardingSkip: 'Überspringen',
+                onboardingSubtitle: 'Folge der Schritt-für-Schritt-Anleitung',
+                importReview: '📋 Importprüfung',
+                importConfirm: '✅ Bestätigen',
+                importCancel: '✕ Abbrechen',
+                importCategory: 'Kategorie',
+                importLearn: '📌 Die App merkt sich diese Auswahl',
+                importSuggested: 'Vorgeschlagen: {cat} (bestätigen zum Lernen)',
+                csvMappingTitle: '📋 CSV-Spalten zuordnen',
+                csvMappingInstructionsHtml: '<strong>📌 Hinweise:</strong> Ordne jede CSV-Spalte dem passenden Feld zu. Positive Beträge sind <strong>Einnahmen</strong>, negative <strong>Ausgaben</strong>.',
+                csvMappingFieldsTitle: '🎯 Feldzuordnung:',
+                categoriesSectionTitle: '📂 Kategorienverwaltung',
+                manageCustomCategories: '➕ Benutzerdefinierte Kategorien verwalten',
+                newCategoryLabel: 'Neue Kategorie',
+                newCategoryPlaceholder: 'z. B. Reisen',
+                defaultCategoriesTitle: 'Standardkategorien',
+                yourCategoriesTitle: 'Deine Kategorien',
+                close: 'Schließen',
+                manageCategories: '📂 Kategorien verwalten',
+                addCategory: '➕ Kategorie hinzufügen',
+                categoryName: 'Kategoriename',
+                saveCategory: 'Speichern',
+                deleteCategory: '🗑️ Löschen',
+                confirmDeleteCategory: 'Möchtest du die Kategorie „{name}“ wirklich löschen?',
+                categoryAlreadyExists: 'Kategorie bereits vorhanden',
+                categoryAdded: '✅ Kategorie hinzugefügt!',
+                categoryDeleted: '🗑️ Kategorie gelöscht',
+                categoryUpdated: '✏️ Kategorie aktualisiert',
+                showAllExpenses: 'Alle Ausgaben des Zeitraums anzeigen',
+                edit: 'Bearbeiten',
+                aiSuggestionsTitle: '🤖 KI-Vorschläge',
+                aiSmartBadge: 'smart'
+            },
+            pt: {
+                plannedSavingsLabel: 'Poupança planejada',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Com {p}% de poupança, você chega {m} meses antes ao objetivo',
+                resetColors: 'Redefinir cores padrão',
+                budget: 'Orçamento diário',
+                weeklyReportTitle: '📝 Relatório semanal',
+                regenerateReport: 'Regenerar relatório',
+                challengesTitle: '🎮 Desafios',
+                challengeReduceDescTpl: 'Gaste {pct}% menos em variáveis por {weeks} semanas',
+                challengeRewardAddTpl: 'Recompensa: adicionar {amount} ao fundo de poupança',
+                claimReward: '🎁 Resgatar recompensa',
+                challengeProgressTpl: 'Semanas concluídas: {done}/{target}',
+                remaining: 'Restante',
+                days: 'Dias restantes',
+                period: 'Período',
+                totalIncome: 'Rendimento total',
+                startGuide: '👋 Comece adicionando seus rendimentos abaixo!',
+                incomes: '🏦 Rendimentos do período',
+                fixed: '📌 Despesas fixas mensais',
+                variable: '🧾 Despesas variáveis',
+                chart: '📊 Distribuição de despesas',
+                burnRateTitle: '📈 Burn Rate do período',
+                burnRateNote: 'Adicione pelo menos um rendimento para calcular a tendência',
+                assistant: '🤖 Assistente financeiro IA',
+                savings: '🎯 Meta de poupança',
+                settings: '⚙️ Definições',
+                languageLabel: '🌍 Idioma',
+                thresholdLabel: '🔔 Limite de alerta (€)',
+                backupLabel: '📅 Backup de dados',
+                badge: 'múltiplo',
+                addIncome: '➕ Adicionar rendimento',
+                addFixed: '➕ Adicionar despesa fixa',
+                addExpense: '➕ Adicionar despesa',
+                resetDay: '🗑️ Limpar despesas do dia',
+                applySavings: 'Aplicar poupança',
+                backup: '💾 Baixar backup',
+                restore: '📂 Restaurar',
+                resetAll: '⚠️ Redefinição completa',
+                export: '📅 Exportar para o Calendário',
+                send: 'Enviar',
+                docTitle: '💰 BudgetWise 2.0 - Gestão financeira inteligente',
+                subtitle: 'Salário a salário — gestão inteligente com IA',
+                positiveBalance: 'Saldo positivo',
+                negativeBalance: 'Atenção: saldo negativo',
+                onboardingWelcome: '👋 Bem-vindo ao BudgetWise',
+                onboardingStep1: 'Adicione abaixo seu primeiro salário ou rendimento.',
+                onboardingStep2: '📌 Adicione uma despesa fixa mensal (ex. aluguel, contas).',
+                onboardingStep3: '🧾 Registre uma despesa variável como supermercado.',
+                onboardingStep4: '📊 Veja seu orçamento diário no cartão superior.',
+                onboardingStep5: '🤖 Peça dicas ao assistente IA ou tente a voz.',
+                onboardingStep6: '📥 Você também pode importar extratos bancários em CSV ou Excel.',
+                onboardingNext: 'Avançar →',
+                onboardingSkip: 'Pular',
+                onboardingSubtitle: 'Siga o guia passo a passo',
+                importReview: '📋 Revisão da importação',
+                importConfirm: '✅ Confirmar',
+                importCancel: '✕ Cancelar',
+                importCategory: 'Categoria',
+                importLearn: '📌 O app lembrará desta escolha',
+                importSuggested: 'Sugerido: {cat} (confirme para aprender)',
+                csvMappingTitle: '📋 Mapear colunas do CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Instruções:</strong> Associe cada coluna do CSV ao campo certo. Valores positivos são <strong>rendimentos</strong>, negativos são <strong>despesas</strong>.',
+                csvMappingFieldsTitle: '🎯 Associação de campos:',
+                categoriesSectionTitle: '📂 Gestão de categorias',
+                manageCustomCategories: '➕ Gerir categorias personalizadas',
+                newCategoryLabel: 'Nova categoria',
+                newCategoryPlaceholder: 'ex. Viagens',
+                defaultCategoriesTitle: 'Categorias padrão',
+                yourCategoriesTitle: 'Suas categorias',
+                close: 'Fechar',
+                manageCategories: '📂 Gerir categorias',
+                addCategory: '➕ Adicionar categoria',
+                categoryName: 'Nome da categoria',
+                saveCategory: 'Guardar',
+                deleteCategory: '🗑️ Excluir',
+                confirmDeleteCategory: 'Tem certeza de excluir a categoria “{name}”?',
+                categoryAlreadyExists: 'Categoria já existe',
+                categoryAdded: '✅ Categoria adicionada!',
+                categoryDeleted: '🗑️ Categoria excluída',
+                categoryUpdated: '✏️ Categoria atualizada',
+                showAllExpenses: 'Mostrar todas as despesas do período',
+                edit: 'Editar',
+                aiSuggestionsTitle: '🤖 Sugestões IA',
+                aiSmartBadge: 'inteligente'
+            },
+            nl: {
+                plannedSavingsLabel: 'Geplande besparing',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Met {p}% sparen bereik je het doel {m} maanden eerder',
+                resetColors: 'Standaardkleuren herstellen',
+                budget: 'Dagbudget',
+                weeklyReportTitle: '📝 Wekelijks rapport',
+                regenerateReport: 'Rapport opnieuw genereren',
+                challengesTitle: '🎮 Uitdagingen',
+                challengeReduceDescTpl: 'Besteed {pct}% minder in variabelen gedurende {weeks} weken',
+                challengeRewardAddTpl: 'Beloning: voeg {amount} toe aan spaarpot',
+                claimReward: '🎁 Beloning innen',
+                challengeProgressTpl: 'Voltooide weken: {done}/{target}',
+                remaining: 'Resterend',
+                days: 'Dagen resterend',
+                period: 'Periode',
+                totalIncome: 'Totaal inkomen',
+                startGuide: '👋 Begin hieronder met het toevoegen van je inkomen!',
+                incomes: '🏦 Inkomsten van de periode',
+                fixed: '📌 Maandelijkse vaste lasten',
+                variable: '🧾 Variabele uitgaven',
+                chart: '📊 Uitgavenverdeling',
+                burnRateTitle: '📈 Burn Rate van de periode',
+                burnRateNote: 'Voeg minstens één inkomen toe om de trend te berekenen',
+                assistant: '🤖 AI-financiële assistent',
+                savings: '🎯 Spaar doel',
+                settings: '⚙️ Instellingen',
+                languageLabel: '🌍 Taal',
+                thresholdLabel: '🔔 Waarschuwingsdrempel (€)',
+                backupLabel: '📅 Gegevensbackup',
+                badge: 'meervoud',
+                addIncome: '➕ Inkomst toevoegen',
+                addFixed: '➕ Vaste last toevoegen',
+                addExpense: '➕ Uitgave toevoegen',
+                resetDay: '🗑️ Daguitgaven wissen',
+                applySavings: 'Sparen toepassen',
+                backup: '💾 Backup downloaden',
+                restore: '📂 Herstellen',
+                resetAll: '⚠️ Volledig resetten',
+                export: '📅 Exporteren naar Kalender',
+                send: 'Verzenden',
+                docTitle: '💰 BudgetWise 2.0 - Slim budgetbeheer',
+                subtitle: 'Van salaris tot salaris — slim beheer met AI',
+                positiveBalance: 'Positief saldo',
+                negativeBalance: 'Waarschuwing: negatief saldo',
+                onboardingWelcome: '👋 Welkom bij BudgetWise',
+                onboardingStep1: 'Voeg hieronder je eerste salaris of inkomen toe.',
+                onboardingStep2: '📌 Voeg een maandelijkse vaste last toe (bijv. huur, rekeningen).',
+                onboardingStep3: '🧾 Registreer een variabele uitgave zoals boodschappen.',
+                onboardingStep4: '📊 Bekijk je dagbudget in de bovenste kaart.',
+                onboardingStep5: '🤖 Vraag advies aan de AI-assistent of probeer spraak.',
+                onboardingStep6: '📥 Je kunt ook bankafschriften importeren in CSV of Excel.',
+                onboardingNext: 'Volgende →',
+                onboardingSkip: 'Overslaan',
+                onboardingSubtitle: 'Volg de stapsgewijze gids',
+                importReview: '📋 Importcontrole',
+                importConfirm: '✅ Bevestigen',
+                importCancel: '✕ Annuleren',
+                importCategory: 'Categorie',
+                importLearn: '📌 De app onthoudt deze keuze',
+                importSuggested: 'Voorgesteld: {cat} (bevestigen om te leren)',
+                csvMappingTitle: '📋 CSV-kolommen koppelen',
+                csvMappingInstructionsHtml: '<strong>📌 Instructies:</strong> Koppel elke CSV-kolom aan het juiste veld. Positieve bedragen zijn <strong>inkomsten</strong>, negatieve <strong>uitgaven</strong>.',
+                csvMappingFieldsTitle: '🎯 Veldkoppeling:',
+                categoriesSectionTitle: '📂 Categoriebeheer',
+                manageCustomCategories: '➕ Aangepaste categorieën beheren',
+                newCategoryLabel: 'Nieuwe categorie',
+                newCategoryPlaceholder: 'bijv. Reizen',
+                defaultCategoriesTitle: 'Standaardcategorieën',
+                yourCategoriesTitle: 'Jouw categorieën',
+                close: 'Sluiten',
+                manageCategories: '📂 Categorieën beheren',
+                addCategory: '➕ Categorie toevoegen',
+                categoryName: 'Categorienaam',
+                saveCategory: 'Opslaan',
+                deleteCategory: '🗑️ Verwijderen',
+                confirmDeleteCategory: 'Categorie “{name}” verwijderen?',
+                categoryAlreadyExists: 'Categorie bestaat al',
+                categoryAdded: '✅ Categorie toegevoegd!',
+                categoryDeleted: '🗑️ Categorie verwijderd',
+                categoryUpdated: '✏️ Categorie bijgewerkt',
+                showAllExpenses: 'Alle uitgaven van de periode tonen',
+                edit: 'Bewerken',
+                aiSuggestionsTitle: '🤖 AI-voorstellen',
+                aiSmartBadge: 'smart'
+            },
+            el: {
+                plannedSavingsLabel: 'Προγραμματισμένη αποταμίευση',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Με αποταμίευση {p}%, φτάνεις τον στόχο {m} μήνες νωρίτερα',
+                resetColors: 'Επαναφορά προεπιλεγμένων χρωμάτων',
+                budget: 'Ημερήσιο προϋπολογισμό',
+                weeklyReportTitle: '📝 Εβδομαδιαία αναφορά',
+                regenerateReport: 'Επαναδημιουργία αναφοράς',
+                challengesTitle: '🎮 Προκλήσεις',
+                challengeReduceDescTpl: 'Ξόδεψε {pct}% λιγότερα στα μεταβλητά για {weeks} εβδομάδες',
+                challengeRewardAddTpl: 'Επιβράβευση: πρόσθεσε {amount} στο ταμείο αποταμίευσης',
+                claimReward: '🎁 Απόκτησε επιβράβευση',
+                challengeProgressTpl: 'Ολοκληρωμένες εβδομάδες: {done}/{target}',
+                remaining: 'Υπόλοιπο',
+                days: 'Μέρες που απομένουν',
+                period: 'Περίοδος',
+                totalIncome: 'Συνολικά έσοδα',
+                startGuide: '👋 Ξεκίνα προσθέτοντας τα έσοδά σου παρακάτω!',
+                incomes: '🏦 Έσοδα περιόδου',
+                fixed: '📌 Μηνιαία πάγια έξοδα',
+                variable: '🧾 Μεταβλητά έξοδα',
+                chart: '📊 Κατανομή εξόδων',
+                burnRateTitle: '📈 Burn Rate περιόδου',
+                burnRateNote: 'Πρόσθεσε τουλάχιστον ένα έσοδο για να υπολογιστεί η τάση',
+                assistant: '🤖 Οικονομικός βοηθός AI',
+                savings: '🎯 Στόχος αποταμίευσης',
+                settings: '⚙️ Ρυθμίσεις',
+                languageLabel: '🌍 Γλώσσα',
+                thresholdLabel: '🔔 Όριο ειδοποίησης (€)',
+                backupLabel: '📅 Αντίγραφο ασφαλείας',
+                badge: 'πολλαπλό',
+                addIncome: '➕ Προσθήκη εσόδου',
+                addFixed: '➕ Προσθήκη πάγιου έξοδου',
+                addExpense: '➕ Προσθήκη έξοδου',
+                resetDay: '🗑️ Εκκαθάριση εξόδων ημέρας',
+                applySavings: 'Εφαρμογή αποταμίευσης',
+                backup: '💾 Λήψη αντιγράφου ασφαλείας',
+                restore: '📂 Επαναφορά',
+                resetAll: '⚠️ Πλήρης επαναφορά',
+                export: '📅 Εξαγωγή στο Ημερολόγιο',
+                send: 'Αποστολή',
+                docTitle: '💰 BudgetWise 2.0 - Έξυπνη οικονομική διαχείριση',
+                subtitle: 'Από μισθό σε μισθό — έξυπνη διαχείριση με AI',
+                positiveBalance: 'Θετικό υπόλοιπο',
+                negativeBalance: 'Προσοχή: αρνητικό υπόλοιπο',
+                onboardingWelcome: '👋 Καλώς ήρθες στο BudgetWise',
+                onboardingStep1: 'Πρόσθεσε παρακάτω τον πρώτο σου μισθό ή έσοδο.',
+                onboardingStep2: '📌 Πρόσθεσε ένα μηνιαίο πάγιο έξοδο (π.χ. ενοίκιο, λογαριασμοί).',
+                onboardingStep3: '🧾 Καταχώρησε ένα μεταβλητό έξοδο όπως σούπερ μάρκετ.',
+                onboardingStep4: '📊 Δες τον ημερήσιο προϋπολογισμό στην πάνω κάρτα.',
+                onboardingStep5: '🤖 Ζήτα συμβουλές από τον βοηθό AI ή δοκίμασε φωνή.',
+                onboardingStep6: '📥 Μπορείς επίσης να εισάγεις κινήσεις τράπεζας σε CSV ή Excel.',
+                onboardingNext: 'Επόμενο →',
+                onboardingSkip: 'Παράλειψη',
+                onboardingSubtitle: 'Ακολούθησε τον οδηγό βήμα προς βήμα',
+                importReview: '📋 Έλεγχος εισαγωγής',
+                importConfirm: '✅ Επιβεβαίωση',
+                importCancel: '✕ Ακύρωση',
+                importCategory: 'Κατηγορία',
+                importLearn: '📌 Η εφαρμογή θα θυμάται αυτή την επιλογή',
+                importSuggested: 'Προτείνεται: {cat} (επιβεβαίωσε για εκμάθηση)',
+                csvMappingTitle: '📋 Αντιστοίχιση στηλών CSV',
+                csvMappingInstructionsHtml: '<strong>📌 Οδηγίες:</strong> Αντιστοίχισε κάθε στήλη CSV στο σωστό πεδίο. Θετικά ποσά = <strong>έσοδα</strong>, αρνητικά = <strong>έξοδα</strong>.',
+                csvMappingFieldsTitle: '🎯 Αντιστοίχιση πεδίων:',
+                categoriesSectionTitle: '📂 Διαχείριση κατηγοριών',
+                manageCustomCategories: '➕ Διαχείριση προσαρμοσμένων κατηγοριών',
+                newCategoryLabel: 'Νέα κατηγορία',
+                newCategoryPlaceholder: 'π.χ. Ταξίδια',
+                defaultCategoriesTitle: 'Προεπιλεγμένες κατηγορίες',
+                yourCategoriesTitle: 'Οι κατηγορίες σου',
+                close: 'Κλείσιμο',
+                manageCategories: '📂 Διαχείριση κατηγοριών',
+                addCategory: '➕ Προσθήκη κατηγορίας',
+                categoryName: 'Όνομα κατηγορίας',
+                saveCategory: 'Αποθήκευση',
+                deleteCategory: '🗑️ Διαγραφή',
+                confirmDeleteCategory: 'Διαγραφή κατηγορίας «{name}»;',
+                categoryAlreadyExists: 'Η κατηγορία υπάρχει ήδη',
+                categoryAdded: '✅ Προστέθηκε κατηγορία!',
+                categoryDeleted: '🗑️ Διαγράφηκε κατηγορία',
+                categoryUpdated: '✏️ Ενημερώθηκε κατηγορία',
+                showAllExpenses: 'Εμφάνιση όλων των εξόδων της περιόδου',
+                edit: 'Επεξεργασία',
+                aiSuggestionsTitle: '🤖 Προτάσεις AI',
+                aiSmartBadge: 'έξυπνο'
+            },
+            ar: {
+                plannedSavingsLabel: 'الادخار المخطط',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'مع ادخار بنسبة {p}% تصل للهدف قبل {m} أشهر',
+                resetColors: 'إعادة تعيين الألوان الافتراضية',
+                budget: 'الميزانية اليومية',
+                weeklyReportTitle: '📝 تقرير أسبوعي',
+                regenerateReport: 'إعادة إنشاء التقرير',
+                challengesTitle: '🎮 التحديات',
+                challengeReduceDescTpl: 'أنفق {pct}% أقل في المتغيرات لمدة {weeks} أسابيع',
+                challengeRewardAddTpl: 'المكافأة: أضف {amount} إلى صندوق الادخار',
+                claimReward: '🎁 استلام المكافأة',
+                challengeProgressTpl: 'الأسابيع المكتملة: {done}/{target}',
+                remaining: 'المتبقي',
+                days: 'الأيام المتبقية',
+                period: 'الفترة',
+                totalIncome: 'إجمالي الدخل',
+                startGuide: '👋 ابدأ بإضافة دخلك أدناه!',
+                incomes: '🏦 دخل الفترة',
+                fixed: '📌 المصاريف الثابتة الشهرية',
+                variable: '🧾 المصاريف المتغيرة',
+                chart: '📊 توزيع المصاريف',
+                burnRateTitle: '📈 معدل الاستهلاك للفترة',
+                burnRateNote: 'أضف دخلاً واحدًا على الأقل لحساب الاتجاه',
+                assistant: '🤖 مساعد مالي بالذكاء الاصطناعي',
+                savings: '🎯 هدف الادخار',
+                settings: '⚙️ الإعدادات',
+                languageLabel: '🌍 اللغة',
+                thresholdLabel: '🔔 حدّ التنبيه (€)',
+                backupLabel: '📅 النسخة الاحتياطية',
+                badge: 'متعدد',
+                addIncome: '➕ إضافة دخل',
+                addFixed: '➕ إضافة مصروف ثابت',
+                addExpense: '➕ إضافة مصروف',
+                resetDay: '🗑️ مسح مصاريف اليوم',
+                applySavings: 'تطبيق الادخار',
+                backup: '💾 تنزيل النسخة الاحتياطية',
+                restore: '📂 استعادة',
+                resetAll: '⚠️ إعادة تعيين كاملة',
+                export: '📅 تصدير إلى التقويم',
+                send: 'إرسال',
+                docTitle: '💰 BudgetWise 2.0 - إدارة مالية ذكية',
+                subtitle: 'من راتب إلى راتب — إدارة ذكية بالذكاء الاصطناعي',
+                positiveBalance: 'رصيد إيجابي',
+                negativeBalance: 'تحذير: رصيد سلبي',
+                onboardingWelcome: '👋 مرحبًا بك في BudgetWise',
+                onboardingStep1: 'أضف أول راتب أو دخل لك أدناه.',
+                onboardingStep2: '📌 أضف مصروفًا ثابتًا شهريًا (مثل الإيجار والفواتير).',
+                onboardingStep3: '🧾 سجّل مصروفًا متغيرًا مثل التسوق.',
+                onboardingStep4: '📊 تحقق من ميزانيتك اليومية في البطاقة العلوية.',
+                onboardingStep5: '🤖 اطلب نصائح من مساعد الذكاء الاصطناعي أو جرّب الإدخال الصوتي.',
+                onboardingStep6: '📥 يمكنك أيضًا استيراد معاملات البنك بصيغة CSV أو Excel.',
+                onboardingNext: 'التالي →',
+                onboardingSkip: 'تخطي',
+                onboardingSubtitle: 'اتّبع الدليل خطوة بخطوة',
+                importReview: '📋 مراجعة الاستيراد',
+                importConfirm: '✅ تأكيد',
+                importCancel: '✕ إلغاء',
+                importCategory: 'الفئة',
+                importLearn: '📌 سيحفظ التطبيق هذا الاختيار',
+                importSuggested: 'مقترح: {cat} (أكد للتعلّم)',
+                csvMappingTitle: '📋 ربط أعمدة CSV',
+                csvMappingInstructionsHtml: '<strong>📌 تعليمات:</strong> اربط كل عمود CSV بالحقل الصحيح. القيم الإيجابية هي <strong>دخل</strong> والسلبية هي <strong>مصاريف</strong>.',
+                csvMappingFieldsTitle: '🎯 ربط الحقول:',
+                categoriesSectionTitle: '📂 إدارة الفئات',
+                manageCustomCategories: '➕ إدارة الفئات المخصصة',
+                newCategoryLabel: 'فئة جديدة',
+                newCategoryPlaceholder: 'مثال: سفر',
+                defaultCategoriesTitle: 'الفئات الافتراضية',
+                yourCategoriesTitle: 'فئاتك',
+                close: 'إغلاق',
+                manageCategories: '📂 إدارة الفئات',
+                addCategory: '➕ إضافة فئة',
+                categoryName: 'اسم الفئة',
+                saveCategory: 'حفظ',
+                deleteCategory: '🗑️ حذف',
+                confirmDeleteCategory: 'هل تريد حذف الفئة «{name}»؟',
+                categoryAlreadyExists: 'الفئة موجودة بالفعل',
+                categoryAdded: '✅ تمت إضافة الفئة!',
+                categoryDeleted: '🗑️ تم حذف الفئة',
+                categoryUpdated: '✏️ تم تحديث الفئة',
+                showAllExpenses: 'عرض جميع مصاريف الفترة',
+                edit: 'تحرير',
+                aiSuggestionsTitle: '🤖 اقتراحات الذكاء الاصطناعي',
+                aiSmartBadge: 'ذكي'
+            },
+            },
             en: {
+                plannedSavingsLabel: 'Planned savings',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'If you save {p}%, you reach the goal {m} months sooner',
                 resetColors: 'Reset default colors',
                 budget: 'Daily budget',
+                weeklyReportTitle: '📝 Weekly report',
+                regenerateReport: 'Regenerate report',
+                challengesTitle: '🎮 Challenges',
+                challengeReduceDescTpl: 'Spend {pct}% less in variable expenses for {weeks} weeks',
+                challengeRewardAddTpl: 'Reward: add {amount} to savings pot',
+                claimReward: '🎁 Claim reward',
+                challengeProgressTpl: 'Weeks completed: {done}/{target}',
                 remaining: 'Remaining',
                 days: 'Days left',
                 period: 'Period',
@@ -272,6 +726,8 @@ class BudgetWise {
                 fixed: '📌 Monthly fixed expenses',
                 variable: '🧾 Variable expenses',
                 chart: '📊 Expense distribution',
+                burnRateTitle: '📈 Burn Rate of the period',
+                burnRateNote: 'Add at least one income to compute the trend',
                 assistant: '🤖 AI Financial Assistant',
                 savings: '🎯 Savings goal',
                 settings: '⚙️ Settings',
@@ -471,8 +927,18 @@ class BudgetWise {
                 close: 'Close',
             },
             es: {
+                plannedSavingsLabel: 'Ahorro planificado',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Si ahorras {p}%, llegas {m} meses antes a tu objetivo',
                 resetColors: 'Restablecer colores predeterminados',
                 budget: 'Presupuesto diario',
+                weeklyReportTitle: '📝 Informe semanal',
+                regenerateReport: 'Regenerar informe',
+                challengesTitle: '🎮 Retos',
+                challengeReduceDescTpl: 'Gasta {pct}% menos en variables durante {weeks} semanas',
+                challengeRewardAddTpl: 'Recompensa: añade {amount} al fondo de ahorro',
+                claimReward: '🎁 Reclamar recompensa',
+                challengeProgressTpl: 'Semanas completadas: {done}/{target}',
                 remaining: 'Restante',
                 days: 'Días restantes',
                 period: 'Período',
@@ -482,6 +948,8 @@ class BudgetWise {
                 fixed: '📌 Gastos fijos mensuales',
                 variable: '🧾 Gastos variables',
                 chart: '📊 Distribución de gastos',
+                burnRateTitle: '📈 Burn Rate del período',
+                burnRateNote: 'Añade al menos un ingreso para calcular la tendencia',
                 assistant: '🤖 Asistente financiero IA',
                 savings: '🎯 Objetivo de ahorro',
                 settings: '⚙️ Ajustes',
@@ -671,8 +1139,18 @@ class BudgetWise {
                 edit: 'Editar'
             },
             fr: {
+                plannedSavingsLabel: 'Épargne planifiée',
+                plannedSavingsShortHint: '💡 +{p}%',
+                plannedSavingsTooltip: 'Avec {p}% d’épargne, tu atteins l’objectif {m} mois plus tôt',
                 resetColors: 'Réinitialiser les couleurs par défaut',
                 budget: 'Budget journalier',
+                weeklyReportTitle: '📝 Rapport hebdomadaire',
+                regenerateReport: 'Régénérer le rapport',
+                challengesTitle: '🎮 Défis',
+                challengeReduceDescTpl: 'Dépense {pct}% de moins en variables pendant {weeks} semaines',
+                challengeRewardAddTpl: 'Récompense : ajoute {amount} à la cagnotte',
+                claimReward: '🎁 Récupérer la récompense',
+                challengeProgressTpl: 'Semaines terminées : {done}/{target}',
                 remaining: 'Reste',
                 days: 'Jours restants',
                 period: 'Période',
@@ -682,6 +1160,8 @@ class BudgetWise {
                 fixed: '📌 Dépenses fixes mensuelles',
                 variable: '🧾 Dépenses variables',
                 chart: '📊 Répartition des dépenses',
+                burnRateTitle: '📈 Burn Rate de la période',
+                burnRateNote: 'Ajoute au moins un revenu pour calculer la tendance',
                 assistant: '🤖 Assistant financier IA',
                 savings: '🎯 Objectif d’épargne',
                 settings: '⚙️ Paramètres',
@@ -877,6 +1357,14 @@ class BudgetWise {
 
     init() {
         this.loadData();
+        if (!this.data.language) {
+            const nav = (Array.isArray(navigator.languages) && navigator.languages[0]) || navigator.language || '';
+            const code = String(nav).toLowerCase().slice(0, 2);
+            const supported = ['it','en','es','fr','de','pt','nl','el','ar'];
+            this.data.language = supported.includes(code) ? code : 'it';
+            this.saveData();
+        }
+        this.initChallenges();
         this.setupEventListeners();
         this.applyTheme();
         // NOTE: custom colors should NOT override theme defaults unless the user explicitly saved them.
@@ -889,6 +1377,7 @@ class BudgetWise {
         this.setupColorPickers();
         this.updateUI();
         this.updateChart();
+        this.updateBurnRateChart();
         this.setupVoice();
         this.applyLanguage();
         this.startOnboarding();
@@ -1196,6 +1685,7 @@ class BudgetWise {
         const subtitleEl = document.querySelector('.subtitle');
         if (subtitleEl) subtitleEl.textContent = this.t('subtitle');
         document.documentElement.lang = (this.data.language || 'it');
+        document.documentElement.dir = (this.data.language === 'ar') ? 'rtl' : 'ltr';
         document.title = this.t('docTitle');
         
         const summaryLabels = document.querySelectorAll('.summary-label');
@@ -1212,6 +1702,7 @@ class BudgetWise {
             else if (text.includes('📌')) h2.innerHTML = this.t('fixed');
             else if (text.includes('🧾')) h2.innerHTML = this.t('variable');
             else if (text.includes('📊')) h2.innerHTML = this.t('chart');
+            else if (text.includes('📈')) h2.innerHTML = this.t('burnRateTitle');
             else if (text.includes('Suggerimenti')) h2.innerHTML = this.t('aiSuggestionsTitle');
             else if (text.includes('🤖')) h2.innerHTML = this.t('assistant');
             else if (text.includes('🎯')) h2.innerHTML = this.t('savings');
@@ -1260,6 +1751,17 @@ class BudgetWise {
         if (helpFixed) helpFixed.textContent = this.t('helpFixed');
         
         document.getElementById('chartNote').textContent = this.t('chartNote');
+        const burnRateNote = document.getElementById('burnRateNote');
+        if (burnRateNote) burnRateNote.textContent = this.t('burnRateNote');
+        const autoLangLabel = document.getElementById('autoLangLabel');
+        if (autoLangLabel) autoLangLabel.textContent = this.t('autoRecommended');
+        const autoLangToggle = document.getElementById('autoLangToggle');
+        if (autoLangToggle) {
+            const auto = localStorage.getItem('budgetwise-language-auto') === 'true';
+            autoLangToggle.checked = auto;
+            const langSelect = document.getElementById('languageSelect');
+            if (langSelect) langSelect.disabled = auto;
+        }
         
         const percentLabel = document.querySelector('.input-group label[for="savePercent"]');
         if (percentLabel) percentLabel.textContent = this.t('percentLabel');
@@ -1310,6 +1812,42 @@ class BudgetWise {
         
         const daysLabel = document.getElementById('daysLabel');
         if (daysLabel) daysLabel.textContent = this.t('days');
+        const plannedBadge = document.getElementById('plannedSavingsBadge');
+        if (plannedBadge) {
+            const planned = this.calculatePlannedSavings();
+            plannedBadge.textContent = planned > 0 ? `${this.t('plannedSavingsLabel')}: ${this.formatCurrency(planned)}` : '';
+            if (planned > 0) {
+                const percent = this.data.savingsPercent || 0;
+                if (percent > 0 && percent < 20) {
+                    const suggested = Math.min(percent + 5, 20);
+                    const income = this.calculateTotalIncome();
+                    const goal = this.data.savingsGoal || 0;
+                    let hint = this.t('plannedSavingsShortHint', { p: suggested });
+                    if (goal > 0 && income > 0) {
+                        const monthsNeeded = Math.ceil(goal / ((income * percent) / 100));
+                        const newMonths = Math.ceil(goal / ((income * suggested) / 100));
+                        const diff = Math.max(0, monthsNeeded - newMonths);
+                        if (diff > 0 && isFinite(diff)) {
+                            plannedBadge.title = this.t('plannedSavingsTooltip', { p: suggested, m: diff });
+                        } else {
+                            plannedBadge.title = this.t('plannedSavingsTooltip', { p: suggested, m: 1 });
+                        }
+                    }
+                    plannedBadge.textContent += ` • ${hint}`;
+                } else {
+                    plannedBadge.title = '';
+                }
+                plannedBadge.classList.remove('good','warn');
+                if (percent >= 20) {
+                    plannedBadge.classList.add('good');
+                } else if (percent > 0) {
+                    plannedBadge.classList.add('warn');
+                }
+            } else {
+                plannedBadge.title = '';
+                plannedBadge.classList.remove('good','warn');
+            }
+        }
         
         const assistantNameText = document.getElementById('assistantNameText');
         if (assistantNameText) assistantNameText.textContent = this.t('assistantName');
@@ -1836,7 +2374,7 @@ updateFixedStatusHome() {
     calculateProjectedSavingsEnd() {
         const pot = this.data.savingsPot || 0;
         const planned = this.calculatePlannedSavings();
-        const remaining = this.calculateRemaining(); // remaining budget after fixed + planned savings - variable spent
+        const remaining = this.calculateRemaining();
         // Se vai in rosso, non aumentiamo il pot con un valore negativo
         return pot + planned + Math.max(0, remaining);
     }
@@ -1850,7 +2388,10 @@ updateFixedStatusHome() {
     }
 
     calculateDailyBudget() {
-        const remaining = this.calculateRemaining();
+        const totalIncome = this.calculateTotalIncome();
+        const totalFixed = this.calculateTotalFixedExpensesUnpaid();
+        const budget = totalIncome - totalFixed;
+        const remaining = budget - this.calculateTotalVariableExpenses();
         const daysLeft = this.getDaysLeft();
         return daysLeft > 0 ? remaining / daysLeft : 0;
     }
@@ -2137,6 +2678,28 @@ updateFixedStatusHome() {
             this.data.threshold = parseFloat(e.target.value) || 50;
             this.saveData();
         });
+        const autoLangToggle = document.getElementById('autoLangToggle');
+        if (autoLangToggle) {
+            const auto = localStorage.getItem('budgetwise-language-auto') === 'true';
+            autoLangToggle.checked = auto;
+            document.getElementById('languageSelect').disabled = auto;
+            autoLangToggle.addEventListener('change', (e) => {
+                const enabled = !!e.target.checked;
+                localStorage.setItem('budgetwise-language-auto', enabled ? 'true' : 'false');
+                document.getElementById('languageSelect').disabled = enabled;
+                if (enabled) {
+                    const nav = (Array.isArray(navigator.languages) && navigator.languages[0]) || navigator.language || '';
+                    const code = String(nav).toLowerCase().slice(0, 2);
+                    const supported = ['it','en','es','fr','de','pt','nl','el','ar'];
+                    const chosen = supported.includes(code) ? code : 'it';
+                    this.data.language = chosen;
+                    this.saveData();
+                    this.applyLanguage();
+                    this.updateUI();
+                    this.updateChart();
+                }
+            });
+        }
         document.getElementById('savePercent').addEventListener('input', (e) => {
             this.data.savingsPercent = parseFloat(e.target.value) || 0;
             this.saveData();
@@ -2173,6 +2736,19 @@ updateFixedStatusHome() {
         }
         
         this.setupAiActions();
+        const claimBtn = document.getElementById('claimRewardBtn');
+        if (claimBtn) {
+            claimBtn.addEventListener('click', () => this.claimChallengeReward());
+        }
+        const regenBtn = document.getElementById('regenerateReportBtn');
+        if (regenBtn) {
+            regenBtn.textContent = this.t('regenerateReport');
+            regenBtn.addEventListener('click', () => {
+                const txt = this.generateWeeklyNarrativeReport();
+                const el = document.getElementById('weeklyReportText');
+                if (el) el.textContent = txt;
+            });
+        }
     }
 
     updateUI() {
@@ -2181,6 +2757,42 @@ updateFixedStatusHome() {
         document.getElementById('dailyBudget').textContent = this.formatCurrency(this.calculateDailyBudget());
         document.getElementById('remaining').textContent = this.formatCurrency(this.calculateRemaining());
         document.getElementById('daysLeft').textContent = this.getDaysLeft();
+        const plannedBadge = document.getElementById('plannedSavingsBadge');
+        if (plannedBadge) {
+            const planned = this.calculatePlannedSavings();
+            plannedBadge.textContent = planned > 0 ? `${this.t('plannedSavingsLabel')}: ${this.formatCurrency(planned)}` : '';
+            if (planned > 0) {
+                const percent = this.data.savingsPercent || 0;
+                if (percent > 0 && percent < 20) {
+                    const suggested = Math.min(percent + 5, 20);
+                    const income = this.calculateTotalIncome();
+                    const goal = this.data.savingsGoal || 0;
+                    let hint = this.t('plannedSavingsShortHint', { p: suggested });
+                    if (goal > 0 && income > 0) {
+                        const monthsNeeded = Math.ceil(goal / ((income * percent) / 100));
+                        const newMonths = Math.ceil(goal / ((income * suggested) / 100));
+                        const diff = Math.max(0, monthsNeeded - newMonths);
+                        if (diff > 0 && isFinite(diff)) {
+                            plannedBadge.title = this.t('plannedSavingsTooltip', { p: suggested, m: diff });
+                        } else {
+                            plannedBadge.title = this.t('plannedSavingsTooltip', { p: suggested, m: 1 });
+                        }
+                    }
+                    plannedBadge.textContent += ` • ${hint}`;
+                } else {
+                    plannedBadge.title = '';
+                }
+                plannedBadge.classList.remove('good','warn');
+                if (percent >= 20) {
+                    plannedBadge.classList.add('good');
+                } else if (percent > 0) {
+                    plannedBadge.classList.add('warn');
+                }
+            } else {
+                plannedBadge.title = '';
+                plannedBadge.classList.remove('good','warn');
+            }
+        }
 
         // Piano risparmi (fondo separato dal budget)
         const potEl = document.getElementById('savingsPot');
@@ -2197,7 +2809,65 @@ updateFixedStatusHome() {
             remainingStatus.title = remaining >= 0 ? this.t('positiveBalance') : this.t('negativeBalance');
         }
         if (remainingTrend) {
-            remainingTrend.textContent = this.t('vsYesterday0');
+            const today = new Date();
+            const todayIso = today.toISOString().split('T')[0];
+            let todaySpent = 0;
+            if (this.data.variableExpenses && Array.isArray(this.data.variableExpenses[todayIso])) {
+                todaySpent = this.data.variableExpenses[todayIso].reduce((s, e) => s + (Number(e.amount || 0) || 0), 0);
+            }
+            const dailyBudget = this.calculateDailyBudget();
+            const totalIncome = this.calculateTotalIncome();
+            const totalFixed = this.calculateTotalFixedExpensesUnpaid();
+            const remainingNoSavings = (totalIncome - totalFixed) - this.calculateTotalVariableExpenses();
+            const daysLeft = this.getDaysLeft();
+            const avg7Arr = this.getLast7DaysData();
+            const avg7 = avg7Arr.length ? (avg7Arr.reduce((a,b)=>a+b,0) / avg7Arr.length) : 0;
+            const runoutDays = avg7 > 0 ? Math.ceil(Math.max(0, remainingNoSavings) / avg7) : Infinity;
+            const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+            const tomIso = tomorrow.toISOString().split('T')[0];
+            let tomorrowFixed = 0;
+            const occs = this.getFixedOccurrencesInPeriod();
+            occs.forEach(o => { if (!o.paid && o.dueDate === tomIso) tomorrowFixed += (Number(o.amount||0)||0); });
+            const msgRisk = (lang) => {
+                const d = runoutDays;
+                return lang === 'it' ? `⚠️ A questo ritmo sarai a zero in ${d} giorni`
+                     : lang === 'en' ? `⚠️ At this pace you'll hit zero in ${d} days`
+                     : lang === 'es' ? `⚠️ A este ritmo llegarás a cero en ${d} días`
+                     : lang === 'fr' ? `⚠️ À ce rythme tu seras à zéro dans ${d} jours`
+                     : lang === 'de' ? `⚠️ Mit diesem Tempo bist du in ${d} Tagen bei null`
+                     : lang === 'pt' ? `⚠️ Nesse ritmo você chega a zero em ${d} dias`
+                     : lang === 'nl' ? `⚠️ In dit tempo ben je over ${d} dagen op nul`
+                     : lang === 'el' ? `⚠️ Με αυτόν τον ρυθμό θα μηδενίσεις σε ${d} ημέρες`
+                     : `⚠️ At this pace you'll hit zero in ${d} days`;
+            };
+            const msgTomorrow = (lang, amt) => {
+                const a = this.formatCurrency(amt);
+                return lang === 'it' ? `⚠️ Domani fissa: ${a}. Riduci oggi`
+                     : lang === 'en' ? `⚠️ Fixed tomorrow: ${a}. Cut today`
+                     : lang === 'es' ? `⚠️ Fija mañana: ${a}. Reduce hoy`
+                     : lang === 'fr' ? `⚠️ Fixe demain: ${a}. Réduis aujourd’hui`
+                     : lang === 'de' ? `⚠️ Fixkosten morgen: ${a}. Heute reduzieren`
+                     : lang === 'pt' ? `⚠️ Fixa amanhã: ${a}. Reduza hoje`
+                     : lang === 'nl' ? `⚠️ Vaste last morgen: ${a}. Vandaag minderen`
+                     : lang === 'el' ? `⚠️ Πάγιο αύριο: ${a}. Μείωσε σήμερα`
+                     : `⚠️ Fixed tomorrow: ${a}. Cut today`;
+            };
+            if (tomorrowFixed > dailyBudget) {
+                remainingTrend.textContent = msgTomorrow(this.data.language, tomorrowFixed);
+            } else if (avg7 > dailyBudget && runoutDays < daysLeft) {
+                remainingTrend.textContent = msgRisk(this.data.language);
+            } else {
+                const labelToday = (this.data.language === 'it' ? 'Oggi' :
+                    (this.data.language === 'en' ? 'Today' :
+                    (this.data.language === 'es' ? 'Hoy' :
+                    (this.data.language === 'fr' ? 'Aujourd’hui' :
+                    (this.data.language === 'de' ? 'Heute' :
+                    (this.data.language === 'pt' ? 'Hoje' :
+                    (this.data.language === 'nl' ? 'Vandaag' :
+                    (this.data.language === 'el' ? 'Σήμερα' :
+                    (this.data.language === 'ar' ? 'اليوم' : 'Today')))))))));
+                remainingTrend.textContent = `${labelToday}: ${this.formatCurrency(todaySpent)} / ${this.formatCurrency(dailyBudget)}`;
+            }
         }
 
         this.updatePeriodInfo();
@@ -2259,8 +2929,205 @@ updateFixedStatusHome() {
         this.drawSparkline('budgetSparkline', last7DaysBudget, '#0ea5e9');
         const remainingColor = this.calculateRemaining() >= 0 ? '#2dc653' : '#ef233c';
         this.drawSparkline('remainingSparkline', last7Days, remainingColor);
+        this.updateBurnRateChart();
 
         this.generateAiSuggestion();
+        const challengesTitle = document.getElementById('challengesTitle');
+        if (challengesTitle) challengesTitle.textContent = this.t('challengesTitle');
+        this.updateChallengesUI();
+        const wrTitle = document.getElementById('weeklyReportTitle');
+        if (wrTitle) wrTitle.textContent = this.t('weeklyReportTitle');
+        const wrEl = document.getElementById('weeklyReportText');
+        if (wrEl) wrEl.textContent = this.generateWeeklyNarrativeReport();
+    }
+
+    generateWeeklyNarrativeReport() {
+        const lang = this.data.language || 'it';
+        const ps = this.normalizeIsoDate(this.data.periodStart);
+        const pe = this.normalizeIsoDate(this.data.periodEnd);
+        if (!ps || !pe) {
+            return lang === 'it' ? 'Aggiungi un periodo e qualche spesa per generare il report'
+                 : 'Add a period and some expenses to generate the report';
+        }
+        const start = new Date(ps);
+        const end = new Date(pe);
+        const today = new Date();
+        const curEnd = today < end ? today : end;
+        const prevStartIso = this.addMonthsClamp(ps, -1);
+        const prevStart = new Date(prevStartIso);
+        const prevEnd = new Date(ps);
+        const curMap = this.sumVariableByCategoryBetween(start, curEnd);
+        const prevMap = this.sumVariableByCategoryBetween(prevStart, prevEnd);
+        const deltas = [];
+        Object.keys(curMap).forEach(cat => {
+            const c = curMap[cat] || 0;
+            const p = prevMap[cat] || 0;
+            const pct = p > 0 ? ((c - p) / p) : (c > 0 ? 1 : 0);
+            if (pct > 0.05) deltas.push({ cat, pct: Math.round(pct*100), amount: c });
+        });
+        deltas.sort((a,b)=>b.pct - a.pct);
+        const fixedCur = this.sumFixedBetween(start, curEnd);
+        const fixedPrev = this.sumFixedBetween(prevStart, prevEnd);
+        const fixedStable = fixedPrev > 0 ? Math.abs((fixedCur - fixedPrev) / fixedPrev) < 0.05 : true;
+        const totalIncome = this.calculateTotalIncome();
+        const totalFixed = this.calculateTotalFixedExpensesUnpaid();
+        const remainingNoSavings = (totalIncome - totalFixed) - this.calculateTotalVariableExpenses();
+        const daysLeft = this.getDaysLeft();
+        const avg7Arr = this.getLast7DaysData();
+        const avg7 = avg7Arr.length ? (avg7Arr.reduce((a,b)=>a+b,0) / avg7Arr.length) : 0;
+        const dailyBudget = this.calculateDailyBudget();
+        const projectedSpend = avg7 * Math.max(0, daysLeft);
+        const targetSpend = dailyBudget * Math.max(0, daysLeft);
+        const diff = projectedSpend - targetSpend;
+        const fmt = (v) => this.formatCurrency(Math.abs(Math.round(v)));
+        const top = deltas[0];
+        const catTxt = top ? (lang === 'it'
+            ? `Hai speso ${top.pct}% in più in ${top.cat} rispetto al mese scorso`
+            : `You spent ${top.pct}% more on ${top.cat} than last month`)
+            : (lang === 'it' ? 'Le spese variabili sono in linea con il mese scorso' : 'Variable spending is in line with last month');
+        const fixedTxt = fixedStable
+            ? (lang === 'it' ? 'mentre le spese fisse sono stabili' : 'while fixed bills are stable')
+            : (lang === 'it'
+                ? `con le spese fisse ${fixedCur > fixedPrev ? 'in aumento' : 'in calo'}`
+                : `with fixed bills ${fixedCur > fixedPrev ? 'increasing' : 'decreasing'}`);
+        const endTxt = diff > 0
+            ? (lang === 'it' ? `Se mantieni questo ritmo, arriverai a fine mese con ${fmt(diff)} in meno`
+                              : `At this pace, you’ll end the month with ${fmt(diff)} less`)
+            : (lang === 'it' ? `Se mantieni questo ritmo, arriverai a fine mese con ${fmt(diff)} in più`
+                              : `At this pace, you’ll end the month with ${fmt(diff)} more`);
+        return `${catTxt}, ${fixedTxt}. ${endTxt}.`;
+    }
+
+    sumVariableByCategoryBetween(start, end) {
+        const out = {};
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime()) || d < start || d > end) return;
+                if (Array.isArray(arr)) {
+                    arr.forEach(e => {
+                        const cat = e.category || 'Altro';
+                        out[cat] = (out[cat] || 0) + (Number(e.amount||0)||0);
+                    });
+                }
+            });
+        }
+        return out;
+    }
+
+    sumFixedBetween(start, end) {
+        let total = 0;
+        const occs = this.getFixedOccurrencesInPeriod ? this.getFixedOccurrencesInPeriod() : [];
+        occs.forEach(o => {
+            const d = new Date(this.normalizeIsoDate(o.dueDate));
+            if (isNaN(d.getTime()) || d < start || d > end) return;
+            total += (Number(o.amount||0)||0);
+        });
+        return total;
+    }
+
+    initChallenges() {
+        if (!this.data.challenge) {
+            const baseline = this.computeWeeklyVariableAverage(28);
+            this.data.challenge = {
+                id: 'reduce10_var_4w',
+                startDate: new Date().toISOString().split('T')[0],
+                weeksTarget: 4,
+                targetReductionPercent: 10,
+                baselineWeeklyAvg: baseline,
+                weeksAchieved: 0,
+                completed: false,
+                claimed: false,
+                rewardType: 'savings_pot_add',
+                rewardAmount: 20
+            };
+            this.saveData();
+        }
+        this.evaluateChallengeProgress();
+    }
+
+    computeWeeklyVariableAverage(daysWindow) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - Math.max(1, daysWindow || 28));
+        let total = 0;
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime()) || d < start || d > end) return;
+                const sum = Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+                total += sum;
+            });
+        }
+        const dailyAvg = total / Math.max(1, Math.ceil((end - start) / (1000*60*60*24)));
+        return dailyAvg * 7;
+    }
+
+    evaluateChallengeProgress() {
+        const ch = this.data.challenge;
+        if (!ch) return;
+        const start = new Date(ch.startDate);
+        const today = new Date();
+        let weeksDone = 0;
+        for (let i = 0; i < ch.weeksTarget; i++) {
+            const ws = new Date(start); ws.setDate(start.getDate() + i*7);
+            const we = new Date(ws); we.setDate(ws.getDate() + 7);
+            if (we > today) break;
+            const sum = this.sumVariableBetween(ws, we);
+            const target = ch.baselineWeeklyAvg * (1 - ch.targetReductionPercent/100);
+            if (sum <= target) weeksDone += 1;
+        }
+        ch.weeksAchieved = weeksDone;
+        ch.completed = weeksDone >= ch.weeksTarget;
+        this.saveData();
+    }
+
+    sumVariableBetween(start, end) {
+        let total = 0;
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime()) || d < start || d > end) return;
+                const sum = Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+                total += sum;
+            });
+        }
+        return total;
+    }
+
+    updateChallengesUI() {
+        const ch = this.data.challenge;
+        const box = document.getElementById('challengeBox');
+        if (!box || !ch) return;
+        const desc = this.t('challengeReduceDescTpl', { pct: ch.targetReductionPercent, weeks: ch.weeksTarget });
+        const reward = this.t('challengeRewardAddTpl', { amount: this.formatCurrency(ch.rewardAmount) });
+        const progressText = this.t('challengeProgressTpl', { done: ch.weeksAchieved || 0, target: ch.weeksTarget });
+        document.getElementById('challengeDesc').textContent = desc;
+        document.getElementById('challengeRewardText').textContent = reward;
+        document.getElementById('challengeProgressText').textContent = progressText;
+        const bar = document.getElementById('challengeProgressBar');
+        const cont = document.getElementById('challengeProgressContainer');
+        if (bar && cont) {
+            const pct = Math.min(100, Math.round(((ch.weeksAchieved || 0) / ch.weeksTarget) * 100));
+            cont.style.display = 'block';
+            bar.style.width = pct + '%';
+        }
+        const claim = document.getElementById('claimRewardBtn');
+        if (claim) {
+            claim.style.display = ch.completed && !ch.claimed ? '' : 'none';
+            claim.textContent = this.t('claimReward');
+        }
+    }
+
+    claimChallengeReward() {
+        const ch = this.data.challenge;
+        if (!ch || !ch.completed || ch.claimed) return;
+        if (ch.rewardType === 'savings_pot_add') {
+            this.data.savingsPot = (this.data.savingsPot || 0) + (ch.rewardAmount || 0);
+        }
+        ch.claimed = true;
+        this.saveData();
+        this.updateUI();
     }
 
     // ========== FUNZIONI DI VISUALIZZAZIONE LISTE ==========
@@ -2619,6 +3486,200 @@ updateFixedStatusHome() {
         this.categoryExpenses = categoryExpenses;
     }
 
+    buildBurnRateSeries() {
+        const startIso = this.normalizeIsoDate(this.data.periodStart);
+        const endIso = this.normalizeIsoDate(this.data.periodEnd);
+        const start = new Date(startIso);
+        const end = new Date(endIso);
+        if ([start, end].some(d => isNaN(d.getTime()))) return { labels: [], data: [], meta: [], baseline: [] };
+        const varMap = {};
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([date, arr]) => {
+                const d = this.normalizeIsoDate(date);
+                if (!d || !this.isDateInPeriod(d)) return;
+                const sum = Array.isArray(arr) ? arr.reduce((s, e) => s + (Number(e.amount || 0) || 0), 0) : 0;
+                varMap[d] = (varMap[d] || 0) + sum;
+            });
+        }
+        const occs = this.getFixedOccurrencesInPeriod();
+        const unpaidFixedMap = {};
+        occs.forEach(o => {
+            if (!o || !o.dueDate || o.paid) return;
+            unpaidFixedMap[o.dueDate] = (unpaidFixedMap[o.dueDate] || 0) + (Number(o.amount || 0) || 0);
+        });
+        const totalIncome = this.calculateTotalIncome();
+        const initialRemaining = totalIncome;
+        let remaining = initialRemaining;
+        const labels = [];
+        const data = [];
+        const meta = [];
+        const baseline = [];
+        // baseline: distribuisce (initialRemaining - totale fisse) uniformemente sui giorni
+        let totalFixedUnpaid = 0;
+        Object.values(unpaidFixedMap).forEach(v => totalFixedUnpaid += (Number(v || 0) || 0));
+        const daysCount = Math.max(1, Math.ceil((end - start) / (1000 * 60 * 60 * 24)));
+        const dailyTarget = (initialRemaining - totalFixedUnpaid) / daysCount;
+        let cumulativeFixed = 0;
+        const cursor = new Date(start);
+        let dayIndex = 0;
+        while (cursor < end) {
+            const iso = cursor.toISOString().slice(0, 10);
+            const fixedToday = unpaidFixedMap[iso] || 0;
+            const varToday = varMap[iso] || 0;
+            if (fixedToday) remaining -= fixedToday;
+            if (varToday) remaining -= varToday;
+            cumulativeFixed += fixedToday;
+            const dLabel = cursor.toLocaleDateString(this.data.language === 'it' ? 'it-IT' : 'en-US', { day: '2-digit', month: '2-digit' });
+            labels.push(dLabel);
+            data.push(remaining);
+            meta.push({ fixedToday, varToday, remaining });
+            const baselineRemaining = initialRemaining - cumulativeFixed - (dailyTarget * (dayIndex + 1));
+            baseline.push(baselineRemaining);
+            cursor.setDate(cursor.getDate() + 1);
+            dayIndex += 1;
+        }
+        return { labels, data, meta, baseline };
+    }
+
+    updateBurnRateChart() {
+        const noteEl = document.getElementById('burnRateNote');
+        const canvas = document.getElementById('burnRateChart');
+        if (!canvas) return;
+        const series = this.buildBurnRateSeries();
+        const hasData = series.labels.length > 0 && this.calculateTotalIncome() > 0;
+        if (noteEl) noteEl.style.display = hasData ? 'none' : '';
+        if (!hasData) {
+            if (this.burnChart) { this.burnChart.destroy(); this.burnChart = null; }
+            return;
+        }
+        if (this.burnChart) { this.burnChart.destroy(); this.burnChart = null; }
+        const ctx = canvas.getContext('2d');
+        const colors = this.getCurrentThemeColors();
+        const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+        const accent = colors.accentLight || '#38bdf8';
+        grad.addColorStop(0, `${accent}`);
+        grad.addColorStop(0.3, `${accent}AA`);
+        grad.addColorStop(1, `${accent}00`);
+        const zeroLine = {
+            id: 'zeroLine',
+            afterDraw: (chart) => {
+                const yScale = chart.scales.y;
+                if (!yScale) return;
+                const y = yScale.getPixelForValue(0);
+                const { left, right } = chart.chartArea;
+                const c = chart.ctx;
+                c.save();
+                c.setLineDash([6, 4]);
+                c.strokeStyle = colors.textSecondary || '#a1a1aa';
+                c.lineWidth = 1;
+                c.beginPath();
+                c.moveTo(left, y);
+                c.lineTo(right, y);
+                c.stroke();
+                c.restore();
+            }
+        };
+        this.burnChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: series.labels,
+                datasets: [{
+                    data: series.data,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    fill: true,
+                    backgroundColor: grad
+                },{
+                    data: series.baseline,
+                    tension: 0.4,
+                    borderWidth: 2,
+                    borderColor: colors.warning || '#f59e0b',
+                    fill: false,
+                    borderDash: [8, 6]
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (context) => {
+                                const idx = context.dataIndex ?? 0;
+                                const m = series.meta[idx] || { fixedToday:0, varToday:0, remaining:0 };
+                                const r = this.formatCurrency(context.parsed.y || m.remaining || 0);
+                                const f = this.formatCurrency(m.fixedToday || 0);
+                                const v = this.formatCurrency(m.varToday || 0);
+                                const fixedTxt = this.data.language === 'it' ? 'Fisse oggi' :
+                                                  (this.data.language === 'de' ? 'Fixkosten heute' :
+                                                  (this.data.language === 'pt' ? 'Fixas hoje' :
+                                                  (this.data.language === 'nl' ? 'Vaste lasten vandaag' :
+                                                  (this.data.language === 'el' ? 'Πάγια σήμερα' :
+                                                  (this.data.language === 'es' ? 'Fijas hoy' :
+                                                  (this.data.language === 'fr' ? 'Fixes aujourd’hui' :
+                                                   'Fixed today'))))));
+                                const varTxt = this.data.language === 'it' ? 'Variabili oggi' :
+                                               (this.data.language === 'de' ? 'Variabel heute' :
+                                               (this.data.language === 'pt' ? 'Variáveis hoje' :
+                                               (this.data.language === 'nl' ? 'Variabel vandaag' :
+                                               (this.data.language === 'el' ? 'Μεταβλητά σήμερα' :
+                                               (this.data.language === 'es' ? 'Variables hoy' :
+                                               (this.data.language === 'fr' ? 'Variables aujourd’hui' :
+                                                'Variables today'))))));
+                                // distinguere serie: saldo reale vs baseline
+                                const isBaseline = context.datasetIndex === 1;
+                                const titleTxt = isBaseline
+                                    ? (this.data.language === 'it' ? 'Saldo previsto' :
+                                       (this.data.language === 'de' ? 'Erwarteter Saldo' :
+                                       (this.data.language === 'pt' ? 'Saldo previsto' :
+                                       (this.data.language === 'nl' ? 'Verwachte saldo' :
+                                       (this.data.language === 'el' ? 'Αναμενόμενο υπόλοιπο' :
+                                       (this.data.language === 'es' ? 'Saldo previsto' :
+                                       (this.data.language === 'fr' ? 'Solde prévu' : 'Expected balance')))))))
+                                    : (this.data.language === 'it' ? 'Saldo' :
+                                       (this.data.language === 'de' ? 'Saldo' :
+                                       (this.data.language === 'pt' ? 'Saldo' :
+                                       (this.data.language === 'nl' ? 'Saldo' :
+                                       (this.data.language === 'el' ? 'Υπόλοιπο' :
+                                       (this.data.language === 'es' ? 'Saldo' :
+                                       (this.data.language === 'fr' ? 'Solde' : 'Balance')))))));
+                                const main = `${titleTxt}: ${r}`;
+                                if (isBaseline) return [main];
+                                return [main, `${fixedTxt}: ${f}`, `${varTxt}: ${v}`];
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { autoSkip: true, maxTicksLimit: 10 }
+                    },
+                    y: {
+                        ticks: {
+                            callback: (v) => this.formatCurrency(v)
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        borderColor: (ctx) => {
+                            const y0 = ctx.p0.parsed.y;
+                            const y1 = ctx.p1.parsed.y;
+                            const neg = y0 < 0 || y1 < 0;
+                            return neg ? (colors.danger || '#ef4444') : (colors.accent || '#0ea5e9');
+                        }
+                    },
+                    point: {
+                        radius: 0
+                    }
+                }
+            },
+            plugins: [zeroLine]
+        });
+    }
+
     showCategoryDetail(categoryName, expenses) {
         const detailContainer = document.getElementById('categoryDetail');
         const titleEl = document.getElementById('detailCategoryTitle');
@@ -2653,7 +3714,7 @@ updateFixedStatusHome() {
     formatCurrency(amount) {
         const value = Number(amount || 0);
         const lang = this.data.language || 'it';
-        const localeMap = { it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR' };
+        const localeMap = { it: 'it-IT', en: 'en-GB', es: 'es-ES', fr: 'fr-FR', de: 'de-DE', pt: 'pt-PT', nl: 'nl-NL', el: 'el-GR', ar: 'ar-EG' };
         const locale = localeMap[lang] || 'it-IT';
         try {
             return new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(value);
@@ -2774,6 +3835,7 @@ updateFixedStatusHome() {
             this.clearThemeInlineOverrides();
         }
         this.updateChart();
+        this.updateBurnRateChart();
     }
 
     applyTheme() {
@@ -4235,6 +5297,208 @@ document.documentElement.style.setProperty('--accent-gradient',
         const suggestions = [];
         const language = this.data.language;
         
+        // Proattivo: rischio andare a zero prima della fine
+        const totalIncome = this.calculateTotalIncome();
+        const totalFixed = this.calculateTotalFixedExpensesUnpaid();
+        const remainingNoSavings = (totalIncome - totalFixed) - this.calculateTotalVariableExpenses();
+        const daysLeft = this.getDaysLeft();
+        const avg7Arr = this.getLast7DaysData();
+        const avg7 = avg7Arr.length ? (avg7Arr.reduce((a,b)=>a+b,0) / avg7Arr.length) : 0;
+        const dailyBudget = this.calculateDailyBudget();
+        const runoutDays = avg7 > 0 ? Math.ceil(Math.max(0, remainingNoSavings) / avg7) : Infinity;
+        if (avg7 > dailyBudget && runoutDays < daysLeft) {
+            const d = runoutDays;
+            const msg = language === 'it'
+                ? `⚠️ A questo ritmo sarai a zero in ${d} giorni. Prova a restare sotto ${this.formatCurrency(dailyBudget)} al giorno.`
+                : language === 'en'
+                ? `⚠️ At this pace you'll hit zero in ${d} days. Try staying under ${this.formatCurrency(dailyBudget)} per day.`
+                : language === 'es'
+                ? `⚠️ A este ritmo llegarás a cero en ${d} días. Intenta gastar menos de ${this.formatCurrency(dailyBudget)} por día.`
+                : language === 'fr'
+                ? `⚠️ À ce rythme tu seras à zéro dans ${d} jours. Essaie de rester sous ${this.formatCurrency(dailyBudget)} par jour.`
+                : language === 'de'
+                ? `⚠️ Mit diesem Tempo bist du in ${d} Tagen bei null. Bleibe unter ${this.formatCurrency(dailyBudget)} pro Tag.`
+                : language === 'pt'
+                ? `⚠️ Nesse ritmo você chega a zero em ${d} dias. Tente ficar abaixo de ${this.formatCurrency(dailyBudget)} por dia.`
+                : language === 'nl'
+                ? `⚠️ In dit tempo ben je over ${d} dagen op nul. Blijf onder ${this.formatCurrency(dailyBudget)} per dag.`
+                : language === 'el'
+                ? `⚠️ Με αυτόν τον ρυθμό θα μηδενίσεις σε ${d} ημέρες. Προσπάθησε να μένεις κάτω από ${this.formatCurrency(dailyBudget)} την ημέρα.`
+                : `⚠️ At this pace you'll hit zero in ${d} days. Try staying under ${this.formatCurrency(dailyBudget)} per day.`;
+            suggestions.push({
+                message: msg,
+                action: language === 'it' ? 'Consigli budget' : 'Budget tips',
+                actionType: 'pace'
+            });
+        }
+        // Proattivo: fissa alta domani
+        const today = new Date();
+        const tomorrow = new Date(today); tomorrow.setDate(today.getDate()+1);
+        const tomIso = tomorrow.toISOString().split('T')[0];
+        const occs = this.getFixedOccurrencesInPeriod();
+        let tomorrowFixed = 0;
+        occs.forEach(o => { if (!o.paid && o.dueDate === tomIso) tomorrowFixed += (Number(o.amount||0)||0); });
+        if (tomorrowFixed > dailyBudget) {
+            const a = this.formatCurrency(tomorrowFixed);
+            const msg = language === 'it'
+                ? `⚠️ Domani hai una fissa di ${a}. Riduci oggi per restare in linea col budget.`
+                : language === 'en'
+                ? `⚠️ Fixed expense of ${a} tomorrow. Cut today to stay on budget.`
+                : language === 'es'
+                ? `⚠️ Mañana tienes un fijo de ${a}. Reduce hoy para mantener el presupuesto.`
+                : language === 'fr'
+                ? `⚠️ Dépense fixe de ${a} demain. Réduis aujourd’hui pour tenir le budget.`
+                : language === 'de'
+                ? `⚠️ Morgen hast du Fixkosten von ${a}. Heute reduzieren, um im Budget zu bleiben.`
+                : language === 'pt'
+                ? `⚠️ Amanhã há uma despesa fixa de ${a}. Reduza hoje para manter o orçamento.`
+                : language === 'nl'
+                ? `⚠️ Morgen staat een vaste last van ${a}. Minderen vandaag om binnen budget te blijven.`
+                : language === 'el'
+                ? `⚠️ Αύριο έχεις πάγιο ${a}. Μείωσε σήμερα για να μείνεις στο budget.`
+                : `⚠️ Fixed expense of ${a} tomorrow. Cut today to stay on budget.`;
+            suggestions.push({
+                message: msg,
+                action: language === 'it' ? 'Riduci oggi' : 'Cut today',
+                actionType: 'fixedTomorrow'
+            });
+        }
+        const dow = new Date().getDay();
+        const dowAvg = this.averageSpendForDow(dow, 56);
+        if (dowAvg > dailyBudget) {
+            const totalIncome2 = this.calculateTotalIncome();
+            const totalFixed2 = this.calculateTotalFixedExpensesUnpaid();
+            const remaining2 = (totalIncome2 - totalFixed2) - this.calculateTotalVariableExpenses();
+            const runout2 = dowAvg > 0 ? Math.ceil(Math.max(0, remaining2) / dowAvg) : Infinity;
+            if (runout2 < daysLeft) {
+                const dayName2 = this.getDayName(dow);
+                const msg2 = language === 'it'
+                    ? `🔮 Se oggi spendi come i ${dayName2} scorsi, finirai il budget tra ${runout2} giorni`
+                    : language === 'en'
+                    ? `🔮 If you spend like past ${dayName2}s, you’ll run out in ${runout2} days`
+                    : language === 'es'
+                    ? `🔮 Si gastas como los últimos ${dayName2}, te quedarás sin presupuesto en ${runout2} días`
+                    : language === 'fr'
+                    ? `🔮 Si tu dépenses comme les derniers ${dayName2}, tu seras à court dans ${runout2} jours`
+                    : language === 'de'
+                    ? `🔮 Wenn du wie an vergangenen ${dayName2} ausgibst, bist du in ${runout2} Tagen am Limit`
+                    : language === 'pt'
+                    ? `🔮 Se gastar como nas últimas ${dayName2}, ficará sem orçamento em ${runout2} dias`
+                    : language === 'nl'
+                    ? `🔮 Als je uitgeeft zoals eerdere ${dayName2}, ben je over ${runout2} dagen door je budget`
+                    : language === 'el'
+                    ? `🔮 Αν ξοδέψεις όπως τα προηγούμενα ${dayName2}, θα μηδενίσεις σε ${runout2} ημέρες`
+                    : `🔮 If you spend like past ${dayName2}s, you’ll run out in ${runout2} days`;
+                suggestions.unshift({
+                    message: msg2,
+                    action: language === 'it' ? 'Regola oggi' : 'Adjust today',
+                    actionType: 'dowPredict'
+                });
+            }
+        }
+        const trends = this.computeCategoryNegativeTrends(28, 28);
+        if (trends && trends.length >= 1) {
+            const top3 = trends.slice(0,3).map(t => `${t.cat} (+${Math.round(t.growth*100)}%)`).join(' • ');
+            const msg3 = language === 'it'
+                ? `📉 Trend negativo: ${top3} → valore emotivo, esamina`
+                : language === 'en'
+                ? `📉 Negative trend: ${top3} → emotional value, examine`
+                : language === 'es'
+                ? `📉 Tendencia negativa: ${top3} → valor emocional, examina`
+                : language === 'fr'
+                ? `📉 Tendance négative: ${top3} → valeur émotionnelle, examine`
+                : language === 'de'
+                ? `📉 Negativer Trend: ${top3} → emotionaler Wert, prüfen`
+                : language === 'pt'
+                ? `📉 Tendência negativa: ${top3} → valor emocional, examine`
+                : language === 'nl'
+                ? `📉 Negatieve trend: ${top3} → emotionele waarde, bekijk`
+                : language === 'el'
+                ? `📉 Αρνητική τάση: ${top3} → συναισθηματική αξία, εξέτασε`
+                : `📉 Negative trend: ${top3} → emotional value, examine`;
+            suggestions.unshift({
+                message: msg3,
+                action: language === 'it' ? 'Rivedi categorie' : 'Review categories',
+                actionType: 'catTrend'
+            });
+        }
+        const season = this.computeSeasonalityPreSalary();
+        if (season && season.isUpcoming && season.ratio > 1.2) {
+            const cutAmt = Math.round(Math.max(0, dailyBudget * (season.ratio - 1)));
+            const msg4 = language === 'it'
+                ? `📆 Negli anni passati, spendi di più nella settimana prima dello stipendio. Soglia adattiva: -${this.formatCurrency(cutAmt)} al giorno`
+                : language === 'en'
+                ? `📆 Historically you spend more in the week before payday. Adaptive threshold: -${this.formatCurrency(cutAmt)} per day`
+                : language === 'es'
+                ? `📆 Históricamente gastas más la semana previa al salario. Umbral adaptativo: -${this.formatCurrency(cutAmt)} por día`
+                : language === 'fr'
+                ? `📆 Historiquement tu dépenses plus la semaine avant le salaire. Seuil adaptatif: -${this.formatCurrency(cutAmt)} par jour`
+                : language === 'de'
+                ? `📆 Historisch gibst du in der Woche vor dem Gehalt mehr aus. Adaptiver Schwellenwert: -${this.formatCurrency(cutAmt)} pro Tag`
+                : language === 'pt'
+                ? `📆 Historicamente você gasta mais na semana antes do salário. Limite adaptativo: -${this.formatCurrency(cutAmt)} por dia`
+                : language === 'nl'
+                ? `📆 Historisch geef je meer uit in de week voor salaris. Adaptieve drempel: -${this.formatCurrency(cutAmt)} per dag`
+                : language === 'el'
+                ? `📆 Ιστορικά ξοδεύεις περισσότερο την εβδομάδα πριν τον μισθό. Προσαρμοστικό όριο: -${this.formatCurrency(cutAmt)} ανά ημέρα`
+                : `📆 Historically you spend more in the week before payday. Adaptive threshold: -${this.formatCurrency(cutAmt)} per day`;
+            suggestions.unshift({
+                message: msg4,
+                action: language === 'it' ? 'Applica soglia' : 'Apply threshold',
+                actionType: 'adaptiveThreshold',
+                amount: cutAmt
+            });
+        }
+        // Coach predittivo di spesa: profilo e piano
+        const coachProfile = this.computeSpendingProfile(30);
+        if (coachProfile.total > 0) {
+            const caps = this.computeCategoryCaps(coachProfile, dailyBudget);
+            const topCaps = Object.entries(caps).sort((a,b)=>a[1]-b[1]).slice(0,3);
+            const worstDow = coachProfile.dowAverages.length ? coachProfile.dowAverages.sort((a,b)=>b.avg-a.avg)[0] : null;
+            const lines = [];
+            if (topCaps.length) {
+                const capLine = topCaps.map(([cat, cap]) => `${cat}: ${this.formatCurrency(Math.max(0, cap))}`).join(' • ');
+                lines.push(language === 'it' ? `🎯 Limiti consigliati (al giorno): ${capLine}`
+                     : language === 'en' ? `🎯 Recommended daily caps: ${capLine}`
+                     : language === 'es' ? `🎯 Límites diarios recomendados: ${capLine}`
+                     : language === 'fr' ? `🎯 Plafonds quotidiens recommandés: ${capLine}`
+                     : language === 'de' ? `🎯 Tägliche Limits empfohlen: ${capLine}`
+                     : language === 'pt' ? `🎯 Limites diários recomendados: ${capLine}`
+                     : language === 'nl' ? `🎯 Aanbevolen daglimieten: ${capLine}`
+                     : language === 'el' ? `🎯 Συνιστώμενα ημερήσια όρια: ${capLine}`
+                     : `🎯 Recommended daily caps: ${capLine}`);
+            }
+            if (worstDow && worstDow.avg > dailyBudget) {
+                const dayName = this.getDayName(worstDow.dow);
+                const cut = Math.max(0, Math.round(worstDow.avg - dailyBudget));
+                const msg = language === 'it'
+                    ? `📅 Regola settimanale: riduci ${this.formatCurrency(cut)} il ${dayName}`
+                    : language === 'en'
+                    ? `📅 Weekly rule: cut ${this.formatCurrency(cut)} on ${dayName}`
+                    : language === 'es'
+                    ? `📅 Regla semanal: reduce ${this.formatCurrency(cut)} el ${dayName}`
+                    : language === 'fr'
+                    ? `📅 Règle hebdo: réduis de ${this.formatCurrency(cut)} le ${dayName}`
+                    : language === 'de'
+                    ? `📅 Wochenregel: reduziere ${this.formatCurrency(cut)} am ${dayName}`
+                    : language === 'pt'
+                    ? `📅 Regra semanal: reduza ${this.formatCurrency(cut)} na ${dayName}`
+                    : language === 'nl'
+                    ? `📅 Weekregel: minder ${this.formatCurrency(cut)} op ${dayName}`
+                    : language === 'el'
+                    ? `📅 Εβδομαδιαίος κανόνας: μείωσε κατά ${this.formatCurrency(cut)} την ${dayName}`
+                    : `📅 Weekly rule: cut ${this.formatCurrency(cut)} on ${dayName}`;
+                lines.push(msg);
+            }
+            if (lines.length) {
+                suggestions.unshift({
+                    message: lines.join(' • '),
+                    action: language === 'it' ? 'Coach plan' : 'Coach plan',
+                    actionType: 'coach'
+                });
+            }
+        }
+        
         const categoryTotals = {};
         if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
             Object.values(this.data.variableExpenses).forEach(day => {
@@ -4293,11 +5557,157 @@ document.documentElement.style.setProperty('--accent-gradient',
         }
 
         if (suggestions.length > 0) {
-            const randomIndex = Math.floor(Math.random() * suggestions.length);
-            this.showAiSuggestion(suggestions[randomIndex]);
+            this.showAiSuggestion(suggestions[0]);
         } else {
             document.getElementById('aiWidget').style.display = 'none';
         }
+    }
+
+    averageSpendForDow(dow, daysWindow) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - Math.max(7, daysWindow || 56));
+        let sum = 0, count = 0;
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime()) || d < start || d > end) return;
+                if (d.getDay() !== dow) return;
+                const daySum = Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+                sum += daySum;
+                count += 1;
+            });
+        }
+        return count ? (sum / count) : 0;
+    }
+
+    computeCategoryNegativeTrends(daysRecent, daysPrev) {
+        const end = new Date();
+        const recentStart = new Date(); recentStart.setDate(end.getDate() - Math.max(7, daysRecent || 28));
+        const prevStart = new Date(); prevStart.setDate(recentStart.getDate() - Math.max(7, daysPrev || 28));
+        const recent = {};
+        const prev = {};
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime())) return;
+                const sum = Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+                arr && arr.forEach(e => {
+                    const cat = e.category || 'Altro';
+                    if (d >= recentStart && d <= end) recent[cat] = (recent[cat] || 0) + (Number(e.amount||0)||0);
+                    else if (d >= prevStart && d < recentStart) prev[cat] = (prev[cat] || 0) + (Number(e.amount||0)||0);
+                });
+            });
+        }
+        const out = [];
+        Object.keys(recent).forEach(cat => {
+            const r = recent[cat] || 0;
+            const p = prev[cat] || 0;
+            const growth = p > 0 ? (r - p) / p : (r > 0 ? 1 : 0);
+            if (growth > 0.15) out.push({ cat, growth });
+        });
+        out.sort((a,b)=>b.growth - a.growth);
+        return out;
+    }
+
+    computeSeasonalityPreSalary() {
+        const incomes = Array.isArray(this.data.incomes) ? this.data.incomes : [];
+        const salaryDates = incomes.filter(inc => this.isSalaryIncome(inc) && inc.date).map(inc => this.normalizeIsoDate(inc.date));
+        if (!salaryDates.length) return null;
+        let preWeekSum = 0, weeks = 0;
+        const allWeeklyAvg = [];
+        salaryDates.forEach(sd => {
+            const end = new Date(sd);
+            const start = new Date(sd); start.setDate(end.getDate() - 7);
+            let sum = 0;
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate()+1)) {
+                const iso = d.toISOString().split('T')[0];
+                const arr = this.data.variableExpenses && this.data.variableExpenses[iso];
+                const daySum = Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+                sum += daySum;
+            }
+            preWeekSum += sum;
+            weeks += 1;
+        });
+        const preAvg = weeks ? (preWeekSum / weeks / 7) : 0;
+        const endAll = new Date();
+        const startAll = new Date(); startAll.setFullYear(endAll.getFullYear()-3);
+        let total = 0, days = 0;
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime()) || d < startAll || d > endAll) return;
+                const sum = Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+                total += sum;
+                days += 1;
+            });
+        }
+        const globalAvg = days ? (total / days) : 0;
+        const ratio = globalAvg ? (preAvg / globalAvg) : 1;
+        const nextSalary = this.findLastSalaryIncome();
+        if (!nextSalary || !nextSalary.date) return { ratio: 1, isUpcoming: false };
+        const nextDate = this.addMonthsClamp(this.normalizeIsoDate(nextSalary.date), 1);
+        const today = new Date();
+        const next = new Date(nextDate);
+        const diffDays = Math.ceil((next - today) / (1000*60*60*24));
+        const isUpcoming = diffDays > 0 && diffDays <= 7;
+        return { ratio, isUpcoming };
+    }
+
+    getDayName(dow) {
+        const daysIt = ['Domenica','Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato'];
+        const daysEn = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+        const daysEs = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+        const daysFr = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+        const daysDe = ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+        const daysPt = ['Domingo','Segunda','Terça','Quarta','Quinta','Sexta','Sábado'];
+        const daysNl = ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+        const daysEl = ['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'];
+        const daysAr = ['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+        const lang = this.data.language || 'it';
+        const maps = { it: daysIt, en: daysEn, es: daysEs, fr: daysFr, de: daysDe, pt: daysPt, nl: daysNl, el: daysEl, ar: daysAr };
+        const arr = maps[lang] || daysIt;
+        return arr[dow] || arr[0];
+    }
+
+    computeSpendingProfile(daysWindow) {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - Math.max(1, daysWindow || 30));
+        const categoryTotals = {};
+        const dowTotals = Array(7).fill(0);
+        let total = 0;
+        if (this.data.variableExpenses && typeof this.data.variableExpenses === 'object') {
+            Object.entries(this.data.variableExpenses).forEach(([iso, arr]) => {
+                const d = new Date(this.normalizeIsoDate(iso));
+                if (isNaN(d.getTime()) || d < start || d > end) return;
+                if (Array.isArray(arr)) {
+                    arr.forEach(e => {
+                        const amount = Number(e.amount || 0) || 0;
+                        const cat = e.category || 'Altro';
+                        categoryTotals[cat] = (categoryTotals[cat] || 0) + amount;
+                        total += amount;
+                    });
+                }
+                const dow = d.getDay(); // 0=Sun ... 6=Sat
+                dowTotals[dow] += Array.isArray(arr) ? arr.reduce((s,e)=>s+(Number(e.amount||0)||0),0) : 0;
+            });
+        }
+        const shares = Object.entries(categoryTotals).map(([cat, tot]) => ({ cat, tot, share: total ? tot/total : 0 }));
+        const dowAverages = dowTotals.map((sum, i) => ({ dow: i, avg: sum / Math.max(1, Math.floor((daysWindow||30)/7)) }));
+        return { total, shares, dowAverages };
+    }
+
+    computeCategoryCaps(profile, dailyBudget) {
+        const caps = {};
+        const budget = Math.max(0, dailyBudget || 0);
+        profile.shares.forEach(s => {
+            caps[s.cat] = s.share * budget;
+        });
+        Object.keys(caps).forEach(cat => {
+            if (caps[cat] > budget * 0.4) caps[cat] = Math.round(caps[cat] * 0.85);
+        });
+        return caps;
     }
 
     showAiSuggestion(suggestion) {

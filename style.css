@@ -777,6 +777,18 @@ input:focus, select:focus {
     margin: 0 auto 16px;
 }
 
+#burnRateChart {
+    max-width: 100%;
+    height: auto;
+}
+
+.line-chart-container {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto 16px;
+}
+
 #expenseChart {
     max-width: 100%;
     height: auto;
@@ -871,6 +883,24 @@ input:focus, select:focus {
     font-style: italic;
 }
 
+.trend-indicator.good {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--success);
+    color: #fff;
+    font-style: normal;
+}
+
+.trend-indicator.warn {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: var(--warning);
+    color: #fff;
+    font-style: normal;
+}
+
 /* Dettaglio categoria */
 .category-detail {
     margin-top: 20px;
@@ -921,6 +951,18 @@ input:focus, select:focus {
 .detail-expense-item .expense-amount {
     color: var(--danger);
     font-weight: 600;
+}
+
+#challengeBox, .challenge-box {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 16px 18px;
+    border: 1px dashed var(--accent);
+}
+
+.challenge-box p, #challengeBox p {
+    margin: 2px 0;
+    font-size: 0.85rem;
 }
 
 #closeDetailBtn {
