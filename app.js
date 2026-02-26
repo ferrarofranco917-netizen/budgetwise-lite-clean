@@ -5301,6 +5301,7 @@ document.documentElement.style.setProperty('--accent-gradient',
             const progress = ((stepIndex + 1) / steps.length) * 100;
             const progressBar = document.getElementById('onboarding-progress');
             if (progressBar) progressBar.style.width = progress + '%';
+			document.getElementById("savingsPercent").textContent = percent + "%";
 
             document.querySelectorAll('.onboarding-highlight').forEach(el => el.classList.remove('onboarding-highlight'));
 
