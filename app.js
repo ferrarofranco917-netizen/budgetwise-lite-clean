@@ -376,7 +376,7 @@ class BudgetWise {
                 showAllExpenses: 'Alle Ausgaben des Zeitraums anzeigen',
                 edit: 'Bearbeiten',
                 aiSuggestionsTitle: '🤖 KI-Vorschläge',
-                aiSmartBadge: 'smart'
+                aiSmartBadge: 'smart',
             
                 savingsPotInitial: "Anfangs-Sparbetrag (€)",
                 advancedOptions: "⚙️ Erweiterte Optionen",
@@ -481,7 +481,7 @@ class BudgetWise {
                 showAllExpenses: 'Mostrar todas as despesas do período',
                 edit: 'Editar',
                 aiSuggestionsTitle: '🤖 Sugestões IA',
-                aiSmartBadge: 'inteligente'
+                aiSmartBadge: 'inteligente',
             
                 savingsPotInitial: "Fundo de poupança inicial (€)",
                 advancedOptions: "⚙️ Opções avançadas",
@@ -586,7 +586,7 @@ class BudgetWise {
                 showAllExpenses: 'Alle uitgaven van de periode tonen',
                 edit: 'Bewerken',
                 aiSuggestionsTitle: '🤖 AI-voorstellen',
-                aiSmartBadge: 'smart'
+                aiSmartBadge: 'smart',
             
                 savingsPotInitial: "Startspaarpot (€)",
                 advancedOptions: "⚙️ Geavanceerde opties",
@@ -691,7 +691,7 @@ class BudgetWise {
                 showAllExpenses: 'Εμφάνιση όλων των εξόδων της περιόδου',
                 edit: 'Επεξεργασία',
                 aiSuggestionsTitle: '🤖 Προτάσεις AI',
-                aiSmartBadge: 'έξυπνο'
+                aiSmartBadge: 'έξυπνο',
             
                 savingsPotInitial: "Αρχικό ποσό αποταμίευσης (€)",
                 advancedOptions: "⚙️ Προχωρημένες επιλογές",
@@ -796,7 +796,7 @@ class BudgetWise {
                 showAllExpenses: 'عرض جميع مصاريف الفترة',
                 edit: 'تحرير',
                 aiSuggestionsTitle: '🤖 اقتراحات الذكاء الاصطناعي',
-                aiSmartBadge: 'ذكي'
+                aiSmartBadge: 'ذكي',
             
                 savingsPotInitial: "صندوق الادخار المبدئي (€)",
                 advancedOptions: "⚙️ خيارات متقدمة",
