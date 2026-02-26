@@ -7,7 +7,32 @@ class BudgetWise {
         this.data = {
             incomes: [],
             fixedExpenses: [],
-            variableExpenses: {},
+            variableExpenses: {
+                loadDemoBtn: '✨ Cargar datos demo',
+                noFixedInPeriod: 'No hay gastos fijos en el período',
+                fixedPaid: '✅ Pagado',
+                fixedPlanned: '⏳ Previsto',
+                fixedDueLabel: 'Vence',
+                fixedMatchFoundTpl: 'Encontrado: {date} • {name}',
+                periodStartedWithTpl: '⏳ Período iniciado con: {desc} el {date}',
+                importAdvancedOpen: '⚙️ Opciones avanzadas',
+                importAdvancedHide: '✕ Ocultar opciones',
+                savingsPotInitialLabel: 'Fondo de ahorro inicial (€)',
+                excelSheetLabel: 'Hoja de Excel',
+                excelHeaderLabel: 'Fila de encabezado',
+                colorsTitle: '🎨 Personalizar colores',
+                colorsSubtitle: 'Elige tus colores preferidos para la app. Los cambios son inmediatos.',
+                colorAccentLabel: 'Color principal (acento)',
+                colorAccentLightLabel: 'Color secundario (accent-light)',
+                colorCardBgLabel: 'Fondo de tarjeta',
+                colorTextPrimaryLabel: 'Texto principal',
+                colorTextSecondaryLabel: 'Texto secundario',
+                colorBgLabel: 'Fondo general',
+                colorSuccessLabel: 'Éxito (ingresos)',
+                colorDangerLabel: 'Peligro (gastos)',
+                colorWarningLabel: 'Aviso',
+                colorBorderLabel: 'Bordes',
+            },
             savingsPercent: 0,
             savingsGoal: 0,
             savingsPot: 0,
@@ -272,6 +297,31 @@ class BudgetWise {
                 defaultCategoriesTitle: 'Categorie predefinite',
                 yourCategoriesTitle: 'Le tue categorie',
                 close: 'Chiudi',
+            
+                loadDemoBtn: '✨ Carica dati demo',
+                noFixedInPeriod: 'Nessuna spesa fissa nel periodo',
+                fixedPaid: '✅ Pagata',
+                fixedPlanned: '⏳ Prevista',
+                fixedDueLabel: 'Scadenza',
+                fixedMatchFoundTpl: 'Trovata: {date} • {name}',
+                periodStartedWithTpl: '⏳ Periodo iniziato con: {desc} del {date}',
+                importAdvancedOpen: '⚙️ Opzioni avanzate',
+                importAdvancedHide: '✕ Nascondi opzioni',
+                savingsPotInitialLabel: 'Fondo risparmi iniziale (€)',
+                excelSheetLabel: 'Foglio Excel',
+                excelHeaderLabel: 'Riga intestazione',
+                colorsTitle: '🎨 Personalizza colori',
+                colorsSubtitle: 'Scegli i tuoi colori preferiti per l\'app. Le modifiche sono immediate.',
+                colorAccentLabel: 'Colore principale (accento)',
+                colorAccentLightLabel: 'Colore secondario (accent-light)',
+                colorCardBgLabel: 'Sfondo card',
+                colorTextPrimaryLabel: 'Testo primario',
+                colorTextSecondaryLabel: 'Testo secondario',
+                colorBgLabel: 'Sfondo generale',
+                colorSuccessLabel: 'Successo (entrate)',
+                colorDangerLabel: 'Pericolo (spese)',
+                colorWarningLabel: 'Avviso',
+                colorBorderLabel: 'Bordi',
             },
             de: {
                 plannedSavingsLabel: 'Geplante Ersparnis',
@@ -285,7 +335,32 @@ class BudgetWise {
                 challengeReduceDescTpl: 'Gib {pct}% weniger für Variable aus über {weeks} Wochen',
                 challengeRewardAddTpl: 'Belohnung: {amount} zum Sparkonto hinzufügen',
                 claimReward: '🎁 Belohnung abholen',
-                challengeProgressTpl: 'Abgeschlossene Wochen: {done}/{target}',
+                challengeProgressTpl: 'Abgeschlossene Wochen: {done
+                loadDemoBtn: '✨ Load demo data',
+                noFixedInPeriod: 'No fixed expenses in this period',
+                fixedPaid: '✅ Paid',
+                fixedPlanned: '⏳ Planned',
+                fixedDueLabel: 'Due',
+                fixedMatchFoundTpl: 'Matched: {date} • {name}',
+                periodStartedWithTpl: '⏳ Period started with: {desc} on {date}',
+                importAdvancedOpen: '⚙️ Advanced options',
+                importAdvancedHide: '✕ Hide options',
+                savingsPotInitialLabel: 'Initial savings pot (€)',
+                excelSheetLabel: 'Excel sheet',
+                excelHeaderLabel: 'Header row',
+                colorsTitle: '🎨 Customize colors',
+                colorsSubtitle: 'Choose your preferred colors for the app. Changes apply instantly.',
+                colorAccentLabel: 'Primary color (accent)',
+                colorAccentLightLabel: 'Secondary color (accent-light)',
+                colorCardBgLabel: 'Card background',
+                colorTextPrimaryLabel: 'Primary text',
+                colorTextSecondaryLabel: 'Secondary text',
+                colorBgLabel: 'App background',
+                colorSuccessLabel: 'Success (income)',
+                colorDangerLabel: 'Danger (expenses)',
+                colorWarningLabel: 'Warning',
+                colorBorderLabel: 'Borders',
+            }/{target}',
                 remaining: 'Verbleibend',
                 days: 'Verbleibende Tage',
                 period: 'Zeitraum',
@@ -444,6 +519,31 @@ class BudgetWise {
                 edit: 'Editar',
                 aiSuggestionsTitle: '🤖 Sugestões IA',
                 aiSmartBadge: 'inteligente'
+            
+                loadDemoBtn: '✨ Carregar dados demo',
+                noFixedInPeriod: 'Nenhuma despesa fixa no período',
+                fixedPaid: '✅ Pago',
+                fixedPlanned: '⏳ Previsto',
+                fixedDueLabel: 'Vencimento',
+                fixedMatchFoundTpl: 'Encontrado: {date} • {name}',
+                periodStartedWithTpl: '⏳ Período iniciado com: {desc} em {date}',
+                importAdvancedOpen: '⚙️ Opções avançadas',
+                importAdvancedHide: '✕ Ocultar opções',
+                savingsPotInitialLabel: 'Fundo de poupança inicial (€)',
+                excelSheetLabel: 'Folha do Excel',
+                excelHeaderLabel: 'Linha de cabeçalho',
+                colorsTitle: '🎨 Personalizar cores',
+                colorsSubtitle: 'Escolha suas cores preferidas. As mudanças são imediatas.',
+                colorAccentLabel: 'Cor principal (acento)',
+                colorAccentLightLabel: 'Cor secundária (accent-light)',
+                colorCardBgLabel: 'Fundo do cartão',
+                colorTextPrimaryLabel: 'Texto principal',
+                colorTextSecondaryLabel: 'Texto secundário',
+                colorBgLabel: 'Fundo geral',
+                colorSuccessLabel: 'Sucesso (rendimentos)',
+                colorDangerLabel: 'Perigo (despesas)',
+                colorWarningLabel: 'Aviso',
+                colorBorderLabel: 'Bordas',
             },
             nl: {
                 plannedSavingsLabel: 'Geplande besparing',
@@ -530,6 +630,31 @@ class BudgetWise {
                 edit: 'Bewerken',
                 aiSuggestionsTitle: '🤖 AI-voorstellen',
                 aiSmartBadge: 'smart'
+            
+                loadDemoBtn: '✨ Demo-data laden',
+                noFixedInPeriod: 'Geen vaste lasten in deze periode',
+                fixedPaid: '✅ Betaald',
+                fixedPlanned: '⏳ Gepland',
+                fixedDueLabel: 'Vervalt',
+                fixedMatchFoundTpl: 'Gevonden: {date} • {name}',
+                periodStartedWithTpl: '⏳ Periode gestart met: {desc} op {date}',
+                importAdvancedOpen: '⚙️ Geavanceerde opties',
+                importAdvancedHide: '✕ Opties verbergen',
+                savingsPotInitialLabel: 'Start spaarpot (€)',
+                excelSheetLabel: 'Excel-blad',
+                excelHeaderLabel: 'Koprij',
+                colorsTitle: '🎨 Kleuren aanpassen',
+                colorsSubtitle: 'Kies je voorkeurskleuren. Wijzigingen worden direct toegepast.',
+                colorAccentLabel: 'Primaire kleur (accent)',
+                colorAccentLightLabel: 'Secundaire kleur (accent-light)',
+                colorCardBgLabel: 'Kaartachtergrond',
+                colorTextPrimaryLabel: 'Primaire tekst',
+                colorTextSecondaryLabel: 'Secundaire tekst',
+                colorBgLabel: 'Achtergrond',
+                colorSuccessLabel: 'Succes (inkomsten)',
+                colorDangerLabel: 'Gevaar (uitgaven)',
+                colorWarningLabel: 'Waarschuwing',
+                colorBorderLabel: 'Randen',
             },
             el: {
                 plannedSavingsLabel: 'Προγραμματισμένη αποταμίευση',
@@ -616,6 +741,31 @@ class BudgetWise {
                 edit: 'Επεξεργασία',
                 aiSuggestionsTitle: '🤖 Προτάσεις AI',
                 aiSmartBadge: 'έξυπνο'
+            
+                loadDemoBtn: '✨ Φόρτωση demo δεδομένων',
+                noFixedInPeriod: 'Δεν υπάρχουν πάγια έξοδα στην περίοδο',
+                fixedPaid: '✅ Πληρώθηκε',
+                fixedPlanned: '⏳ Προγραμματισμένο',
+                fixedDueLabel: 'Λήξη',
+                fixedMatchFoundTpl: 'Βρέθηκε: {date} • {name}',
+                periodStartedWithTpl: '⏳ Η περίοδος ξεκίνησε με: {desc} στις {date}',
+                importAdvancedOpen: '⚙️ Προχωρημένες επιλογές',
+                importAdvancedHide: '✕ Απόκρυψη επιλογών',
+                savingsPotInitialLabel: 'Αρχικό ποσό αποταμίευσης (€)',
+                excelSheetLabel: 'Φύλλο Excel',
+                excelHeaderLabel: 'Γραμμή κεφαλίδας',
+                colorsTitle: '🎨 Προσαρμογή χρωμάτων',
+                colorsSubtitle: 'Διάλεξε τα αγαπημένα σου χρώματα. Οι αλλαγές εφαρμόζονται άμεσα.',
+                colorAccentLabel: 'Κύριο χρώμα (accent)',
+                colorAccentLightLabel: 'Δευτερεύον χρώμα (accent-light)',
+                colorCardBgLabel: 'Φόντο κάρτας',
+                colorTextPrimaryLabel: 'Κύριο κείμενο',
+                colorTextSecondaryLabel: 'Δευτερεύον κείμενο',
+                colorBgLabel: 'Γενικό φόντο',
+                colorSuccessLabel: 'Επιτυχία (έσοδα)',
+                colorDangerLabel: 'Κίνδυνος (έξοδα)',
+                colorWarningLabel: 'Προειδοποίηση',
+                colorBorderLabel: 'Περιγράμματα',
             },
             ar: {
                 plannedSavingsLabel: 'الادخار المخطط',
@@ -702,6 +852,31 @@ class BudgetWise {
                 edit: 'تحرير',
                 aiSuggestionsTitle: '🤖 اقتراحات الذكاء الاصطناعي',
                 aiSmartBadge: 'ذكي'
+            
+                loadDemoBtn: '✨ تحميل بيانات تجريبية',
+                noFixedInPeriod: 'لا توجد مصاريف ثابتة في هذه الفترة',
+                fixedPaid: '✅ مدفوع',
+                fixedPlanned: '⏳ مخطط',
+                fixedDueLabel: 'الاستحقاق',
+                fixedMatchFoundTpl: 'تم العثور: {date} • {name}',
+                periodStartedWithTpl: '⏳ بدأت الفترة بـ: {desc} بتاريخ {date}',
+                importAdvancedOpen: '⚙️ خيارات متقدمة',
+                importAdvancedHide: '✕ إخفاء الخيارات',
+                savingsPotInitialLabel: 'رصيد الادخار الأولي (€)',
+                excelSheetLabel: 'ورقة Excel',
+                excelHeaderLabel: 'صف العناوين',
+                colorsTitle: '🎨 تخصيص الألوان',
+                colorsSubtitle: 'اختر ألوانك المفضلة. يتم تطبيق التغييرات فورًا.',
+                colorAccentLabel: 'اللون الأساسي (accent)',
+                colorAccentLightLabel: 'اللون الثانوي (accent-light)',
+                colorCardBgLabel: 'خلفية البطاقة',
+                colorTextPrimaryLabel: 'النص الأساسي',
+                colorTextSecondaryLabel: 'النص الثانوي',
+                colorBgLabel: 'الخلفية العامة',
+                colorSuccessLabel: 'نجاح (دخل)',
+                colorDangerLabel: 'خطر (مصروفات)',
+                colorWarningLabel: 'تنبيه',
+                colorBorderLabel: 'الحدود',
             },
             en: {
                 plannedSavingsLabel: 'Planned savings',
@@ -1982,6 +2157,45 @@ class BudgetWise {
         const skipHelp = document.getElementById('skipHelp');
         if (skipHelp) skipHelp.textContent = this.t('skipHelp');
 
+        // Etichette extra (risparmio / import Excel)
+        const savingsPotLabel = document.getElementById('savingsPotInputLabel');
+        if (savingsPotLabel) savingsPotLabel.textContent = this.t('savingsPotInitialLabel');
+
+        const excelSheetLabel = document.getElementById('excelSheetLabel');
+        if (excelSheetLabel) excelSheetLabel.textContent = this.t('excelSheetLabel');
+
+        const excelHeaderLabel = document.getElementById('excelHeaderLabel');
+        if (excelHeaderLabel) excelHeaderLabel.textContent = this.t('excelHeaderLabel');
+
+        const importAdvancedToggle = document.getElementById('importAdvancedToggle');
+        const importAdvanced = document.getElementById('importAdvanced');
+        if (importAdvancedToggle) {
+            const open = importAdvanced && importAdvanced.style.display !== 'none';
+            importAdvancedToggle.textContent = open ? this.t('importAdvancedHide') : this.t('importAdvancedOpen');
+        }
+
+        // Sezione "Personalizza colori" (Tools)
+        const toolsCards = document.querySelectorAll('.section-card[data-tab="tools"]');
+        toolsCards.forEach(card => {
+            const h2 = card.querySelector('h2');
+            if (h2 && h2.textContent.includes('🎨')) {
+                h2.textContent = this.t('colorsTitle');
+                const p = card.querySelector('p');
+                if (p) p.textContent = this.t('colorsSubtitle');
+
+                const labels = card.querySelectorAll('.color-item label');
+                const keys = [
+                    'colorAccentLabel','colorAccentLightLabel','colorCardBgLabel','colorTextPrimaryLabel',
+                    'colorTextSecondaryLabel','colorBgLabel','colorSuccessLabel','colorDangerLabel',
+                    'colorWarningLabel','colorBorderLabel'
+                ];
+                labels.forEach((lab, i) => { if (keys[i]) lab.textContent = this.t(keys[i]); });
+
+                const resetBtn = document.getElementById('resetColorsBtn');
+                if (resetBtn) resetBtn.textContent = `↩️ ${this.t('resetColors')}`;
+            }
+        });
+
         this.updateIncomeList();
         this.updateFixedExpensesList();
         this.updateVariableExpensesList();
@@ -2045,9 +2259,7 @@ class BudgetWise {
         const sourceEl = document.getElementById('periodSource');
         if (sourceEl && this.data.incomes && this.data.incomes.length > 0) {
             const firstIncome = this.data.incomes.sort((a,b) => new Date(a.date) - new Date(b.date))[0];
-            sourceEl.textContent = this.data.language === 'it'
-                ? `⏳ Periodo iniziato con: ${firstIncome.desc} del ${firstIncome.date}`
-                : `⏳ Period started with: ${firstIncome.desc} on ${firstIncome.date}`;
+            sourceEl.textContent = this.t('periodStartedWithTpl', { desc: firstIncome.desc, date: firstIncome.date });
         }
     }
 
@@ -2327,7 +2539,7 @@ updateFixedStatusHome() {
 
     const occs = this.getFixedOccurrencesInPeriod();
     if (!occs || occs.length === 0) {
-        listEl.innerHTML = `<p class="chart-note">Nessuna spesa fissa nel periodo</p>`;
+        listEl.innerHTML = `<p class="chart-note">${this.t('noFixedInPeriod')}</p>`;
         return;
     }
 
@@ -2342,15 +2554,15 @@ updateFixedStatusHome() {
     };
 
     listEl.innerHTML = occs.map(o => {
-        const statusTxt = o.paid ? '✅ Pagata' : '⏳ Prevista';
+        const statusTxt = o.paid ? this.t('fixedPaid') : this.t('fixedPlanned');
         const pillClass = o.paid ? 'fixed-pill paid' : 'fixed-pill due';
-        const matchTxt = (o.paid && o.match) ? `Trovata: ${fmtDate(o.match.date)} • ${(o.match.name || '')}` : '';
+        const matchTxt = (o.paid && o.match) ? this.t('fixedMatchFoundTpl', { date: fmtDate(o.match.date), name: (o.match.name || '') }) : '';
 
         return `
             <div class="fixed-status-row">
                 <div class="fixed-status-left">
                     <div class="fixed-status-name" title="${esc(o.name)}">${esc(o.name)}</div>
-                    <div class="fixed-status-sub">Scadenza: ${fmtDate(o.dueDate)}</div>
+                    <div class="fixed-status-sub">${this.t('fixedDueLabel')}: ${fmtDate(o.dueDate)}</div>
                 </div>
                 <div class="fixed-status-right">
                     <div class="fixed-status-amount">${this.formatCurrency(o.amount)}</div>
@@ -5824,7 +6036,7 @@ setTimeout(function() {
         advancedToggle.addEventListener('click', () => {
             const isOpen = advancedWrap.style.display !== 'none';
             advancedWrap.style.display = isOpen ? 'none' : 'block';
-            advancedToggle.textContent = isOpen ? '⚙️ Opzioni avanzate' : '✕ Nascondi opzioni';
+            advancedToggle.textContent = isOpen ? this.t('importAdvancedOpen') : this.t('importAdvancedHide');
         });
     }
 
