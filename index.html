@@ -352,11 +352,18 @@
                 <button class="btn-primary" id="applySaveBtn">Applica risparmio</button>
                 <div class="savings-container">
                     <div class="savings-pig">
-                        <span class="pig-emoji">🐷</span>
-                        <div class="progress-emotional" id="progressContainer" style="display: none;">
-                            <div class="progress-fill" id="progressBar" style="width: 0%;"></div>
-                        </div>
-                    </div>
+  <div class="savings-icon" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+      <path d="M12 3c4.418 0 8 1.343 8 3s-3.582 3-8 3-8-1.343-8-3 3.582-3 8-3Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 6v4c0 1.657 3.582 3 8 3s8-1.343 8-3V6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 10v4c0 1.657 3.582 3 8 3s8-1.343 8-3v-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <div class="progress-emotional" id="progressContainer" style="display: none;">
+    <div class="progress-fill" id="progressBar" style="width: 0%;"></div>
+  </div>
+</div>
                     <div class="savings-message" id="savingsMessage"></div>
                     <div class="savings-tip" id="savingsTip"></div>
                 </div>
