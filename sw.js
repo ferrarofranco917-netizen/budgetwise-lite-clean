@@ -2,8 +2,7 @@
 // Works for browser + installed PWA (GitHub Pages friendly)
 
 const CACHE_VERSION = "v14";                 // bump ad ogni release
-const CACHE_NAME = "budgetwise-cache-20260225v14";
-
+const CACHE_NAME = "budgetwise-cache-20260226v15";
 const CORE_ASSETS = [
   "./",
   "./index.html",
