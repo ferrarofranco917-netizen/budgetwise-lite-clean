@@ -585,7 +585,7 @@
           .catch(() => console.warn("⚠️ Icona 512px non trovata"));
         if (!("serviceWorker" in navigator)) return;
         try {
-          const reg = await navigator.serviceWorker.register("./sw.js?v=20260225v14", { scope: "./" });
+          const reg = await navigator.serviceWorker.register("./sw.js?v=20260225v15", { scope: "./" });
           console.log("✅ ServiceWorker registrato:", reg.scope);
           await reg.update().catch(() => {});
         } catch (err) {
