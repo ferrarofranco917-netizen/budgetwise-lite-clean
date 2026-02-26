@@ -1268,7 +1268,7 @@ class BudgetWise {
                 csvMappingInstructionsHtml: '<strong>📌 Instrucciones:</strong> Asocia cada columna del CSV con su campo. Importes positivos = <strong>ingresos</strong>, negativos = <strong>gastos</strong>.',
                 csvMappingFieldsTitle: '🎯 Asignación de campos:',
                 showAllExpenses: 'Mostrar todos los gastos del período',
-                edit: 'Editar'
+                edit: 'Editar',
             
                 savingsPotInitial: "Fondo de ahorro inicial (€)",
                 advancedOptions: "⚙️ Opciones avanzadas",
