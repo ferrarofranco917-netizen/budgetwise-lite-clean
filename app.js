@@ -67,23 +67,23 @@ class BudgetWise {
         // ========== TRADUZIONI ==========
         this.translations = {
             it: {
-				savingsWidgetTitle: 'Raggiungerai il tuo obiettivo',  // invece di "You will reach your goal"
-				savingsPotInputLabel: 'Risparmi iniziali (€)',       // invece di "Initial savings (€)"
-				excelSheetPlaceholder: 'Carica un file Excel',       // invece di "Load an Excel file"
-				excelHelp: '⚠️ I file Excel vengono convertiti automaticamente', // invece di inglese
+                savingsWidgetTitle: 'Raggiungerai il tuo obiettivo',
+                savingsPotInputLabel: 'Risparmi iniziali (€)',
+                excelSheetPlaceholder: 'Carica un file Excel',
+                excelHelp: '⚠️ I file Excel vengono convertiti automaticamente',
                 never: "Mai",
-				currentPaceReachOn: "Al ritmo attuale, raggiungerai l'obiettivo il {date}",
-				goalNotReachable: "Con questi parametri non raggiungerai l'obiettivo",
-				savingsSuggestionTitle: "Suggerimento",
-				applySuggestion: "Applica suggerimento",
-				increaseToPercentToArriveEarlier: "Aumenta al {percent}% per arrivare {months} mesi prima!",
-				increaseToPercentToArriveEarlier_one: "Aumenta al {percent}% per arrivare {months} mese prima!",
-				suggestionAppliedToast: "💡 Suggerimento applicato: {percent}% di risparmio",
+                currentPaceReachOn: "Al ritmo attuale, raggiungerai l'obiettivo il {date}",
+                goalNotReachable: "Con questi parametri non raggiungerai l'obiettivo",
+                savingsSuggestionTitle: "Suggerimento",
+                applySuggestion: "Applica suggerimento",
+                increaseToPercentToArriveEarlier: "Aumenta al {percent}% per arrivare {months} mesi prima!",
+                increaseToPercentToArriveEarlier_one: "Aumenta al {percent}% per arrivare {months} mese prima!",
+                suggestionAppliedToast: "💡 Suggerimento applicato: {percent}% di risparmio",
                 onboardingDemo: "✨ Carica demo",
                 loadDemo: "Carica demo",
                 savingsPotLabel: 'Piano risparmi',
-				searchPlaceholder: 'Cerca per descrizione, categoria o importo',
-				maybeLater: 'Forse dopo',
+                searchPlaceholder: 'Cerca per descrizione, categoria o importo',
+                maybeLater: 'Forse dopo',
                 resetColors: 'Ripristina colori predefiniti',
                 colorsTitle: '🎨 Personalizza colori',
                 colorsSubtitle: 'Scegli i tuoi colori preferiti per personalizzare l\'app.',
@@ -310,7 +310,8 @@ class BudgetWise {
                 defaultCategoriesTitle: 'Categorie predefinite',
                 yourCategoriesTitle: 'Le tue categorie',
                 close: 'Chiudi',
-                                // NUOVE TRADUZIONI
+                
+                // NUOVE TRADUZIONI
                 fixedDateFormatDays: '🗓️ Giorni rimanenti',
                 fixedDateFormatMonths: '📆 Mesi e giorni',
                 fixedDateFormatHelp: 'Scegli come visualizzare le scadenze delle spese fisse',
@@ -334,6 +335,8 @@ class BudgetWise {
                 free: '🆓 Free',
                 premium: '💎 Premium',
                 transactionsLimit: '50 transazioni/mese',
+                fixedExpensesLimit: '5 spese fisse',
+                savingsPercentLimit: '15% risparmio max',
                 categoriesLimit: '3 categorie base',
                 popular: 'POPOLARE',
                 price: '€4.99 /mese',
@@ -343,94 +346,74 @@ class BudgetWise {
                 activateLicense: '🔑 Attiva Licenza',
                 allCategories: '📋 Tutte le categorie',
                 clearFilters: '✕ Cancella filtri',
+                transactionCounter: 'Transazioni mensili',
+                aiSuggestionReduce: '💡 Hai speso {amount} in {category}. Riducendolo del 10% ({reduction}), potresti destinarlo al risparmio.',
+                aiSuggestionTransport: '🚗 Hai speso {amount} in trasporti. Usando più mezzi pubblici potresti risparmiare circa {potential} al mese.',
+                aiSuggestionLeisure: '🎮 Hai speso {amount} in svago. Limitando le uscite a 2 a settimana potresti risparmiare {potential}.',
+                aiActionSetGoal: '🎯 Imposta obiettivo',
+                aiActionLearnHow: '💡 Scopri come',
+                aiActionPlan: '📅 Pianifica',
                 features: {
-    csvImport: '✅ Importazione CSV',
-    aiAssistant: '✅ Assistente AI',
-    cloudSync: '✅ Sincronizzazione cloud',
-    unlimitedTransactions: '✅ Transazioni illimitate',
-    customCategories: '✅ Categorie personalizzate',
-    excelImport: '✅ Importazione CSV/Excel',
-    advancedAI: '✅ Assistente AI avanzato',
-    detailedReports: '✅ Report dettagliati',
-    voiceRecognition: '✅ Riconoscimento vocale'
-}, 
-
-// 🔽 LE NUOVE CHIAVI VANNO QUI (DOPO features, PRIMA della chiusura di 'it')
-aiSuggestionReduce: '💡 Hai speso {amount} in {category}. Riducendolo del 10% ({reduction}), potresti destinarlo al risparmio.',
-aiSuggestionTransport: '🚗 Hai speso {amount} in trasporti. Usando più mezzi pubblici potresti risparmiare circa {potential} al mese.',
-aiSuggestionLeisure: '🎮 Hai speso {amount} in svago. Limitando le uscite a 2 a settimana potresti risparmiare {potential}.',
-aiActionSetGoal: '🎯 Imposta obiettivo',
-aiActionLearnHow: '💡 Scopri come',
-aiActionPlan: '📅 Pianifica',
-
-}, 
+                    csvImport: '✅ Importazione CSV',
+                    aiAssistant: '✅ Assistente AI',
+                    cloudSync: '✅ Sincronizzazione cloud',
+                    unlimitedTransactions: '✅ Transazioni illimitate',
+                    unlimitedFixedExpenses: '✅ Spese fisse illimitate',
+                    savingsPercentUnlimited: '✅ Risparmio fino al 50%',
+                    customCategories: '✅ Categorie personalizzate',
+                    excelImport: '✅ Importazione CSV/Excel',
+                    advancedAI: '✅ Assistente AI avanzato',
+                    detailedReports: '✅ Report dettagliati',
+                    voiceRecognition: '✅ Riconoscimento vocale',
+                    colorCustomization: '✅ Colori personalizzati'
+                }
+            },
             en: {
-				// backup button
                 backupButton: '💾 Download backup',
-                // restore button
                 restoreButton: '📂 Restore backup',
-				never: "Never",
-				currentPaceReachOn: "At the current pace, you'll reach the goal on {date}",
-				goalNotReachable: "With these parameters you won't reach the goal",
-				savingsSuggestionTitle: "Tip",
-				applySuggestion: "Apply suggestion",
-				increaseToPercentToArriveEarlier: "Increase to {percent}% to reach the goal {months} months earlier!",
-				increaseToPercentToArriveEarlier_one: "Increase to {percent}% to reach the goal {months} month earlier!",
-				suggestionAppliedToast: "💡 Suggestion applied: {percent}% savings",
+                never: "Never",
+                currentPaceReachOn: "At the current pace, you'll reach the goal on {date}",
+                goalNotReachable: "With these parameters you won't reach the goal",
+                savingsSuggestionTitle: "Tip",
+                applySuggestion: "Apply suggestion",
+                increaseToPercentToArriveEarlier: "Increase to {percent}% to reach the goal {months} months earlier!",
+                increaseToPercentToArriveEarlier_one: "Increase to {percent}% to reach the goal {months} month earlier!",
+                suggestionAppliedToast: "💡 Suggestion applied: {percent}% savings",
                 onboardingDemo: "✨ Load demo",
                 loadDemo: "Load demo",
                 upgradeBanner: '🚀 Upgrade to Premium',
-upgradeBannerText: 'Unlock unlimited features and AI assistant!',
-upgrade: 'Upgrade',
-free: '🆓 Free',
-premium: '💎 Premium',
-transactionsLimit: '50 transactions/month',
-categoriesLimit: '3 base categories',
-popular: 'POPULAR',
-price: '€4.99/month',
-freeTrial: '🎁 Free Trial',
-freeTrialText: '7 days of Premium, zero risk!',
-startTrial: '🚀 Start Free Trial',
-activateLicense: '🔑 Activate License',
-maybeLater: 'Maybe later',
+                upgradeBannerText: 'Unlock unlimited features and AI assistant!',
+                upgrade: 'Upgrade',
+                free: '🆓 Free',
+                premium: '💎 Premium',
+                transactionsLimit: '30 transactions/month',
+                fixedExpensesLimit: '5 fixed expenses',
+                savingsPercentLimit: '15% max savings',
+                categoriesLimit: '3 base categories',
+                popular: 'POPULAR',
+                price: '€4.99/month',
+                freeTrial: '🎁 Free Trial',
+                freeTrialText: '7 days of Premium, zero risk!',
+                startTrial: '🚀 Start Free Trial',
+                activateLicense: '🔑 Activate License',
+                maybeLater: 'Maybe later',
                 allCategories: '📋 All categories',
-clearFilters: '✕ Clear filters',
-maybeLater: 'Maybe later',
-
-// Nella sezione del widget risparmio (cerca "savingsWidgetTitle"):
-savingsWidgetTitle: 'You will reach your goal',
-never: 'Never',
-percent0: '0%',
-percent15: '15%',
-percent30: '30%',
-currentPlan: '📅 Current plan',
-currentPlanMessage: 'With these parameters you will never reach the goal',
-
-// Nella sezione import avanzato (cerca "excelSheet"):
-excelSheet: 'Excel Sheet',
-excelSheetPlaceholder: 'Load an Excel file',
-rowNone: 'None (auto)',
-excelHelp: '⚠️ Excel files are converted automatically',
-hideOptions: 'Hide options',
-advancedOptions: '⚙️ Advanced options',
-
-// Nella sezione upgrade banner:
-upgradeBanner: '🚀 Upgrade to Premium',
-upgradeBannerText: 'Unlock unlimited features and AI assistant!',
-upgrade: 'Upgrade',
-free: '🆓 Free',
-premium: '💎 Premium',
-transactionsLimit: '50 transactions/month',
-categoriesLimit: '3 base categories',
-popular: 'POPULAR',
-price: '€4.99/month',
-freeTrial: '🎁 Free Trial',
-freeTrialText: '7 days of Premium, zero risk!',
-startTrial: '🚀 Start Free Trial',
-activateLicense: '🔑 Activate License',
+                clearFilters: '✕ Clear filters',
+                savingsWidgetTitle: 'You will reach your goal',
+                never: 'Never',
+                percent0: '0%',
+                percent15: '15%',
+                percent30: '30%',
+                currentPlan: '📅 Current plan',
+                currentPlanMessage: 'With these parameters you will never reach the goal',
+                excelSheet: 'Excel Sheet',
+                excelSheetPlaceholder: 'Load an Excel file',
+                rowNone: 'None (auto)',
+                excelHelp: '⚠️ Excel files are converted automatically',
+                hideOptions: 'Hide options',
+                advancedOptions: '⚙️ Advanced options',
                 savingsPotLabel: 'Savings plan',
-searchPlaceholder: 'Search by description, category or amount',
-maybeLater: 'Maybe later',
+                searchPlaceholder: 'Search by description, category or amount',
                 resetColors: 'Reset default colors',
                 colorsTitle: '🎨 Customize colors',
                 colorsSubtitle: 'Choose your favorite colors to personalize the app.',
@@ -456,10 +439,10 @@ maybeLater: 'Maybe later',
                 addFixed: '➕ Add fixed expense',
                 addExpense: '➕ Add expense',
                 resetDay: '🗑️ Clear day expenses',
-	            resetVariablePeriod: '🗑️ Clear period variable expenses',
-	            confirmResetVariablePeriod: 'Are you sure you want to delete ALL variable expenses in the current period?',
-	            variablePeriodReset: 'Period variable expenses deleted!',
-	            noVariablePeriodToReset: 'There are no variable expenses to delete in this period.',
+                resetVariablePeriod: '🗑️ Clear period variable expenses',
+                confirmResetVariablePeriod: 'Are you sure you want to delete ALL variable expenses in the current period?',
+                variablePeriodReset: 'Period variable expenses deleted!',
+                noVariablePeriodToReset: 'There are no variable expenses to delete in this period.',
                 applySavings: 'Apply savings',
                 backup: '💾 Download backup',
                 restore: '📂 Restore',
@@ -557,7 +540,7 @@ maybeLater: 'Maybe later',
                 importLearn: '📌 The app will remember this choice',
                 importSuggested: 'Suggested: {cat} (confirm to learn)',
                 
-                // Traduzioni CSV
+                // CSV translations
                 csvTitle: '📥 Import bank statements',
                 csvSubtitle: 'Download your bank statement in CSV format',
                 csvChooseFile: 'Choose file',
@@ -570,7 +553,7 @@ maybeLater: 'Maybe later',
                 csvTab: 'Tab',
                 csvPreview: 'Preview',
                 
-                // Gestione categorie
+                // Category management
                 manageCategories: '📂 Manage categories',
                 addCategory: '➕ Add category',
                 categoryName: 'Category name',
@@ -585,14 +568,14 @@ maybeLater: 'Maybe later',
                 customCategories: 'Your categories',
                 noCustomCategories: 'No custom categories',
 
-                // NUOVE CHIAVI PER I TAB
+                // Tab keys
                 tabHome: '🏠 Home',
                 tabIncomes: '🏦 Incomes',
                 tabFixed: '📌 Fixed',
                 tabVariable: '🧾 Variable',
                 tabTools: '🛠️ Tools',
 
-                // NUOVE CHIAVI PER SKIP ROWS
+                // Skip rows
                 skipRowsLabel: 'Skip initial rows',
                 headerRowManualLabel: 'Header row',
                 skipHelp: '📌 For files with initial rows (e.g., Fineco): skip rows until you find the columns',
@@ -657,146 +640,87 @@ maybeLater: 'Maybe later',
                 defaultCategoriesTitle: 'Default categories',
                 yourCategoriesTitle: 'Your categories',
                 close: 'Close',
-                             
-                // ===== WIDGET RISPARMIO =====
-                savingsWidgetTitle: 'You will reach your goal',
-                never: 'Never',
-                percent0: '0%',
-                percent15: '15%',
-                percent30: '30%',
-                savingsPotInputLabel: 'Initial savings (€)',
-                currentPlan: '📅 Current plan',
-                currentPlanMessage: 'With these parameters you will never reach the goal',
-                
-                // ===== IMPORT AVANZATO =====
-                advancedOptions: '⚙️ Advanced options',
-                excelSheet: 'Excel Sheet',
-                excelHeaderRow: 'Header row',
-                excelSheetPlaceholder: 'Load an Excel file',
-                rowNone: 'None (auto)',
-                excelHelp: '⚠️ Excel files are converted automatically',
-                
-                // ===== IMPOSTAZIONI =====
-                backupButton: '💾 Scarica backup',
-                restoreButton: '📂 Ripristina backup',
-                                // NUOVE TRADUZIONI
                 fixedDateFormatDays: '🗓️ Days remaining',
                 fixedDateFormatMonths: '📆 Months and days',
                 fixedDateFormatHelp: 'Choose how to display fixed expense deadlines',
                 hideOptions: 'Hide options',
-                excelSheet: 'Excel Sheet',
-                excelHeaderRow: 'Header row',
                 row1: 'Row 1',
                 row2: 'Row 2',
                 row3: 'Row 3',
-                rowNone: 'None (auto)',
-                never: 'Never',
-                percent0: '0%',
-                percent15: '15%',
-                percent30: '30%',
-                currentPlan: '📅 Current plan',
-                currentPlanMessage: 'With these parameters you will never reach the goal',
                 endPeriod: 'End of period',
-                upgradeBanner: '🚀 Upgrade to Premium',
-                upgradeBannerText: 'Unlock unlimited features and AI assistant!',
-                upgrade: 'Upgrade',
-                free: '🆓 Free',
-                premium: '💎 Premium',
-                transactionsLimit: '50 transactions/month',
-                categoriesLimit: '3 base categories',
-                popular: 'POPULAR',
-                price: '€4.99/month',
-                freeTrial: '🎁 Free Trial',
-                freeTrialText: '7 days of Premium, zero risk!',
-                startTrial: '🚀 Start Free Trial',
-                activateLicense: '🔑 Activate License',
-                allCategories: '📋 All categories',
-                clearFilters: '✕ Clear filters',
+                transactionCounter: 'Monthly transactions',
+                aiSuggestionReduce: '💡 You spent {amount} on {category}. Reducing it by 10% ({reduction}) could boost your savings.',
+                aiSuggestionTransport: '🚗 You spent {amount} on transport. Using more public transport could save you about {potential} per month.',
+                aiSuggestionLeisure: '🎮 You spent {amount} on leisure. Limiting outings to 2 per week could save you {potential}.',
+                aiActionSetGoal: '🎯 Set goal',
+                aiActionLearnHow: '💡 Learn how',
+                aiActionPlan: '📅 Plan',
                 features: {
                     csvImport: '✅ CSV Import',
                     aiAssistant: '✅ AI Assistant',
                     cloudSync: '✅ Cloud Sync',
                     unlimitedTransactions: '✅ Unlimited transactions',
+                    unlimitedFixedExpenses: '✅ Unlimited fixed expenses',
+                    savingsPercentUnlimited: '✅ Up to 50% savings',
                     customCategories: '✅ Custom categories',
                     excelImport: '✅ CSV/Excel Import',
                     advancedAI: '✅ Advanced AI Assistant',
                     detailedReports: '✅ Detailed reports',
-                    voiceRecognition: '✅ Voice recognition'
+                    voiceRecognition: '✅ Voice recognition',
+                    colorCustomization: '✅ Color customization'
                 }
             },
             es: {
-				// Per il grafico 
-				chartTotalLabel: 'Total gastos',
-
-// Per i suggerimenti AI (già presenti, ma controllo)
-aiSuggestionReduce: '💡 Has gastado {amount} en {category}. Reduciéndolo un 10% ({reduction}), podrías destinarlo al ahorro.',
-aiSuggestionTransport: '🚗 Has gastado {amount} en transporte. Usando más transporte público podrías ahorrar unos {potential} al mes.',
-aiSuggestionLeisure: '🎮 Has gastado {amount} en ocio. Limitando las salidas a 2 por semana podrías ahorrar {potential}.',
-aiActionSetGoal: 'Establecer objetivo',
-aiActionLearnHow: 'Aprende cómo',
-aiActionPlan: 'Planificar',
+                chartTotalLabel: 'Total gastos',
+                aiSuggestionReduce: '💡 Has gastado {amount} en {category}. Reduciéndolo un 10% ({reduction}), podrías destinarlo al ahorro.',
+                aiSuggestionTransport: '🚗 Has gastado {amount} en transporte. Usando más transporte público podrías ahorrar unos {potential} al mes.',
+                aiSuggestionLeisure: '🎮 Has gastado {amount} en ocio. Limitando las salidas a 2 por semana podrías ahorrar {potential}.',
+                aiActionSetGoal: 'Establecer objetivo',
+                aiActionLearnHow: 'Aprende cómo',
+                aiActionPlan: 'Planificar',
                 never: "Nunca",
-currentPaceReachOn: "Al ritmo actual, alcanzarás el objetivo el {date}",
-goalNotReachable: "Con estos parámetros no alcanzarás el objetivo",
-savingsSuggestionTitle: "Sugerencia",
-applySuggestion: "Aplicar sugerencia",
-increaseToPercentToArriveEarlier: "Aumenta al {percent}% para llegar {months} meses antes!",
-increaseToPercentToArriveEarlier_one: "Aumenta al {percent}% para llegar {months} mes antes!",
-suggestionAppliedToast: "💡 Sugerencia aplicada: {percent}% de ahorro",
+                currentPaceReachOn: "Al ritmo actual, alcanzarás el objetivo el {date}",
+                goalNotReachable: "Con estos parámetros no alcanzarás el objetivo",
+                savingsSuggestionTitle: "Sugerencia",
+                applySuggestion: "Aplicar sugerencia",
+                increaseToPercentToArriveEarlier: "Aumenta al {percent}% para llegar {months} meses antes!",
+                increaseToPercentToArriveEarlier_one: "Aumenta al {percent}% para llegar {months} mes antes!",
+                suggestionAppliedToast: "💡 Sugerencia aplicada: {percent}% de ahorro",
                 onboardingDemo: "✨ Cargar demo",
                 loadDemo: "Cargar demo",
                 upgradeBanner: '🚀 Mejora a Premium',
-upgradeBannerText: '¡Desbloquea funciones ilimitadas y el asistente IA!',
-upgrade: 'Mejorar',
-free: '🆓 Gratis',
-premium: '💎 Premium',
-transactionsLimit: '50 transacciones/mes',
-categoriesLimit: '3 categorías básicas',
-popular: 'POPULAR',
-price: '€4.99 /mes',
-freeTrial: '🎁 Prueba Gratuita',
-freeTrialText: '7 días de Premium, ¡sin riesgos!',
-startTrial: '🚀 Iniciar Prueba Gratuita',
-activateLicense: '🔑 Activar Licencia',
-maybeLater: 'Quizás después',
+                upgradeBannerText: '¡Desbloquea funciones ilimitadas y el asistente IA!',
+                upgrade: 'Mejorar',
+                free: '🆓 Gratis',
+                premium: '💎 Premium',
+                transactionsLimit: '30 transacciones/mes',
+                fixedExpensesLimit: '5 gastos fijos',
+                savingsPercentLimit: '15% ahorro máx.',
+                categoriesLimit: '3 categorías básicas',
+                popular: 'POPULAR',
+                price: '€4.99 /mes',
+                freeTrial: '🎁 Prueba Gratuita',
+                freeTrialText: '7 días de Premium, ¡sin riesgos!',
+                startTrial: '🚀 Iniciar Prueba Gratuita',
+                activateLicense: '🔑 Activar Licencia',
+                maybeLater: 'Quizás después',
                 allCategories: '📋 Todas las categorías',
-clearFilters: '✕ Cancelar filtros',
-maybeLater: 'Quizás después',
-
-// Nella sezione del widget risparmio:
-savingsWidgetTitle: 'Alcanzarás tu objetivo',
-never: 'Nunca',
-percent0: '0%',
-percent15: '15%',
-percent30: '30%',
-currentPlan: '📅 Plan actual',
-currentPlanMessage: 'Con estos parámetros no alcanzarás el objetivo',
-
-// Nella sezione import avanzato:
-excelSheet: 'Hoja de Excel',
-excelSheetPlaceholder: 'Cargar un archivo Excel',
-rowNone: 'Ninguna (auto)',
-excelHelp: '⚠️ Los archivos Excel se convierten automáticamente',
-hideOptions: 'Ocultar opciones',
-advancedOptions: '⚙️ Opciones avanzadas',
-
-// Nella sezione upgrade banner:
-upgradeBanner: '🚀 Mejora a Premium',
-upgradeBannerText: '¡Desbloquea funciones ilimitadas y el asistente IA!',
-upgrade: 'Mejorar',
-free: '🆓 Gratis',
-premium: '💎 Premium',
-transactionsLimit: '50 transacciones/mes',
-categoriesLimit: '3 categorías básicas',
-popular: 'POPULAR',
-price: '€4.99 /mes',
-freeTrial: '🎁 Prueba Gratuita',
-freeTrialText: '7 días de Premium, ¡sin riesgos!',
-startTrial: '🚀 Iniciar Prueba Gratuita',
-activateLicense: '🔑 Activar Licencia',
+                clearFilters: '✕ Cancelar filtros',
+                savingsWidgetTitle: 'Alcanzarás tu objetivo',
+                never: 'Nunca',
+                percent0: '0%',
+                percent15: '15%',
+                percent30: '30%',
+                currentPlan: '📅 Plan actual',
+                currentPlanMessage: 'Con estos parámetros no alcanzarás el objetivo',
+                excelSheet: 'Hoja de Excel',
+                excelSheetPlaceholder: 'Cargar un archivo Excel',
+                rowNone: 'Ninguna (auto)',
+                excelHelp: '⚠️ Los archivos Excel se convierten automáticamente',
+                hideOptions: 'Ocultar opciones',
+                advancedOptions: '⚙️ Opciones avanzadas',
                 savingsPotLabel: 'Plan de ahorro',
-searchPlaceholder: 'Buscar por descripción, categoría o importe',
-maybeLater: 'Quizás después',
+                searchPlaceholder: 'Buscar por descripción, categoría o importe',
                 resetColors: 'Restablecer colores predeterminados',
                 colorsTitle: '🎨 Personalizar colores',
                 colorsSubtitle: 'Elige tus colores favoritos para personalizar la app.',
@@ -936,29 +860,14 @@ maybeLater: 'Quizás después',
                 defaultCategoriesTitle: 'Categorías predeterminadas',
                 yourCategoriesTitle: 'Tus categorías',
                 close: 'Cerrar',
-                
-                // ===== WIDGET RISPARMIO =====
-                savingsWidgetTitle: 'Alcanzarás tu objetivo',
-                never: 'Nunca',
-                percent0: '0%',
-                percent15: '15%',
-                percent30: '30%',
-                savingsPotInputLabel: 'Ahorro inicial (€)',
-                currentPlan: '📅 Plan actual',
-                currentPlanMessage: 'Con estos parámetros no alcanzarás el objetivo',
-                
-                // ===== IMPORT AVANZATO =====
                 advancedOptions: '⚙️ Opciones avanzadas',
                 excelSheet: 'Hoja de Excel',
                 excelHeaderRow: 'Fila de encabezado',
                 excelSheetPlaceholder: 'Cargar un archivo Excel',
                 rowNone: 'Ninguna (auto)',
                 excelHelp: '⚠️ Los archivos Excel se convierten automáticamente',
-                
-                // ===== IMPOSTAZIONI =====
                 backupButton: '💾 Descargar copia',
                 restoreButton: '📂 Restaurar',
-                
                 manageCategories: '📂 Gestionar categorías',
                 addCategory: '➕ Añadir categoría',
                 categoryName: 'Nombre de la categoría',
@@ -972,19 +881,14 @@ maybeLater: 'Quizás después',
                 defaultCategories: 'Categorías predeterminadas',
                 customCategories: 'Tus categorías',
                 noCustomCategories: 'Sin categorías personalizadas',
-
-                // NUOVE CHIAVI PER I TAB
                 tabHome: '🏠 Inicio',
                 tabIncomes: '🏦 Ingresos',
                 tabFixed: '📌 Fijas',
                 tabVariable: '🧾 Variables',
                 tabTools: '🛠️ Herramientas',
-
-                // NUOVE CHIAVI PER SKIP ROWS
                 skipRowsLabel: 'Saltar filas iniciales',
                 headerRowManualLabel: 'Fila de encabezado',
                 skipHelp: '📌 Para archivos con filas iniciales (ej. Fineco): salta las filas hasta encontrar las columnas',
-
                 docTitle: '💰 BudgetWise 2.0 - Gestor de presupuesto inteligente',
                 subtitle: 'De nómina a nómina — gestión inteligente con IA',
                 add: 'Añadir',
@@ -1032,121 +936,80 @@ maybeLater: 'Quizás después',
                 adviceLowRemaining: '⚠️ Atención: solo te quedan {remaining} para los próximos días.',
                 adviceGood: '💪 ¡Vas bien! Aún te quedan {remaining}.',
                 aiSmartBadge: 'inteligente',
-				aiSuggestionsTitle: '🤖 Sugerencias IA',
+                aiSuggestionsTitle: '🤖 Sugerencias IA',
                 csvMappingTitle: '📋 Mapear columnas CSV',
                 csvMappingInstructionsHtml: '<strong>📌 Instrucciones:</strong> Asocia cada columna del CSV con su campo. Importes positivos = <strong>ingresos</strong>, negativos = <strong>gastos</strong>.',
                 csvMappingFieldsTitle: '🎯 Asignación de campos:',
                 showAllExpenses: 'Mostrar todos los gastos del período',
                 edit: 'Editar',
-                                // NUOVE TRADUZIONI PER SPAGNOLO
                 fixedDateFormatDays: '🗓️ Días restantes',
                 fixedDateFormatMonths: '📆 Meses y días',
                 fixedDateFormatHelp: 'Elige cómo visualizar los plazos de gastos fijos',
                 hideOptions: 'Ocultar opciones',
-                excelSheet: 'Hoja de Excel',
-                excelHeaderRow: 'Fila de encabezado',
                 row1: 'Fila 1',
                 row2: 'Fila 2',
                 row3: 'Fila 3',
-                rowNone: 'Ninguna (auto)',
-                never: 'Nunca',
-                percent0: '0%',
-                percent15: '15%',
-                percent30: '30%',
-                currentPlan: '📅 Plan actual',
-                currentPlanMessage: 'Con estos parámetros no alcanzarás el objetivo',
                 endPeriod: 'Fin del período',
-                upgradeBanner: '🚀 Mejora a Premium',
-                upgradeBannerText: '¡Desbloquea funciones ilimitadas y el asistente IA!',
-                upgrade: 'Mejorar',
-                free: '🆓 Gratis',
-                premium: '💎 Premium',
-                transactionsLimit: '50 transacciones/mes',
-                categoriesLimit: '3 categorías básicas',
-                popular: 'POPULAR',
-                price: '€4.99 /mes',
-                freeTrial: '🎁 Prueba Gratuita',
-                freeTrialText: '7 días de Premium, ¡sin riesgos!',
-                startTrial: '🚀 Iniciar Prueba Gratuita',
-                activateLicense: '🔑 Activar Licencia',
-                allCategories: '📋 Todas las categorías',
-                clearFilters: '✕ Cancelar filtros',
+                transactionCounter: 'Transacciones mensuales',
                 features: {
                     csvImport: '✅ Importación CSV',
                     aiAssistant: '✅ Asistente IA',
                     cloudSync: '✅ Sincronización en la nube',
                     unlimitedTransactions: '✅ Transacciones ilimitadas',
+                    unlimitedFixedExpenses: '✅ Gastos fijos ilimitados',
+                    savingsPercentUnlimited: '✅ Ahorro hasta 50%',
                     customCategories: '✅ Categorías personalizadas',
                     excelImport: '✅ Importación CSV/Excel',
                     advancedAI: '✅ Asistente IA avanzado',
                     detailedReports: '✅ Informes detallados',
-                    voiceRecognition: '✅ Reconocimiento de voz'
+                    voiceRecognition: '✅ Reconocimiento de voz',
+                    colorCustomization: '✅ Colores personalizados'
                 }
             },
             fr: {
-				
                 never: "Jamais",
-currentPaceReachOn: "Au rythme actuel, vous atteindrez l'objectif le {date}",
-goalNotReachable: "Avec ces paramètres, vous n'atteindrez pas l'objectif",
-savingsSuggestionTitle: "Suggestion",
-applySuggestion: "Appliquer la suggestion",
-increaseToPercentToArriveEarlier: "Augmente à {percent}% pour atteindre l'objectif {months} mois plus tôt !",
-increaseToPercentToArriveEarlier_one: "Augmente à {percent}% pour atteindre l'objectif {months} mois plus tôt !",
-suggestionAppliedToast: "💡 Suggestion appliquée : {percent}% d'épargne",
+                currentPaceReachOn: "Au rythme actuel, vous atteindrez l'objectif le {date}",
+                goalNotReachable: "Avec ces paramètres, vous n'atteindrez pas l'objectif",
+                savingsSuggestionTitle: "Suggestion",
+                applySuggestion: "Appliquer la suggestion",
+                increaseToPercentToArriveEarlier: "Augmente à {percent}% pour atteindre l'objectif {months} mois plus tôt !",
+                increaseToPercentToArriveEarlier_one: "Augmente à {percent}% pour atteindre l'objectif {months} mois plus tôt !",
+                suggestionAppliedToast: "💡 Suggestion appliquée : {percent}% d'épargne",
                 onboardingDemo: "✨ Charger la démo",
                 loadDemo: "Cargar demo",
                 upgradeBanner: '🚀 Passez à Premium',
-upgradeBannerText: 'Débloquez des fonctionnalités illimitées et l\'assistant IA !',
-upgrade: 'Passer à Premium',
-free: '🆓 Gratuit',
-premium: '💎 Premium',
-transactionsLimit: '50 transactions/mois',
-categoriesLimit: '3 catégories de base',
-popular: 'POPULAIRE',
-price: '€4.99 /mois',
-freeTrial: '🎁 Essai Gratuit',
-freeTrialText: '7 jours de Premium, zéro risque !',
-startTrial: '🚀 Commencer l\'essai gratuit',
-activateLicense: '🔑 Activer la licence',
-maybeLater: 'Peut-être plus tard',
+                upgradeBannerText: 'Débloquez des fonctionnalités illimitées et l\'assistant IA !',
+                upgrade: 'Passer à Premium',
+                free: '🆓 Gratuit',
+                premium: '💎 Premium',
+                transactionsLimit: '30 transactions/mois',
+                fixedExpensesLimit: '5 dépenses fixes',
+                savingsPercentLimit: '15% épargne max',
+                categoriesLimit: '3 catégories de base',
+                popular: 'POPULAIRE',
+                price: '€4.99 /mois',
+                freeTrial: '🎁 Essai Gratuit',
+                freeTrialText: '7 jours de Premium, zéro risque !',
+                startTrial: '🚀 Commencer l\'essai gratuit',
+                activateLicense: '🔑 Activer la licence',
+                maybeLater: 'Peut-être plus tard',
                 allCategories: '📋 Toutes les catégories',
-clearFilters: '✕ Effacer les filtres',
-maybeLater: 'Peut-être plus tard',
-
-// Nella sezione del widget risparmio:
-savingsWidgetTitle: 'Vous atteindrez votre objectif',
-never: 'Jamais',
-percent0: '0%',
-percent15: '15%',
-percent30: '30%',
-currentPlan: '📅 Plan actuel',
-currentPlanMessage: 'Avec ces paramètres, vous n\'atteindrez jamais l\'objectif',
-
-// Nella sezione import avanzato:
-excelSheet: 'Feuille Excel',
-excelSheetPlaceholder: 'Charger un fichier Excel',
-rowNone: 'Aucune (auto)',
-excelHelp: '⚠️ Les fichiers Excel sont convertis automatiquement',
-hideOptions: 'Masquer les options',
-advancedOptions: '⚙️ Options avancées',
-
-// Nella sezione upgrade banner:
-upgradeBanner: '🚀 Passez à Premium',
-upgradeBannerText: 'Débloquez des fonctionnalités illimitées et l\'assistant IA !',
-upgrade: 'Passer à Premium',
-free: '🆓 Gratuit',
-premium: '💎 Premium',
-transactionsLimit: '50 transactions/mois',
-categoriesLimit: '3 catégories de base',
-popular: 'POPULAIRE',
-price: '€4.99 /mois',
-freeTrial: '🎁 Essai Gratuit',
-freeTrialText: '7 jours de Premium, zéro risque !',
-startTrial: '🚀 Commencer l\'essai gratuit',
-activateLicense: '🔑 Activer la licence',
+                clearFilters: '✕ Effacer les filtres',
+                savingsWidgetTitle: 'Vous atteindrez votre objectif',
+                never: 'Jamais',
+                percent0: '0%',
+                percent15: '15%',
+                percent30: '30%',
+                currentPlan: '📅 Plan actuel',
+                currentPlanMessage: 'Avec ces paramètres, vous n\'atteindrez jamais l\'objectif',
+                excelSheet: 'Feuille Excel',
+                excelSheetPlaceholder: 'Charger un fichier Excel',
+                rowNone: 'Aucune (auto)',
+                excelHelp: '⚠️ Les fichiers Excel sont convertis automatiquement',
+                hideOptions: 'Masquer les options',
+                advancedOptions: '⚙️ Options avancées',
                 savingsPotLabel: 'Plan d\'épargne',
-searchPlaceholder: 'Rechercher par description, catégorie ou montant',
-maybeLater: 'Peut-être plus tard',
+                searchPlaceholder: 'Rechercher par description, catégorie ou montant',
                 resetColors: 'Réinitialiser les couleurs par défaut',
                 colorsTitle: '🎨 Personnaliser les couleurs',
                 colorsSubtitle: 'Choisissez vos couleurs préférées pour personnaliser l\'application.',
@@ -1286,26 +1149,12 @@ maybeLater: 'Peut-être plus tard',
                 defaultCategoriesTitle: 'Catégories par défaut',
                 yourCategoriesTitle: 'Vos catégories',
                 close: 'Fermer',
-                
-                // ===== WIDGET RISPARMIO =====
-                savingsWidgetTitle: 'Vous atteindrez votre objectif',
-                never: 'Jamais',
-                percent0: '0%',
-                percent15: '15%',
-                percent30: '30%',
-                savingsPotInputLabel: 'Épargne initiale (€)',
-                currentPlan: '📅 Plan actuel',
-                currentPlanMessage: 'Avec ces paramètres, vous n\'atteindrez jamais l\'objectif',
-                
-                // ===== IMPORT AVANZATO =====
                 advancedOptions: '⚙️ Options avancées',
                 excelSheet: 'Feuille Excel',
                 excelHeaderRow: 'Ligne d\'en-tête',
                 excelSheetPlaceholder: 'Charger un fichier Excel',
                 rowNone: 'Aucune (auto)',
                 excelHelp: '⚠️ Les fichiers Excel sont convertis automatiquement',
-                
-                // ===== IMPOSTAZIONI =====
                 backupButton: '💾 Télécharger la sauvegarde',
                 restoreButton: '📂 Restaurer',
                 manageCategories: '📂 Gérer les catégories',
@@ -1321,19 +1170,14 @@ maybeLater: 'Peut-être plus tard',
                 defaultCategories: 'Catégories par défaut',
                 customCategories: 'Tes catégories',
                 noCustomCategories: 'Aucune catégorie personnalisée',
-
-                // NUOVE CHIAVI PER I TAB
                 tabHome: '🏠 Accueil',
                 tabIncomes: '🏦 Revenus',
                 tabFixed: '📌 Fixes',
                 tabVariable: '🧾 Variables',
                 tabTools: '🛠️ Outils',
-
-                // NUOVE CHIAVI PER SKIP ROWS
                 skipRowsLabel: 'Ignorer les lignes initiales',
                 headerRowManualLabel: 'Ligne d\'en-tête',
                 skipHelp: '📌 Pour les fichiers avec lignes initiales (ex. Fineco): ignorez les lignes jusqu\'à trouver les colonnes',
-
                 docTitle: '💰 BudgetWise 2.0 - Gestionnaire de budget intelligent',
                 subtitle: 'De paie en paie — gestion intelligente avec IA',
                 add: 'Ajouter',
@@ -1381,59 +1225,38 @@ maybeLater: 'Peut-être plus tard',
                 adviceLowRemaining: '⚠️ Attention : il ne te reste que {remaining} pour les prochains jours.',
                 adviceGood: '💪 Ça va ! Il te reste encore {remaining}.',
                 aiSuggestionsTitle: '🤖 Suggestions IA',
-				chartTotalLabel: 'Total dépenses',
+                chartTotalLabel: 'Total dépenses',
                 aiSmartBadge: 'intelligent',
-				aiSuggestionReduce: '💡 Vous avez dépensé {amount} en {category}. En réduisant de 10% ({reduction}), vous pourriez ajouter cette somme à votre épargne.',
-aiSuggestionTransport: '🚗 Vous avez dépensé {amount} en transport. En utilisant plus les transports publics, vous pourriez économiser environ {potential} par mois.',
-aiSuggestionLeisure: '🎮 Vous avez dépensé {amount} en loisirs. En limitant les sorties à 2 par semaine, vous pourriez économiser {potential}.',
+                aiSuggestionReduce: '💡 Vous avez dépensé {amount} en {category}. En réduisant de 10% ({reduction}), vous pourriez ajouter cette somme à votre épargne.',
+                aiSuggestionTransport: '🚗 Vous avez dépensé {amount} en transport. En utilisant plus les transports publics, vous pourriez économiser environ {potential} par mois.',
+                aiSuggestionLeisure: '🎮 Vous avez dépensé {amount} en loisirs. En limitant les sorties à 2 par semaine, vous pourriez économiser {potential}.',
                 csvMappingTitle: '📋 Mapper les colonnes CSV',
                 csvMappingInstructionsHtml: '<strong>📌 Instructions :</strong> Associe chaque colonne du CSV au bon champ. Montants positifs = <strong>revenus</strong>, négatifs = <strong>dépenses</strong>.',
                 csvMappingFieldsTitle: '🎯 Association des champs :',
                 showAllExpenses: 'Afficher toutes les dépenses de la période',
                 edit: 'Modifier',
-                                // NOUVELLES TRADUCTIONS POUR FRANÇAIS
                 fixedDateFormatDays: '🗓️ Jours restants',
                 fixedDateFormatMonths: '📆 Mois et jours',
                 fixedDateFormatHelp: 'Choisissez comment afficher les échéances des dépenses fixes',
                 hideOptions: 'Masquer les options',
-                excelSheet: 'Feuille Excel',
-                excelHeaderRow: 'Ligne d\'en-tête',
                 row1: 'Ligne 1',
                 row2: 'Ligne 2',
                 row3: 'Ligne 3',
-                rowNone: 'Aucune (auto)',
-                never: 'Jamais',
-                percent0: '0%',
-                percent15: '15%',
-                percent30: '30%',
-                currentPlan: '📅 Plan actuel',
-                currentPlanMessage: 'Avec ces paramètres, vous n\'atteindrez jamais l\'objectif',
                 endPeriod: 'Fin de période',
-                upgradeBanner: '🚀 Passez à Premium',
-                upgradeBannerText: 'Débloquez des fonctionnalités illimitées et l\'assistant IA !',
-                upgrade: 'Passer à Premium',
-                free: '🆓 Gratuit',
-                premium: '💎 Premium',
-                transactionsLimit: '50 transactions/mois',
-                categoriesLimit: '3 catégories de base',
-                popular: 'POPULAIRE',
-                price: '€4.99 /mois',
-                freeTrial: '🎁 Essai Gratuit',
-                freeTrialText: '7 jours de Premium, zéro risque !',
-                startTrial: '🚀 Commencer l\'essai gratuit',
-                activateLicense: '🔑 Activer la licence',
-                allCategories: '📋 Toutes les catégories',
-                clearFilters: '✕ Effacer les filtres',
+                transactionCounter: 'Transactions mensuelles',
                 features: {
                     csvImport: '✅ Importation CSV',
                     aiAssistant: '✅ Assistant IA',
                     cloudSync: '✅ Synchronisation cloud',
                     unlimitedTransactions: '✅ Transactions illimitées',
+                    unlimitedFixedExpenses: '✅ Dépenses fixes illimitées',
+                    savingsPercentUnlimited: '✅ Épargne jusqu\'à 50%',
                     customCategories: '✅ Catégories personnalisées',
                     excelImport: '✅ Importation CSV/Excel',
                     advancedAI: '✅ Assistant IA avancé',
                     detailedReports: '✅ Rapports détaillés',
-                    voiceRecognition: '✅ Reconnaissance vocale'
+                    voiceRecognition: '✅ Reconnaissance vocale',
+                    colorCustomization: '✅ Couleurs personnalisées'
                 }
             }
         };
@@ -1454,17 +1277,290 @@ aiSuggestionLeisure: '🎮 Vous avez dépensé {amount} en loisirs. En limitant 
                 isPremium: false,
                 trialUsed: false,
                 limits: {
-                    free: { maxTransactions: 50, maxCategories: 3, csvImport: false },
-                    premium: { maxTransactions: Infinity, maxCategories: Infinity, csvImport: true }
+                    free: { 
+                        maxTransactions: 30, 
+                        maxFixedExpenses: 5,
+                        maxSavingsPercent: 15,
+                        maxCategories: 3, 
+                        csvImport: false,
+                        voiceRecognition: false,
+                        colorCustomization: false,
+                        advancedFixedFormat: false,
+                        calendarExport: false
+                    },
+                    premium: { 
+                        maxTransactions: Infinity, 
+                        maxFixedExpenses: Infinity,
+                        maxSavingsPercent: 50,
+                        maxCategories: Infinity, 
+                        csvImport: true,
+                        voiceRecognition: true,
+                        colorCustomization: true,
+                        advancedFixedFormat: true,
+                        calendarExport: true
+                    }
                 },
                 checkPremiumStatus: () => false,
                 getPlanInfo: () => ({ name: 'Free', status: 'Limitato' }),
                 hasFullPremiumAccess: () => false,
                 canUseFeature: (feature) => false,
-                canAddTransaction: (count) => count < 50,
-                getCurrentLimits: () => ({ maxTransactions: 50, maxCategories: 3, csvImport: false }),
-                getUpgradeMessage: (feature) => 'Questa funzionalità è disponibile nella versione Premium! 💎'
+                canAddTransaction: (count) => count < 30,
+                canAddFixedExpense: (count) => count < 5,
+                getCurrentLimits: () => ({ 
+                    maxTransactions: 30, 
+                    maxFixedExpenses: 5,
+                    maxSavingsPercent: 15,
+                    maxCategories: 3, 
+                    csvImport: false,
+                    voiceRecognition: false,
+                    colorCustomization: false,
+                    advancedFixedFormat: false,
+                    calendarExport: false
+                }),
+                getMaxSavingsPercent: () => 15,
+                getUpgradeMessage: (feature) => 'Questa funzionalità è disponibile nella versione Premium! 💎',
+                isFeatureLocked: () => true
             };
+        }
+    }
+
+    // ========== SISTEMA LIMITI FREE/PREMIUM ==========
+    calculateMonthlyTransactions() {
+        let count = 0;
+        
+        // Conta spese variabili
+        if (this.data.variableExpenses) {
+            Object.values(this.data.variableExpenses).forEach(day => {
+                count += day?.length || 0;
+            });
+        }
+        
+        // Conta spese fisse
+        count += this.data.fixedExpenses?.length || 0;
+        
+        // Conta entrate
+        count += this.data.incomes?.length || 0;
+        
+        return count;
+    }
+
+    updateTransactionCount() {
+        const count = this.calculateMonthlyTransactions();
+        
+        const transactionCounter = document.getElementById('transactionCounter');
+        if (transactionCounter) {
+            const limits = this.license?.getCurrentLimits();
+            if (limits && !this.license?.hasFullPremiumAccess()) {
+                transactionCounter.textContent = `${count}/${limits.maxTransactions}`;
+                
+                // Cambia colore se vicino al limite
+                if (count >= limits.maxTransactions - 5) {
+                    transactionCounter.classList.add('warning');
+                } else {
+                    transactionCounter.classList.remove('warning');
+                }
+                
+                if (count >= limits.maxTransactions) {
+                    transactionCounter.classList.add('danger');
+                } else {
+                    transactionCounter.classList.remove('danger');
+                }
+            } else {
+                transactionCounter.textContent = '∞';
+            }
+        }
+    }
+
+    checkFreeLimits(feature, value = null) {
+        if (!this.license) return true;
+        
+        // Se è premium o trial attivo, tutto permesso
+        if (this.license.hasFullPremiumAccess?.() || false) return true;
+        
+        const limits = this.license.getCurrentLimits?.() || this.license.limits?.free;
+        
+        switch(feature) {
+            case 'addVariableExpense':
+            case 'addIncome':
+                const transactionCount = this.calculateMonthlyTransactions();
+                if (transactionCount >= limits.maxTransactions) {
+                    this.showToast(`⚠️ Hai raggiunto il limite di ${limits.maxTransactions} transazioni mensili (versione Free)`);
+                    this.showUpgradePrompt('transactions');
+                    return false;
+                }
+                break;
+                
+            case 'addFixedExpense':
+                if (this.data.fixedExpenses?.length >= limits.maxFixedExpenses) {
+                    this.showToast(`⚠️ Limite di ${limits.maxFixedExpenses} spese fisse raggiunto (versione Free)`);
+                    this.showUpgradePrompt('fixedExpenses');
+                    return false;
+                }
+                break;
+                
+            case 'customCategory':
+                if (!limits.customCategories) {
+                    this.showUpgradePrompt('customCategories');
+                    return false;
+                }
+                break;
+                
+            case 'csvImport':
+                if (!limits.csvImport) {
+                    this.showUpgradePrompt('csvImport');
+                    return false;
+                }
+                break;
+                
+            case 'voiceRecognition':
+                if (!limits.voiceRecognition) {
+                    this.showUpgradePrompt('voiceRecognition');
+                    return false;
+                }
+                break;
+                
+            case 'savePercent':
+                const maxPercent = this.license.getMaxSavingsPercent?.() || limits.maxSavingsPercent;
+                if (value > maxPercent) {
+                    this.showToast(`⚠️ Nella versione Free la percentuale massima è ${maxPercent}%`);
+                    return false;
+                }
+                break;
+                
+            case 'calendarExport':
+                if (!limits.calendarExport) {
+                    this.showUpgradePrompt('calendarExport');
+                    return false;
+                }
+                break;
+                
+            case 'fixedDateFormat':
+                if (!limits.advancedFixedFormat && value === 'months') {
+                    this.showUpgradePrompt('advancedFixedFormat');
+                    return false;
+                }
+                break;
+                
+            case 'colorCustomization':
+                if (!limits.colorCustomization) {
+                    this.showUpgradePrompt('colorCustomization');
+                    return false;
+                }
+                break;
+        }
+        
+        return true;
+    }
+
+    showUpgradePrompt(feature) {
+        const message = this.license?.getUpgradeMessage?.(feature) || 
+                       'Questa funzionalità è disponibile nella versione Premium! 💎';
+        
+        // Mostra un prompt non intrusivo
+        const prompt = document.createElement('div');
+        prompt.className = 'upgrade-prompt';
+        prompt.innerHTML = `
+            <h4>🔒 Versione Free</h4>
+            <p>${message}</p>
+            <button onclick="window.app?.showPremiumModal()">💎 Scopri Premium</button>
+        `;
+        
+        const container = document.querySelector('.container');
+        if (container) {
+            // Rimuovi eventuali prompt esistenti
+            const oldPrompt = document.querySelector('.upgrade-prompt');
+            if (oldPrompt) oldPrompt.remove();
+            
+            container.insertBefore(prompt, container.firstChild);
+            
+            setTimeout(() => {
+                if (prompt.parentNode) {
+                    prompt.remove();
+                }
+            }, 5000);
+        }
+    }
+
+    applyFreeLimitsToUI() {
+        if (!this.license) return;
+        
+        const isFree = !(this.license.hasFullPremiumAccess?.() || false);
+        const limits = this.license.getCurrentLimits?.() || this.license.limits?.free;
+        
+        // Disabilita/Nascondi feature bloccate in free
+        if (isFree) {
+            // Categorie personalizzate
+            if (!limits.customCategories) {
+                document.querySelectorAll('[data-premium="custom-categories"], #manageCategoriesBtn, #categoryManagerOverlay').forEach(el => {
+                    if (el) el.classList.add('feature-locked');
+                });
+            }
+            
+            // Riconoscimento vocale
+            if (!limits.voiceRecognition) {
+                const micFixed = document.getElementById('micFixedBtn');
+                const voiceBtn = document.getElementById('voiceBtn');
+                const chatVoice = document.getElementById('chatVoiceBtn');
+                
+                if (micFixed) {
+                    micFixed.disabled = true;
+                    micFixed.title = '🔒 Funzione Premium';
+                }
+                if (voiceBtn) {
+                    voiceBtn.disabled = true;
+                    voiceBtn.title = '🔒 Funzione Premium';
+                }
+                if (chatVoice) {
+                    chatVoice.disabled = true;
+                    chatVoice.title = '🔒 Funzione Premium';
+                }
+            }
+            
+            // Import CSV/Excel
+            if (!limits.csvImport) {
+                const importSection = document.querySelector('[data-tab="tools"] .section-card:has(#csvTitle)');
+                if (importSection) {
+                    importSection.classList.add('feature-locked');
+                }
+            }
+            
+            // Colori personalizzati
+            if (!limits.colorCustomization) {
+                const colorSection = document.querySelector('[data-tab="tools"] .section-card:has(#colorsTitle)');
+                if (colorSection) {
+                    colorSection.classList.add('feature-locked');
+                }
+                
+                // Disabilita anche i color picker
+                document.querySelectorAll('#colorAccent, #colorAccentLight, #colorCardBg, #colorTextPrimary, #colorTextSecondary, #colorBg, #colorSuccess, #colorDanger, #colorWarning, #colorBorder, #resetColorsBtn').forEach(el => {
+                    if (el) el.disabled = true;
+                });
+            }
+            
+            // Formato date avanzato
+            if (!limits.advancedFixedFormat) {
+                const monthsRadio = document.getElementById('dateFormatMonths');
+                if (monthsRadio) {
+                    monthsRadio.disabled = true;
+                    const monthsLabel = document.querySelector('label[for="dateFormatMonths"]');
+                    if (monthsLabel) monthsLabel.classList.add('feature-locked-sm');
+                }
+            }
+            
+            // Esportazione calendario
+            if (!limits.calendarExport) {
+                const exportBtn = document.getElementById('exportCalendarBtn');
+                if (exportBtn) {
+                    exportBtn.disabled = true;
+                    exportBtn.title = '🔒 Funzione Premium';
+                }
+            }
+            
+            // Limita percentuale risparmio
+            const savePercentSlider = document.getElementById('savePercent');
+            if (savePercentSlider) {
+                savePercentSlider.max = limits.maxSavingsPercent;
+            }
         }
     }
 
@@ -1490,6 +1586,9 @@ aiSuggestionLeisure: '🎮 Vous avez dépensé {amount} en loisirs. En limitant 
         this.startOnboarding();
         this.updateAllCategorySelects();
         this.initTabs();
+        
+        // Applica limiti free alla UI
+        this.applyFreeLimitsToUI();
 
         const toggle = document.getElementById('showAllExpensesToggle');
         if (toggle) toggle.checked = !!this.showAllExpenses;
@@ -2295,6 +2394,13 @@ if (excelHeaderSelectEl) {
 
         const aiWidgetBadgeElement = document.getElementById('aiWidgetBadge');
         if (aiWidgetBadgeElement) aiWidgetBadgeElement.textContent = this.t('aiSmartBadge');
+        
+        // 5. CONTATORE TRANSAZIONI
+        const transactionCounter = document.getElementById('transactionCounter');
+        if (transactionCounter) {
+            this.updateTransactionCount();
+        }
+        
         this.updatePeriodInfo();
     }
                 
@@ -2743,6 +2849,9 @@ updateFixedStatusHome() {
 
     // ========== ENTRATE ==========
     addIncome() {
+        // Verifica limite transazioni
+        if (!this.checkFreeLimits('addIncome')) return;
+        
         const desc = document.getElementById('incomeDesc').value.trim();
         const amount = parseFloat(document.getElementById('incomeAmount').value);
         const dateInput = document.getElementById('incomeDate').value;
@@ -2776,6 +2885,7 @@ updateFixedStatusHome() {
         
         this.saveData();
         this.updateUI();
+        this.updateTransactionCount();
         alert(this.t('incomeAdded'));
         
         document.getElementById('incomeDesc').value = '';
@@ -2788,11 +2898,15 @@ updateFixedStatusHome() {
         this.data.incomes = this.data.incomes.filter(inc => inc.id !== id);
         this.saveData();
         this.updateUI();
+        this.updateTransactionCount();
         alert(this.t('incomeDeleted'));
     }
 
     // ========== SPESE FISSE ==========
     addFixedExpense() {
+        // Verifica limite spese fisse
+        if (!this.checkFreeLimits('addFixedExpense')) return;
+        
         const name = document.getElementById('fixedName').value.trim();
         const amount = this.parseMoney(document.getElementById('fixedAmount').value);
         const day = parseInt(document.getElementById('fixedDay').value);
@@ -2812,6 +2926,7 @@ updateFixedStatusHome() {
         this.data.fixedExpenses.push({ name, amount, day, endDate, id: Date.now() });
         this.saveData();
         this.updateUI();
+        this.updateTransactionCount();
 
         const status = new Date(endDate) >= new Date() ? '🟢' : '🔴';
         this.showToast(`💰 ${name} ${this.formatCurrency(amount)} – giorno ${day} (scad. ${endDate}) ${status}`, 'success');
@@ -2831,11 +2946,15 @@ updateFixedStatusHome() {
         this.data.fixedExpenses = this.data.fixedExpenses.filter(exp => exp.id !== id);
         this.saveData();
         this.updateUI();
+        this.updateTransactionCount();
         alert(this.t('fixedDeleted'));
     }
 
     // ========== SPESE VARIABILI ==========
     addVariableExpense() {
+        // Verifica limite transazioni
+        if (!this.checkFreeLimits('addVariableExpense')) return;
+        
         const date = this.normalizeIsoDate(document.getElementById('expenseDate').value);
         const name = document.getElementById('expenseName').value.trim();
         const amount = parseFloat(document.getElementById('expenseAmount').value);
@@ -2852,11 +2971,16 @@ updateFixedStatusHome() {
         if (!this.data.variableExpenses[date]) this.data.variableExpenses[date] = [];
 
         this.data.variableExpenses[date].push({ name, amount, category, id: Date.now() });
-        this.learnCategory(name, category);
+        
+        // Apprendimento categorie solo in premium
+        if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+            this.learnCategory(name, category);
+        }
 
         this.saveData();
         this.updateUI();
         this.updateChart();
+        this.updateTransactionCount();
 
         const categoryEmoji = this.getCategoryEmoji(category);
         this.showToast(`${categoryEmoji} ${name} ${this.formatCurrency(amount)} aggiunto!`, 'success');
@@ -2875,6 +2999,7 @@ updateFixedStatusHome() {
         this.saveData();
         this.updateUI();
         this.updateChart();
+        this.updateTransactionCount();
         alert(this.t('expenseDeleted'));
     }
 
@@ -2885,6 +3010,7 @@ updateFixedStatusHome() {
             this.saveData();
             this.updateUI();
             this.updateChart();
+            this.updateTransactionCount();
             alert(this.t('dayReset'));
         }
     }
@@ -2917,6 +3043,7 @@ updateFixedStatusHome() {
         this.saveData();
         this.updateUI();
         this.updateChart();
+        this.updateTransactionCount();
         alert(this.t('variablePeriodReset'));
     }
 
@@ -2931,6 +3058,15 @@ updateFixedStatusHome() {
 
     applySavings() {
         const percent = parseFloat(document.getElementById('savePercent').value) || 0;
+        
+        // Verifica limite percentuale
+        if (!this.checkFreeLimits('savePercent', percent)) {
+            // Ripristina al valore precedente
+            document.getElementById('savePercent').value = this.data.savingsPercent;
+            document.getElementById('percentageValue').textContent = this.data.savingsPercent + '%';
+            return;
+        }
+        
         const goal = parseFloat(document.getElementById('saveGoal').value) || 0;
         const pot = parseFloat(document.getElementById('savingsPotInput')?.value) || 0;
         this.data.savingsPercent = percent;
@@ -2948,12 +3084,18 @@ updateFixedStatusHome() {
         const goal = this.data.savingsGoal || 0;
         const currentSavings = this.data.savingsPot || 0;
         
+        // Limita percentuale in free
+        const maxPercent = this.license?.getMaxSavingsPercent?.() || 15;
+        if (!this.license?.hasFullPremiumAccess?.() && percent > maxPercent) {
+            this.data.savingsPercent = maxPercent;
+        }
+        
         // Aggiorna slider e valore percentuale
         const slider = document.getElementById('savePercent');
         const percentageValue = document.getElementById('percentageValue');
         if (slider && percentageValue) {
-            slider.value = percent;
-            percentageValue.textContent = percent + '%';
+            slider.value = this.data.savingsPercent;
+            percentageValue.textContent = this.data.savingsPercent + '%';
         }
         
         // Aggiorna input obiettivo e fondo iniziale
@@ -2963,7 +3105,7 @@ updateFixedStatusHome() {
         if (potInput) potInput.value = currentSavings || '';
         
         // Calcola e aggiorna i messaggi
-        this.updateSavingsMessages(percent, goal, currentSavings);
+        this.updateSavingsMessages(this.data.savingsPercent, goal, currentSavings);
         
         // Aggiusta l'anello di progresso
         this.updateProgressRing(currentSavings, goal);
@@ -2983,17 +3125,15 @@ updateFixedStatusHome() {
         // Calcola data target
         const targetDate = new Date();
         targetDate.setMonth(targetDate.getMonth() + monthsToGoal);
-        // Mappa lingua app → locale browser
+        
+        const currentLang = this.data.language || 'it';
+        const locale = LOCALE_MAP[currentLang] || 'it-IT';
 
-
-const currentLang = this.data.language || 'it';
-const locale = LOCALE_MAP[currentLang] || 'it-IT';
-
-const dateStr = targetDate.toLocaleDateString(locale, {
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric'
-});
+        const dateStr = targetDate.toLocaleDateString(locale, {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
         
         // Aggiorna messaggi
         const targetDateEl = document.getElementById('targetDate');
@@ -3006,12 +3146,17 @@ const dateStr = targetDate.toLocaleDateString(locale, {
         
         if (currentPlanEl) {
             currentPlanEl.innerHTML = monthsToGoal === Infinity
-    ? this.t('goalNotReachable')
-    : this.t('currentPaceReachOn').replace('{date}', `<strong>${dateStr}</strong>`);
+                ? this.t('goalNotReachable')
+                : this.t('currentPaceReachOn').replace('{date}', `<strong>${dateStr}</strong>`);
         }
         
-        // Calcola suggerimento
-        this.updateSavingsSuggestion(percent, monthsToGoal, monthlyIncome, remaining);
+        // Calcola suggerimento (solo premium)
+        if (!this.license?.isFeatureLocked?.('aiAssistant')) {
+            this.updateSavingsSuggestion(percent, monthsToGoal, monthlyIncome, remaining);
+        } else {
+            const suggestionCard = document.getElementById('suggestionCard');
+            if (suggestionCard) suggestionCard.style.display = 'none';
+        }
     }
 
     updateSavingsSuggestion(currentPercent, currentMonths, monthlyIncome, remaining) {
@@ -3028,7 +3173,9 @@ const dateStr = targetDate.toLocaleDateString(locale, {
         let bestPercent = currentPercent;
         let bestMonths = currentMonths;
         
-        for (let p = currentPercent + 1; p <= Math.min(currentPercent + 10, 30); p++) {
+        const maxPercent = this.license?.getMaxSavingsPercent?.() || 30;
+        
+        for (let p = currentPercent + 1; p <= Math.min(currentPercent + 10, maxPercent); p++) {
             const monthlySavings = (monthlyIncome * p) / 100;
             const months = monthlySavings > 0 ? Math.ceil(remaining / monthlySavings) : Infinity;
             
@@ -3041,16 +3188,14 @@ const dateStr = targetDate.toLocaleDateString(locale, {
         if (bestPercent > currentPercent && bestMonths < currentMonths) {
             const monthsSaved = currentMonths - bestMonths;
             const key = monthsSaved === 1 ? 'increaseToPercentToArriveEarlier_one' : 'increaseToPercentToArriveEarlier';
-suggestionEl.innerHTML = this.t(key)
-    .replace('{percent}', `<strong>${bestPercent}</strong>`)
-    .replace('{months}', `<strong>${monthsSaved}</strong>`);
+            suggestionEl.innerHTML = this.t(key)
+                .replace('{percent}', `<strong>${bestPercent}</strong>`)
+                .replace('{months}', `<strong>${monthsSaved}</strong>`);
             
             if (applyBtn) {
-                if (applyBtn) {
-    applyBtn.textContent = this.t('applySuggestion'); // ✅ traduzione
-    applyBtn.onclick = () => this.applySavingsSuggestion(bestPercent);
-    applyBtn.style.display = 'inline-block';
-}
+                applyBtn.textContent = this.t('applySuggestion');
+                applyBtn.onclick = () => this.applySavingsSuggestion(bestPercent);
+                applyBtn.style.display = 'inline-block';
             }
             if (suggestionCard) suggestionCard.style.display = 'block';
         } else {
@@ -3116,6 +3261,15 @@ suggestionEl.innerHTML = this.t(key)
             slider.addEventListener('input', (e) => {
                 const value = e.target.value;
                 percentageValue.textContent = value + '%';
+                
+                // Verifica limite percentuale
+                if (!this.checkFreeLimits('savePercent', parseFloat(value))) {
+                    // Ripristina al valore precedente
+                    slider.value = this.data.savingsPercent;
+                    percentageValue.textContent = this.data.savingsPercent + '%';
+                    return;
+                }
+                
                 this.data.savingsPercent = parseFloat(value);
                 this.updateSavingsWidget();
             });
@@ -3242,8 +3396,13 @@ suggestionEl.innerHTML = this.t(key)
             this.saveData();
         });
         document.getElementById('savePercent').addEventListener('input', (e) => {
-            this.data.savingsPercent = parseFloat(e.target.value) || 0;
-            this.saveData();
+            const value = parseFloat(e.target.value) || 0;
+            if (this.checkFreeLimits('savePercent', value)) {
+                this.data.savingsPercent = value;
+                this.saveData();
+            } else {
+                e.target.value = this.data.savingsPercent;
+            }
         });
         document.getElementById('saveGoal').addEventListener('input', (e) => {
             this.data.savingsGoal = parseFloat(e.target.value) || 0;
@@ -3265,7 +3424,11 @@ suggestionEl.innerHTML = this.t(key)
         
         const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
         if (manageCategoriesBtn) {
-            manageCategoriesBtn.addEventListener('click', () => this.showCategoryManager());
+            manageCategoriesBtn.addEventListener('click', () => {
+                if (this.checkFreeLimits('customCategory')) {
+                    this.showCategoryManager();
+                }
+            });
         }
         const saveCategoryBtn = document.getElementById('saveCategoryBtn');
         if (saveCategoryBtn) {
@@ -3324,6 +3487,10 @@ if (toggleFixedListBtn) {
             
             monthsRadio.addEventListener('change', (e) => {
                 if (e.target.checked) {
+                    if (!this.checkFreeLimits('fixedDateFormat', 'months')) {
+                        daysRadio.checked = true;
+                        return;
+                    }
                     this.fixedDateFormat = 'months';
                     localStorage.setItem('budgetwise-fixed-date-format', 'months');
                     this.updateFixedExpensesList();
@@ -3396,6 +3563,9 @@ if (toggleFixedListBtn) {
 
         // Usa il nuovo widget risparmio migliorato
         this.updateSavingsWidget();
+        
+        // Aggiorna contatore transazioni
+        this.updateTransactionCount();
 
         document.getElementById('guideMessage').style.display = (!this.data.incomes || this.data.incomes.length === 0) ? 'block' : 'none';
 
@@ -3700,7 +3870,7 @@ formatDaysToYearsMonthsDays(days) {
         countEl.textContent = '';
     }
 }
-    // Popola il select delle categorie
+    // Popula il select delle categorie
     populateCategoryFilter() {
         const select = document.getElementById('searchCategory');
         if (!select) return;
@@ -3758,6 +3928,11 @@ formatDaysToYearsMonthsDays(days) {
         const trimmedCat = String(newCategory).trim() || 'Altro';
 
         if (!this.getAllCategories().includes(trimmedCat)) {
+            // Categorie personalizzate solo in premium
+            if (!this.checkFreeLimits('customCategory')) {
+                alert('Le categorie personalizzate sono disponibili in Premium!');
+                return;
+            }
             this.customCategories.push(trimmedCat);
             this.saveCustomCategories();
             this.updateAllCategorySelects();
@@ -4236,6 +4411,14 @@ document.documentElement.style.setProperty('--accent-gradient',
     }
 
     setupColorPickers() {
+        // Blocca in free
+        if (!this.checkFreeLimits('colorCustomization')) {
+            document.querySelectorAll('#colorAccent, #colorAccentLight, #colorCardBg, #colorTextPrimary, #colorTextSecondary, #colorBg, #colorSuccess, #colorDanger, #colorWarning, #colorBorder, #resetColorsBtn').forEach(el => {
+                if (el) el.disabled = true;
+            });
+            return;
+        }
+        
         const colorInputs = [
             'colorAccent', 'colorAccentLight', 'colorCardBg', 
             'colorTextPrimary', 'colorTextSecondary', 'colorBg',
@@ -4356,6 +4539,7 @@ document.documentElement.style.setProperty('--accent-gradient',
                 this.saveData();
                 this.updateUI();
                 this.updateChart();
+                this.updateTransactionCount();
                 this.applyLanguage();
                 alert(this.t('dataRestored'));
             } catch {
@@ -4392,12 +4576,16 @@ document.documentElement.style.setProperty('--accent-gradient',
 
             this.updateUI();
             this.updateChart();
+            this.updateTransactionCount();
             this.applyLanguage();
             alert(this.t('resetCompleted'));
         }
     }
 
     exportToCalendar() {
+        // Verifica limite esportazione
+        if (!this.checkFreeLimits('calendarExport')) return;
+        
         let ics = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//BudgetWise//IT\n";
         if (Array.isArray(this.data.fixedExpenses)) {
             this.data.fixedExpenses.forEach(exp => {
@@ -4475,6 +4663,9 @@ document.documentElement.style.setProperty('--accent-gradient',
     }
 
     learnCategory(description, category) {
+        // Apprendimento solo in premium
+        if (this.license?.isFeatureLocked?.('categoryLearning')) return;
+        
         if (!description || !category) return;
         const tokens = this.normalizeDescriptionForLearning(description);
         for (const keyword of tokens) {
@@ -4618,6 +4809,8 @@ document.documentElement.style.setProperty('--accent-gradient',
     }
     
     saveCategory() {
+        if (!this.checkFreeLimits('customCategory')) return;
+        
         const input = document.getElementById('newCategoryName');
         if (!input) return;
         const newCat = input.value.trim();
@@ -4792,8 +4985,10 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                     otherSelect.style.backgroundColor = '';
                 }, 500);
                 
-                // Impara anche per questa riga
-                this.learnCategory(otherExp.name, newCategory);
+                // Impara anche per questa riga (solo premium)
+                if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+                    this.learnCategory(otherExp.name, newCategory);
+                }
             }
         } else {
             console.log(`❌ Riga ${i} DIVERSA: ${otherExp.name} - NON modificata`);
@@ -4817,7 +5012,12 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                         
                         // Verifica se esiste già
                         if (!this.getAllCategories().includes(catName)) {
-                            // Aggiungi alle categorie personalizzate
+                            // Aggiungi alle categorie personalizzate (solo premium)
+                            if (!this.checkFreeLimits('customCategory')) {
+                                alert('Le categorie personalizzate sono disponibili in Premium!');
+                                selectEl.value = importedExpenses[index].category || 'Altro';
+                                return;
+                            }
                             this.customCategories.push(catName);
                             this.saveCustomCategories();
                             
@@ -4837,10 +5037,12 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                             currentSelect.value = catName;
                         }
                         
-                        // Apprendimento immediato
-                        this.learnCategory(description, catName);
+                        // Apprendimento immediato (solo premium)
+                        if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+                            this.learnCategory(description, catName);
+                        }
                         
-                        // AUTO-COMPLETAMENTO: applica SOLO a righe con descrizione SIMILE
+                        // AUTO-COMPLETAMENTO: applica SOLO a righe con descrizione IDENTICA
                         autoCompleteIdentical(index, catName, description);
                         
                     } else {
@@ -4851,9 +5053,13 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                     // Cambio categoria normale
                     const newCategory = selectEl.value;
                     importedExpenses[index].category = newCategory;
-                    this.learnCategory(description, newCategory);
                     
-                    // AUTO-COMPLETAMENTO: applica SOLO a righe con descrizione SIMILE
+                    // Apprendimento (solo premium)
+                    if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+                        this.learnCategory(description, newCategory);
+                    }
+                    
+                    // AUTO-COMPLETAMENTO: applica SOLO a righe con descrizione IDENTICA
                     autoCompleteIdentical(index, newCategory, description);
                 }
             });
@@ -4871,7 +5077,11 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                 if (select.value !== '__NEW__') {
                     const newCategory = select.value;
                     importedExpenses[index].category = newCategory;
-                    this.learnCategory(importedExpenses[index].name, newCategory);
+                    
+                    // Apprendimento (solo premium)
+                    if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+                        this.learnCategory(importedExpenses[index].name, newCategory);
+                    }
                 }
             });
             
@@ -4902,6 +5112,9 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
 }
     // ========== IMPORT CSV CON MAPPATURA E REVISIONE ==========
     async parseCSV(file, delimiter, dateFormat, skipRows = 0, headerRow = 1) {
+        // Verifica limite import
+        if (!this.checkFreeLimits('csvImport')) return { cancelled: true, added: 0, incomes: 0 };
+        
         console.log('📥 Inizio import CSV:', file.name, 'delimiter:', delimiter, 'dateFormat:', dateFormat, 'skipRows:', skipRows, 'headerRow:', headerRow);
 
         const mapping = await this.showMappingDialog(file, delimiter, skipRows, headerRow);
@@ -4969,10 +5182,15 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
 
                         let _suggested = null;
                         if (!category) {
-                            const sug = this.suggestCategory(description);
-                            category = sug.confidence >= this.CATEGORY_CONFIDENCE_THRESHOLD ? sug.category : 'Altro';
-                            if (sug.confidence > 0 && sug.confidence < this.CATEGORY_CONFIDENCE_THRESHOLD) {
-                                _suggested = sug.category;
+                            // Suggerimento categorie (solo premium o base)
+                            if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+                                const sug = this.suggestCategory(description);
+                                category = sug.confidence >= this.CATEGORY_CONFIDENCE_THRESHOLD ? sug.category : 'Altro';
+                                if (sug.confidence > 0 && sug.confidence < this.CATEGORY_CONFIDENCE_THRESHOLD) {
+                                    _suggested = sug.category;
+                                }
+                            } else {
+                                category = 'Altro';
                             }
                         }
 
@@ -5020,6 +5238,7 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                             this.saveData();
                             this.updateUI();
                             this.updateChart();
+                            this.updateTransactionCount();
 
                             const mostRecent = reviewed
                                 .map(e => this.normalizeIsoDate(e.date))
@@ -5050,6 +5269,7 @@ const autoCompleteIdentical = (startIndex, newCategory, description) => {
                         this.saveData();
                         this.updateUI();
                         this.updateChart();
+                        this.updateTransactionCount();
 
                         this.showToast(
                             this.data.language === 'it'
@@ -5226,6 +5446,9 @@ async showMappingDialog(file, delimiter, skipRows = 0, headerRow = 1) {
 }
     // ========== IMPORT EXCEL CON AUTO-RICONOSCIMENTO INTELLIGENTE ==========
 async parseExcel(file, sheetIndex = 0, headerRow = -1) {
+        // Verifica limite import
+        if (!this.checkFreeLimits('csvImport')) return { cancelled: true, added: 0, incomes: 0 };
+        
         const self = this; // 
     console.log('📥 Inizio import Excel con auto-riconoscimento:', file.name, 'foglio:', sheetIndex);
 
@@ -5435,13 +5658,17 @@ const allLines = relevantRows.map((row, rowIndex) =>
         let amount = parseFloat(amountStr);
         if (isNaN(amount)) continue;
 
-        // Suggerisci categoria se mancante
+        // Suggerisci categoria se mancante (solo premium)
         let _suggested = null;
         if (!category) {
-            const sug = this.suggestCategory(description);
-            category = sug.confidence >= this.CATEGORY_CONFIDENCE_THRESHOLD ? sug.category : 'Altro';
-            if (sug.confidence > 0 && sug.confidence < this.CATEGORY_CONFIDENCE_THRESHOLD) {
-                _suggested = sug.category;
+            if (!this.license?.isFeatureLocked?.('categoryLearning')) {
+                const sug = this.suggestCategory(description);
+                category = sug.confidence >= this.CATEGORY_CONFIDENCE_THRESHOLD ? sug.category : 'Altro';
+                if (sug.confidence > 0 && sug.confidence < this.CATEGORY_CONFIDENCE_THRESHOLD) {
+                    _suggested = sug.category;
+                }
+            } else {
+                category = 'Altro';
             }
         }
 
@@ -5521,9 +5748,7 @@ if (tempIncomes.length > 0) {
 
 this.updateUI();
 this.updateChart();
-
-    this.updateUI();
-    this.updateChart();
+this.updateTransactionCount();
 
     if (addedExpenses > 0) {
         const mostRecent = importedExpenses
@@ -5716,6 +5941,30 @@ this.updateChart();
     }
 
     setupVoice() {
+        // Blocca in free
+        if (!this.checkFreeLimits('voiceRecognition')) {
+            const micFixed = document.getElementById('micFixedBtn');
+            const voiceBtn = document.getElementById('voiceBtn');
+            const chatVoice = document.getElementById('chatVoiceBtn');
+            
+            if (micFixed) {
+                micFixed.disabled = true;
+                micFixed.title = '🔒 Funzione Premium';
+                micFixed.style.opacity = '0.5';
+            }
+            if (voiceBtn) {
+                voiceBtn.disabled = true;
+                voiceBtn.title = '🔒 Funzione Premium';
+                voiceBtn.style.opacity = '0.5';
+            }
+            if (chatVoice) {
+                chatVoice.disabled = true;
+                chatVoice.title = '🔒 Funzione Premium';
+                chatVoice.style.opacity = '0.5';
+            }
+            return;
+        }
+        
         console.log('Setup voice...');
         if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
             console.warn('Riconoscimento vocale non supportato');
@@ -6275,8 +6524,11 @@ function setupImportHandlers() {
             
             const banner = document.getElementById('premiumBanner');
             if (banner) {
-                banner.style.display = 'none';
+                banner.style.display = 'block';
             }
+            
+            // Ricarica UI per sbloccare feature
+            window.app.applyFreeLimitsToUI();
         };
 
         window.app.showPremiumBannerIfNeeded = () => {
@@ -6288,48 +6540,6 @@ function setupImportHandlers() {
             const banner = document.getElementById('premiumBanner');
             if (banner && !window.app.license.hasFullPremiumAccess()) {
                 banner.style.display = 'block';
-            }
-        };
-
-        window.app.checkFeatureLimit = (feature, currentCount = 0) => {
-            if (!window.app.license) {
-                console.warn('⚠️ License system non disponibile - feature check fallback');
-                return true;
-            }
-            
-            if (!window.app.license.canUseFeature(feature)) {
-                window.app.showUpgradePrompt(feature);
-                return false;
-            }
-            
-            if (feature === 'transactions' && !window.app.license.canAddTransaction(currentCount)) {
-                window.app.showToast(`⚠️ Hai raggiunto il limite di ${window.app.license.getCurrentLimits().maxTransactions} transazioni (versione Free)`);
-                window.app.showUpgradePrompt('transactions');
-                return false;
-            }
-            
-            return true;
-        };
-
-        window.app.showUpgradePrompt = (feature) => {
-            const message = window.app.license.getUpgradeMessage(feature);
-            const prompt = document.createElement('div');
-            prompt.className = 'upgrade-prompt';
-            prompt.innerHTML = `
-                <h4>🔒 ${message}</h4>
-                <p>Upgrade a Premium per sbloccare questa funzionalità!</p>
-                <button onclick="window.app.showPremiumModal()">💎 Upgrade Ora</button>
-            `;
-            
-            const container = document.querySelector('.container');
-            if (container) {
-                container.appendChild(prompt);
-                
-                setTimeout(() => {
-                    if (prompt.parentNode) {
-                        prompt.parentNode.removeChild(prompt);
-                    }
-                }, 5000);
             }
         };
 
