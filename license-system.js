@@ -10,33 +10,43 @@ class BudgetWiseLicense {
         this.trialUsed = localStorage.getItem('bw-trial-used') === 'true';
         this.trialStart = localStorage.getItem('bw-trial-start') || null;
         
-        // Limitazioni per versione
+        // 🆓 LIMITAZIONI FREE VS PREMIUM
         this.limits = {
             free: {
-                maxTransactions: 50,
-                maxCategories: 3,
+                maxTransactions: 30,
+                maxFixedExpenses: 5,
+                maxSavingsPercent: 15,
+                maxGoals: 1,
+                customCategories: false,
                 csvImport: false,
-                aiAssistant: false,
+                aiAssistant: 'basic',
                 voiceRecognition: false,
                 cloudSync: false,
-                customCategories: false,
-                advancedReports: false,
-                calendarExport: false
+                colorCustomization: false,
+                dateFormatCustom: false,
+                calendarExport: false,
+                categoryLearning: false,
+                advancedFixedFormat: false
             },
             premium: {
                 maxTransactions: Infinity,
-                maxCategories: Infinity,
+                maxFixedExpenses: Infinity,
+                maxSavingsPercent: 50,
+                maxGoals: Infinity,
+                customCategories: true,
                 csvImport: true,
-                aiAssistant: true,
+                aiAssistant: 'advanced',
                 voiceRecognition: true,
                 cloudSync: true,
-                customCategories: true,
-                advancedReports: true,
-                calendarExport: true
+                colorCustomization: true,
+                dateFormatCustom: true,
+                calendarExport: true,
+                categoryLearning: true,
+                advancedFixedFormat: true
             }
         };
         
-        this.categories = ['Alimentari', 'Trasporti', 'Altro']; // Free version limit
+        this.categories = ['Alimentari', 'Trasporti', 'Altro'];
     }
     
     checkPremiumStatus() {
@@ -52,7 +62,7 @@ class BudgetWiseLicense {
     }
     
     getCurrentLimits() {
-        if (this.isPremium) return this.limits.premium;
+        if (this.hasFullPremiumAccess()) return this.limits.premium;
         return this.limits.free;
     }
     
@@ -61,9 +71,22 @@ class BudgetWiseLicense {
         return currentCount < limits.maxTransactions;
     }
     
+    canAddFixedExpense(currentCount) {
+        const limits = this.getCurrentLimits();
+        return currentCount < limits.maxFixedExpenses;
+    }
+    
     canUseFeature(feature) {
         const limits = this.getCurrentLimits();
         return limits[feature] === true;
+    }
+    
+    getMaxSavingsPercent() {
+        return this.getCurrentLimits().maxSavingsPercent;
+    }
+    
+    isFeatureLocked(feature) {
+        return !this.canUseFeature(feature);
     }
     
     startTrial() {
@@ -74,7 +97,6 @@ class BudgetWiseLicense {
         localStorage.setItem('bw-trial-used', 'true');
         localStorage.setItem('bw-trial-start', this.trialStart);
         
-        // 7 giorni di trial premium
         const trialEnd = new Date();
         trialEnd.setDate(trialEnd.getDate() + 7);
         localStorage.setItem('bw-trial-end', trialEnd.toISOString());
@@ -97,25 +119,12 @@ class BudgetWiseLicense {
     
     async activateLicense(email, key) {
         try {
-            // Validazione licenza via GitHub API (o altro servizio gratuito)
-            const response = await fetch('https://api.github.com/repos/ferrarofranco917-netizen/budgetwise/actions/workflows/validate-license/dispatches', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `token ${key}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    email: email,
-                    timestamp: Date.now()
-                })
-            });
-            
-            if (response.ok) {
+            // Simulazione validazione - in produzione usa un servizio reale
+            if (key && email) {
                 this.licenseKey = key;
                 this.licenseEmail = email;
                 this.isPremium = true;
                 
-                // Salva licenza valida per 30 giorni
                 const expiry = new Date();
                 expiry.setDate(expiry.getDate() + 30);
                 
@@ -135,13 +144,16 @@ class BudgetWiseLicense {
     
     getUpgradeMessage(feature) {
         const messages = {
+            transactions: 'Hai raggiunto il limite di 30 transazioni mensili!',
+            fixedExpenses: 'Hai raggiunto il limite di 5 spese fisse attive!',
+            customCategories: 'Crea categorie personalizzate e organizza meglio le tue spese!',
             csvImport: 'Importa i tuoi estratti conto con un clic! 📊',
-            aiAssistant: 'Chiedi consigli al tuo assistente finanziario AI! 🤖',
-            voiceRecognition: 'Aggiungi spese con la voce! 🎤',
+            aiAssistant: 'Chiedi consigli al tuo assistente finanziario AI avanzato! 🤖',
+            voiceRecognition: 'Aggiungi spese con la voce, senza scrivere! 🎤',
             cloudSync: 'Sincronizza i dati su tutti i dispositivi! 🔄',
-            customCategories: 'Crea categorie personalizzate! 🏷️',
-            advancedReports: 'Report dettagliati e previsioni! 📈',
-            calendarExport: 'Esporta in Google Calendar! 📅'
+            colorCustomization: 'Personalizza l\'app con i tuoi colori preferiti! 🎨',
+            calendarExport: 'Esporta in Google Calendar e pianifica! 📅',
+            advancedFixedFormat: 'Visualizza le scadenze in mesi e anni! 📆'
         };
         
         return messages[feature] || 'Questa funzionalità è disponibile nella versione Premium! 💎';
@@ -194,18 +206,21 @@ class BudgetWiseLicense {
                 return {
                     name: 'Free',
                     status: 'Limitato',
-                    remaining: 'Upgrade per funzionalità complete',
+                    remaining: `${30 - this.getRemainingTransactions()} transazioni rimaste`,
                     color: '#6b7280'
                 };
         }
     }
+    
+    getRemainingTransactions() {
+        const count = window.app?.calculateMonthlyTransactions?.() || 0;
+        return Math.max(0, this.limits.free.maxTransactions - count);
+    }
 }
 
-// Export per uso in app.js
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = BudgetWiseLicense;
 }
 
-// Expose for other scripts/modules
 try { globalThis.BudgetWiseLicense = BudgetWiseLicense; } catch(e) {}
 try { window.BudgetWiseLicense = BudgetWiseLicense; } catch(e) {}
