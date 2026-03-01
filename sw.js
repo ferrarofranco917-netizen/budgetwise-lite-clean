@@ -1,17 +1,35 @@
 // BudgetWise Service Worker - Production Safe
 // Works for browser + installed PWA (GitHub Pages friendly)
 
-const CACHE_VERSION = "v14";                 // bump ad ogni release
-const CACHE_NAME = "budgetwise-cache-20260226v15";
+const CACHE_VERSION = "v23";                 // bump ad ogni release
+const CACHE_PREFIX = "budgetwise-cache-";
+const CACHE_NAME = CACHE_PREFIX + "20260226" + CACHE_VERSION;
+
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./style.css",
-  "./app.js?v=20260225v14",
+  // IMPORTANT: cache keys WITHOUT querystring (see fetch handler below)
+  "./app.js",
+  "./license-system.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",
 ];
+
+// Normalize cache keys for versioned assets like app.js?v=...
+// This prevents "old app.js" being served just because the querystring changed.
+function getNormalizedCacheKey(request) {
+  const url = new URL(request.url);
+  const file = url.pathname.split("/").pop() || "";
+
+  // Normalize ONLY the assets we version via querystring
+  if (file === "app.js" || file === "license-system.js" || file === "style.css" || file === "index.html" || file === "manifest.json" || file === "icon-192.png" || file === "icon-512.png") {
+    return new Request(url.origin + url.pathname, { method: "GET" });
+  }
+
+  return request;
+}
 
 // Utility: cache only same-origin http(s)
 function isCacheableRequest(request) {
@@ -49,7 +67,7 @@ self.addEventListener("activate", (event) => {
       // Remove old caches
       const keys = await caches.keys();
       await Promise.all(
-        keys.map((k) => (k.startsWith("budgetwise-") && k !== CACHE_NAME ? caches.delete(k) : null))
+        keys.map((k) => (k.startsWith(CACHE_PREFIX) && k !== CACHE_NAME ? caches.delete(k) : null))
       );
 
       await self.clients.claim();
@@ -65,12 +83,13 @@ self.addEventListener("fetch", (event) => {
   if (!isCacheableRequest(req)) return;
 
   const url = new URL(req.url);
-    const file = url.pathname.split("/").pop() || "";
+  const file = url.pathname.split("/").pop() || "";
   const isCore =
     CORE_ASSETS.includes("./" + file) ||
     CORE_ASSETS.includes(url.pathname) ||
     file === "style.css" ||
     file === "app.js" ||
+    file === "license-system.js" ||
     file === "manifest.json" ||
     file.startsWith("icon-");
   
@@ -104,11 +123,12 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       (async () => {
         const cache = await caches.open(CACHE_NAME);
-        const cached = await cache.match(req);
+        const cacheKey = getNormalizedCacheKey(req);
+        const cached = await cache.match(cacheKey);
 
         const fetchPromise = fetch(req)
           .then((res) => {
-            if (res && res.ok) cache.put(req, res.clone()).catch(() => {});
+            if (res && res.ok) cache.put(cacheKey, res.clone()).catch(() => {});
             return res;
           })
           .catch(() => null);
