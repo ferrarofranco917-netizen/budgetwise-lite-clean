@@ -4,7 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>💰 BudgetWise 2.0 - Gestione Finanziaria Intelligente</title>
+    
+    <!-- QUESTO ERA MANCANTE! -->
     <link rel="stylesheet" href="style.css">
+    
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#16181b">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,7 +22,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-            <!-- Chart.js -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <!-- SheetJS per leggere file Excel -->
@@ -105,6 +108,11 @@
                     <span class="summary-value" id="savingsPot">0,00 €</span>
                     <small class="trend-indicator" id="savingsProjected"></small>
                 </div>
+                <!-- CONTATORE TRANSAZIONI -->
+                <div class="summary-item">
+                    <span class="summary-label" data-i18n="transactionCounter">Transazioni mensili</span>
+                    <span class="summary-value" id="transactionCounter">0/30</span>
+                </div>
             </div>
             <div class="period-info" id="periodInfo">
                 📅 Periodo: 2026-02-22 → 2026-03-22
@@ -126,21 +134,21 @@
             👋 Inizia inserendo le tue entrate nella sezione qui sotto!
         </div>
 
-   <!-- FISSE NEL PERIODO (HOME) -->
-<div class="section-card" data-tab="home" id="fixedStatusHome">
-    <div class="section-header">
-        <h2 id="fixedStatusHomeTitle">📌 Fisse nel periodo</h2>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="badge" id="fixedStatusHomeBadge">pagate / previste</span>
-            <span id="toggleFixedHome" style="cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 20px; background: var(--bg-color); border: 1px solid var(--border);" title="Nascondi/Mostra">▼</span>
+        <!-- FISSE NEL PERIODO (HOME) -->
+        <div class="section-card" data-tab="home" id="fixedStatusHome">
+            <div class="section-header">
+                <h2 id="fixedStatusHomeTitle">📌 Fisse nel periodo</h2>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge" id="fixedStatusHomeBadge">pagate / previste</span>
+                    <span id="toggleFixedHome" style="cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 20px; background: var(--bg-color); border: 1px solid var(--border);" title="Nascondi/Mostra">▼</span>
+                </div>
+            </div>
+            <div class="section-content">
+                <div id="fixedStatusHomeList" class="fixed-status-list">
+                    <!-- Le spese fisse verranno inserite qui da JavaScript -->
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="section-content">
-        <div id="fixedStatusHomeList" class="fixed-status-list">
-            <!-- Le spese fisse verranno inserite qui da JavaScript -->
-        </div>
-    </div>
-</div>
 
         <!-- ENTRATE -->
         <div class="section-card" data-tab="incomes">
@@ -172,50 +180,49 @@
         </div>
         
         <!-- SPESE FISSE -->
-<div class="section-card" data-tab="fixed">
-    <div class="section-header">
-        <h2 id="fixedTitle" data-i18n="fixed">📌 Spese fisse mensili</h2>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <span class="badge" id="badge" data-i18n="badge">multiplo</span>
-            <span id="toggleFixedList" style="cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 20px; background: var(--bg-color); border: 1px solid var(--border);" title="Nascondi/Mostra lista">▼</span>
-        </div>
-    </div>
-    
-    <div class="section-content" id="fixedSectionContent">
-        <div id="fixedExpensesList" class="expenses-list">
-            <p class="chart-note" data-i18n="noFixed">Nessuna spesa fissa</p>
-        </div>
-        
-        <!-- I form e i bottoni devono stare DENTRO section-content -->
-        <div class="input-group-row">
-            <input type="text" id="fixedName" placeholder="" data-i18n-placeholder="fixedName" style="flex: 2;">
-            <input type="number" id="fixedAmount" placeholder="" data-i18n-placeholder="fixedAmount" step="0.01" style="flex: 1;">
-        </div>
-        
-        <div class="input-group-row">
-            <div class="input-group half">
-                <label id="dayLabel" data-i18n="dayLabel">Giorno del mese</label>
-                <input type="number" id="fixedDay" placeholder="" data-i18n-placeholder="fixedDay" min="1" max="31">
+        <div class="section-card" data-tab="fixed">
+            <div class="section-header">
+                <h2 id="fixedTitle" data-i18n="fixed">📌 Spese fisse mensili</h2>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge" id="badge" data-i18n="badge">multiplo</span>
+                    <span id="toggleFixedList" style="cursor: pointer; font-size: 1.2rem; padding: 4px 8px; border-radius: 20px; background: var(--bg-color); border: 1px solid var(--border);" title="Nascondi/Mostra lista">▼</span>
+                </div>
             </div>
-            <div class="input-group half">
-                <label id="endDateLabel" data-i18n="endDateLabel">Data scadenza (fine)</label>
-                <input type="date" id="fixedEndDate">
-                <small class="date-hint" id="dateHintFixed" data-i18n="dateHint"></small>
-            </div>
-        </div>
-        
-        <div class="voice-fixed-container">
-            <button id="micFixedBtn" class="voice-fixed-btn">
-                🎤 <span id="micFixedText" data-i18n="fixedVoiceButton">Inserisci spesa fissa con voce</span>
-            </button>
-            <div id="fixedVoiceStatus" class="voice-status" data-i18n="micFixed">🎤 Tocca e di' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")</div>
-        </div>
-        
-        <button class="btn-secondary" id="addFixedBtn" data-i18n="addFixed">➕ Aggiungi spesa fissa</button>
-        <p class="help-text" id="fixedHelp" data-i18n="helpFixed">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
-    </div>  <!-- CHIUDE section-content -->
-</div>  
-        </div>
+            
+            <div class="section-content" id="fixedSectionContent">
+                <div id="fixedExpensesList" class="expenses-list">
+                    <p class="chart-note" data-i18n="noFixed">Nessuna spesa fissa</p>
+                </div>
+                
+                <!-- I form e i bottoni devono stare DENTRO section-content -->
+                <div class="input-group-row">
+                    <input type="text" id="fixedName" placeholder="" data-i18n-placeholder="fixedName" style="flex: 2;">
+                    <input type="number" id="fixedAmount" placeholder="" data-i18n-placeholder="fixedAmount" step="0.01" style="flex: 1;">
+                </div>
+                
+                <div class="input-group-row">
+                    <div class="input-group half">
+                        <label id="dayLabel" data-i18n="dayLabel">Giorno del mese</label>
+                        <input type="number" id="fixedDay" placeholder="" data-i18n-placeholder="fixedDay" min="1" max="31">
+                    </div>
+                    <div class="input-group half">
+                        <label id="endDateLabel" data-i18n="endDateLabel">Data scadenza (fine)</label>
+                        <input type="date" id="fixedEndDate">
+                        <small class="date-hint" id="dateHintFixed" data-i18n="dateHint"></small>
+                    </div>
+                </div>
+                
+                <div class="voice-fixed-container">
+                    <button id="micFixedBtn" class="voice-fixed-btn">
+                        🎤 <span id="micFixedText" data-i18n="fixedVoiceButton">Inserisci spesa fissa con voce</span>
+                    </button>
+                    <div id="fixedVoiceStatus" class="voice-status" data-i18n="micFixed">🎤 Tocca e di' tutto in una frase (es. "Mutuo 500 euro giorno 27 scadenza 31 12 2030")</div>
+                </div>
+                
+                <button class="btn-secondary" id="addFixedBtn" data-i18n="addFixed">➕ Aggiungi spesa fissa</button>
+                <p class="help-text" id="fixedHelp" data-i18n="helpFixed">⏰ Verrà conteggiata automaticamente ogni mese fino alla scadenza</p>
+            </div>  <!-- CHIUDE section-content -->
+        </div>  
 
         <!-- SPESE VARIABILI -->
         <div class="section-card" data-tab="variable">
@@ -232,24 +239,24 @@
                         <span id="showAllExpensesLabel" data-i18n="showAllExpenses">Mostra tutte le spese del periodo</span>
                     </label>
                 </div>
-                        <!-- BARRA DI RICERCA (da aggiungere) -->
-        <div class="search-container" style="margin: 15px 0; padding: 15px; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border);">
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <div style="flex: 2; min-width: 200px; position: relative;">
-                    <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);">🔍</span>
-                    <input type="text" id="searchExpenses" placeholder="" data-i18n-placeholder="searchPlaceholder" 
-                           style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid var(--border); border-radius: 30px; background: var(--card-bg);">
+                <!-- BARRA DI RICERCA -->
+                <div class="search-container" style="margin: 15px 0; padding: 15px; background: var(--bg-color); border-radius: 12px; border: 1px solid var(--border);">
+                    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                        <div style="flex: 2; min-width: 200px; position: relative;">
+                            <span style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary);">🔍</span>
+                            <input type="text" id="searchExpenses" placeholder="" data-i18n-placeholder="searchPlaceholder" 
+                                   style="width: 100%; padding: 12px 12px 12px 40px; border: 1px solid var(--border); border-radius: 30px; background: var(--card-bg);">
+                        </div>
+                        <select id="searchCategory" style="flex: 1; min-width: 150px; padding: 12px; border-radius: 30px; border: 1px solid var(--border);">
+                            <option value="all" data-i18n="allCategories">📋 Tutte le categorie</option>
+                            <!-- Le opzioni verranno popolate dinamicamente -->
+                        </select>
+                        <button id="resetSearchBtn" class="btn-text" style="padding: 12px 20px; white-space: nowrap;" data-i18n="clearFilters">
+                            ✕ Cancella filtri
+                        </button>
+                    </div>
+                    <div style="margin-top: 8px; font-size: 0.9rem; color: var(--text-secondary);" id="searchResultsCount"></div>
                 </div>
-                <select id="searchCategory" style="flex: 1; min-width: 150px; padding: 12px; border-radius: 30px; border: 1px solid var(--border);">
-                    <option value="all" data-i18n="allCategories">📋 Tutte le categorie</option>
-                    <!-- Le opzioni verranno popolate dinamicamente -->
-                </select>
-                <button id="resetSearchBtn" class="btn-text" style="padding: 12px 20px; white-space: nowrap;" data-i18n="clearFilters">
-                    ✕ Cancella filtri
-                </button>
-            </div>
-            <div style="margin-top: 8px; font-size: 0.9rem; color: var(--text-secondary);" id="searchResultsCount"></div>
-        </div>
                 <div id="variableExpensesList" class="expenses-list">
                     <p class="chart-note" data-i18n="noVariable">Nessuna spesa in questo giorno</p>
                 </div>
@@ -314,6 +321,7 @@
                     <div class="chat-input-area">
                         <input type="text" id="chatInput" placeholder="" data-i18n-placeholder="chatPlaceholder" class="chat-input">
                         <button id="sendChatBtn" class="chat-send-btn" data-i18n="send">Invia</button>
+                        <button id="chatVoiceBtn" class="chat-voice-btn" title="🎤 Inserisci con voce">🎤</button>
                     </div>
                 </div>
                 <div class="chat-suggestions">
@@ -396,25 +404,25 @@
                         </div>
                     </div>
 
-                  <div class="savings-insights">
-    <div class="insight-card current-plan">
-        <h4 id="currentPlanTitle" data-i18n="currentPlan"></h4>
-        <p id="currentPlanMessage"></p>
-    </div>
-    
-    <div class="insight-card suggestion" id="suggestionCard">
-        <h4 id="suggestionTitle" data-i18n="savingsSuggestionTitle"></h4>
-        <p id="suggestionMessage"></p>
-        <button id="applySuggestionBtn" data-i18n="applySuggestion"></button>
-    </div>
-</div>
+                    <div class="savings-insights">
+                        <div class="insight-card current-plan">
+                            <h4 id="currentPlanTitle" data-i18n="currentPlan">📅 Piano attuale</h4>
+                            <p id="currentPlanMessage"></p>
+                        </div>
+                        
+                        <div class="insight-card suggestion" id="suggestionCard">
+                            <h4 id="suggestionTitle" data-i18n="savingsSuggestionTitle">Suggerimento</h4>
+                            <p id="suggestionMessage"></p>
+                            <button id="applySuggestionBtn" class="btn-suggestion" data-i18n="applySuggestion">Applica suggerimento</button>
+                        </div>
+                    </div>
 
-<button class="btn-primary" id="applySaveBtn" data-i18n="applySavings"></button>
+                    <button class="btn-primary" id="applySaveBtn" data-i18n="applySavings">Applica risparmio</button>
                 </div>
             </div>
         </div>
 
-                <!-- IMPORT CSV/EXCEL (TOOLS) -->
+        <!-- IMPORT CSV/EXCEL (TOOLS) -->
         <div class="section-card" data-tab="tools">
             <h2 id="csvTitle" data-i18n="csvTitle">📥 Importa movimenti bancari</h2>
             <div class="section-content">
@@ -431,54 +439,54 @@
                     </div>
                 </div>
                 <div id="importAdvanced" class="import-advanced" style="display:none;">
-                <div class="input-group-row">
-                    <div class="input-group half">
-                        <label for="csvDelimiter" id="csvDateFormatLabel" data-i18n="csvDateFormat">Formato data</label>
-                        <select id="csvDelimiter">
-                            <option value="DD/MM/YYYY" data-i18n="ddmmyyyy">GG/MM/AAAA</option>
-                            <option value="MM/DD/YYYY" data-i18n="mmddyyyy">MM/DD/AAAA</option>
-                        </select>
+                    <div class="input-group-row">
+                        <div class="input-group half">
+                            <label for="csvDelimiter" id="csvDateFormatLabel" data-i18n="csvDateFormat">Formato data</label>
+                            <select id="csvDelimiter">
+                                <option value="DD/MM/YYYY" data-i18n="ddmmyyyy">GG/MM/AAAA</option>
+                                <option value="MM/DD/YYYY" data-i18n="mmddyyyy">MM/DD/AAAA</option>
+                            </select>
+                        </div>
+                        <div class="input-group half">
+                            <label for="csvSeparator" id="csvSeparatorLabel" data-i18n="csvSeparator">Separatore</label>
+                            <select id="csvSeparator">
+                                <option value="," data-i18n="csvComma">Virgola (,)</option>
+                                <option value=";" data-i18n="csvSemicolon">Punto e virgola (;)</option>
+                                <option value="\t" data-i18n="csvTab">Tabulazione</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="input-group half">
-                        <label for="csvSeparator" id="csvSeparatorLabel" data-i18n="csvSeparator">Separatore</label>
-                        <select id="csvSeparator">
-                            <option value="," data-i18n="csvComma">Virgola (,)</option>
-                            <option value=";" data-i18n="csvSemicolon">Punto e virgola (;)</option>
-                            <option value="\t" data-i18n="csvTab">Tabulazione</option>
-                        </select>
+                    <!-- NUOVI CONTROLLI PER GESTIRE RIGHE INIZIALI -->
+                    <div class="input-group-row" style="margin-top: 10px;">
+                        <div class="input-group half">
+                            <label for="skipRows" id="skipRowsLabel" data-i18n="skipRowsLabel">Salta righe iniziali</label>
+                            <input type="number" id="skipRows" min="0" max="20" value="0" class="date-input">
+                        </div>
+                        <div class="input-group half">
+                            <label for="headerRowManual" id="headerRowManualLabel" data-i18n="headerRowManualLabel">Riga intestazione (0 = nessuna)</label>
+                            <input type="number" id="headerRowManual" min="0" max="20" value="1" class="date-input">
+                        </div>
                     </div>
-                </div>
-                                <!-- NUOVI CONTROLLI PER GESTIRE RIGHE INIZIALI -->
-                <div class="input-group-row" style="margin-top: 10px;">
-                    <div class="input-group half">
-                        <label for="skipRows" id="skipRowsLabel" data-i18n="skipRowsLabel">Salta righe iniziali</label>
-                        <input type="number" id="skipRows" min="0" max="20" value="0" class="date-input">
+                    <p class="help-text" id="skipHelp" data-i18n="skipHelp">📌 Per file Fineco: salta le prime righe fino a trovare le colonne</p>
+                    <!-- NUOVE OPZIONI PER EXCEL -->
+                    <div class="input-group-row" style="margin-top: 15px;">
+                        <div class="input-group half">
+                            <label for="excelSheet" id="excelSheetLabel" data-i18n="excelSheet">Foglio Excel</label>
+                            <select id="excelSheet" class="language-select" disabled>
+                                <option value="" data-i18n="excelSheetPlaceholder">Carica un file Excel</option>
+                            </select>
+                        </div>
+                        <div class="input-group half">
+                            <label for="excelHeaderRow" id="excelHeaderLabel" data-i18n="excelHeaderRow">Riga intestazione</label>
+                            <select id="excelHeaderRow" class="language-select">
+                                <option value="0" data-i18n="row1">Riga 1</option>
+                                <option value="1" data-i18n="row2">Riga 2</option>
+                                <option value="2" data-i18n="row3">Riga 3</option>
+                                <option value="-1" selected data-i18n="rowNone">Nessuna (auto)</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="input-group half">
-                        <label for="headerRowManual" id="headerRowManualLabel" data-i18n="headerRowManualLabel">Riga intestazione (0 = nessuna)</label>
-                        <input type="number" id="headerRowManual" min="0" max="20" value="1" class="date-input">
-                    </div>
-                </div>
-                <p class="help-text" id="skipHelp" data-i18n="skipHelp">📌 Per file Fineco: salta le prime righe fino a trovare le colonne</p>
-                <!-- NUOVE OPZIONI PER EXCEL -->
-                <div class="input-group-row" style="margin-top: 15px;">
-                    <div class="input-group half">
-                        <label for="excelSheet" id="excelSheetLabel" data-i18n="excelSheet">Foglio Excel</label>
-                        <select id="excelSheet" class="language-select" disabled>
-                            <option value="" data-i18n="excelSheetPlaceholder">Carica un file Excel</option>
-                        </select>
-                    </div>
-                    <div class="input-group half">
-                        <label for="excelHeaderRow" id="excelHeaderLabel" data-i18n="excelHeaderRow">Riga intestazione</label>
-                        <select id="excelHeaderRow" class="language-select">
-                            <option value="0" data-i18n="row1">Riga 1</option>
-                            <option value="1" data-i18n="row2">Riga 2</option>
-                            <option value="2" data-i18n="row3">Riga 3</option>
-                            <option value="-1" selected data-i18n="rowNone">Nessuna (auto)</option>
-                        </select>
-                    </div>
-                </div>
-                <p class="help-text" id="excelHelp" data-i18n="excelHelp">📌 I file Excel vengono convertiti automaticamente</p>
+                    <p class="help-text" id="excelHelp" data-i18n="excelHelp">📌 I file Excel vengono convertiti automaticamente</p>
                 </div>
                 
                 <div id="csvPreview" class="csv-preview" style="display: none; margin-top: 20px;">
@@ -505,7 +513,7 @@
                         <option value="fr">🇫🇷 Français</option>
                     </select>
                 </div>
-                                <!-- NUOVO TOGGLE PER VISUALIZZAZIONE MESI/GIORNI -->
+                <!-- NUOVO TOGGLE PER VISUALIZZAZIONE MESI/GIORNI -->
                 <div class="setting-item">
                     <label id="fixedDateFormatLabel" data-i18n="fixedDateFormatLabel">📅 Formato scadenze spese fisse</label>
                     <div style="display: flex; gap: 10px; margin-top: 8px;">
@@ -529,7 +537,7 @@
                     </div>
                 </div>
                 <button class="btn-danger" id="resetAllBtn" data-i18n="resetAll">⚠️ Reset completo</button>
-                <button class="btn-secondary" id="loadDemoBtn" data-i18n="onboardingDemo"></button>
+                <button class="btn-secondary" id="loadDemoBtn" data-i18n="onboardingDemo">✨ Carica demo</button>
             </div>
         </div>
 
@@ -537,65 +545,67 @@
         <div class="section-card" data-tab="tools">
             <h2 id="categoriesSectionTitle" data-i18n="categoriesSectionTitle">📂 Gestione categorie</h2>
             <div class="section-content">
-                <button id="manageCategoriesBtn" class="btn-secondary">
+                <button id="manageCategoriesBtn" class="btn-secondary" data-premium="custom-categories">
                     <span id="manageCustomCategoriesText" data-i18n="manageCustomCategories">➕ Gestisci categorie personalizzate</span>
                 </button>
             </div>
         </div>
-<!-- PERSONALIZZAZIONE COLORI (TOOLS) -->
-<div class="section-card" data-tab="tools">
-    <h2 id="colorsTitle" data-i18n="colorsTitle">🎨 Personalizza colori</h2>
-    <div class="section-content">
-        <p id="colorsSubtitle" style="margin-bottom: 15px; color: var(--text-secondary);" data-i18n="colorsSubtitle">Scegli i tuoi colori preferiti per l'app. Le modifiche sono immediate.</p>
         
-        <div class="color-grid">
-            <div class="color-item">
-                <label id="colorAccentLabel" data-i18n="colorAccentLabel">Colore principale (accento)</label>
-                <input type="color" id="colorAccent" value="#0ea5e9">
-            </div>
-            <div class="color-item">
-                <label id="colorAccentLightLabel" data-i18n="colorAccentLightLabel">Colore secondario (accent-light)</label>
-                <input type="color" id="colorAccentLight" value="#38bdf8">
-            </div>
-            <div class="color-item">
-                <label id="colorCardBgLabel" data-i18n="colorCardBgLabel">Sfondo card</label>
-                <input type="color" id="colorCardBg" value="#ffffff">
-            </div>
-            <div class="color-item">
-                <label id="colorTextPrimaryLabel" data-i18n="colorTextPrimaryLabel">Testo primario</label>
-                <input type="color" id="colorTextPrimary" value="#0f172a">
-            </div>
-            <div class="color-item">
-                <label id="colorTextSecondaryLabel" data-i18n="colorTextSecondaryLabel">Testo secondario</label>
-                <input type="color" id="colorTextSecondary" value="#334155">
-            </div>
-            <div class="color-item">
-                <label id="colorBgLabel" data-i18n="colorBgLabel">Sfondo generale</label>
-                <input type="color" id="colorBg" value="#f8fafc">
-            </div>
-            <div class="color-item">
-                <label id="colorSuccessLabel" data-i18n="colorSuccessLabel">Successo (entrate)</label>
-                <input type="color" id="colorSuccess" value="#10b981">
-            </div>
-            <div class="color-item">
-                <label id="colorDangerLabel" data-i18n="colorDangerLabel">Pericolo (spese)</label>
-                <input type="color" id="colorDanger" value="#ef4444">
-            </div>
-            <div class="color-item">
-                <label id="colorWarningLabel" data-i18n="colorWarningLabel">Avviso</label>
-                <input type="color" id="colorWarning" value="#f59e0b">
-            </div>
-            <div class="color-item">
-                <label id="colorBorderLabel" data-i18n="colorBorderLabel">Bordi</label>
-                <input type="color" id="colorBorder" value="#e2e8f0">
+        <!-- PERSONALIZZAZIONE COLORI (TOOLS) -->
+        <div class="section-card" data-tab="tools">
+            <h2 id="colorsTitle" data-i18n="colorsTitle">🎨 Personalizza colori</h2>
+            <div class="section-content">
+                <p id="colorsSubtitle" style="margin-bottom: 15px; color: var(--text-secondary);" data-i18n="colorsSubtitle">Scegli i tuoi colori preferiti per l'app. Le modifiche sono immediate.</p>
+                
+                <div class="color-grid">
+                    <div class="color-item">
+                        <label id="colorAccentLabel" data-i18n="colorAccentLabel">Colore principale (accento)</label>
+                        <input type="color" id="colorAccent" value="#0ea5e9">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorAccentLightLabel" data-i18n="colorAccentLightLabel">Colore secondario (accent-light)</label>
+                        <input type="color" id="colorAccentLight" value="#38bdf8">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorCardBgLabel" data-i18n="colorCardBgLabel">Sfondo card</label>
+                        <input type="color" id="colorCardBg" value="#ffffff">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorTextPrimaryLabel" data-i18n="colorTextPrimaryLabel">Testo primario</label>
+                        <input type="color" id="colorTextPrimary" value="#0f172a">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorTextSecondaryLabel" data-i18n="colorTextSecondaryLabel">Testo secondario</label>
+                        <input type="color" id="colorTextSecondary" value="#334155">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorBgLabel" data-i18n="colorBgLabel">Sfondo generale</label>
+                        <input type="color" id="colorBg" value="#f8fafc">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorSuccessLabel" data-i18n="colorSuccessLabel">Successo (entrate)</label>
+                        <input type="color" id="colorSuccess" value="#10b981">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorDangerLabel" data-i18n="colorDangerLabel">Pericolo (spese)</label>
+                        <input type="color" id="colorDanger" value="#ef4444">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorWarningLabel" data-i18n="colorWarningLabel">Avviso</label>
+                        <input type="color" id="colorWarning" value="#f59e0b">
+                    </div>
+                    <div class="color-item">
+                        <label id="colorBorderLabel" data-i18n="colorBorderLabel">Bordi</label>
+                        <input type="color" id="colorBorder" value="#e2e8f0">
+                    </div>
+                </div>
+                
+                <div class="button-group" style="margin-top: 20px;">
+                    <button id="resetColorsBtn" class="btn-secondary" data-i18n="resetColors">↩️ Ripristina colori predefiniti</button>
+                </div>
             </div>
         </div>
         
-        <div class="button-group" style="margin-top: 20px;">
-            <button id="resetColorsBtn" class="btn-secondary" data-i18n="resetColors">↩️ Ripristina colori predefiniti</button>
-        </div>
-    </div>
-</div>
         <!-- MODALE GESTIONE CATEGORIE -->
         <div id="categoryManagerOverlay" class="modal-overlay" style="display: none;">
             <div class="modal-content" style="max-width: 500px;">
@@ -661,7 +671,7 @@
             
             // Carica app.js SOLO dopo che license-system.js è caricato
             const appScript = document.createElement('script');
-           appScript.src = 'app.js?v=20260226v61';
+            appScript.src = 'app.js?v=20260226v61';
             appScript.onload = function() {
                 console.log('🚀 App.js caricato dopo license system');
             };
@@ -676,8 +686,28 @@
                     this.isPremium = false;
                     this.trialUsed = false;
                     this.limits = {
-                        free: { maxTransactions: 50, maxCategories: 3, csvImport: false },
-                        premium: { maxTransactions: Infinity, maxCategories: Infinity, csvImport: true }
+                        free: { 
+                            maxTransactions: 30, 
+                            maxFixedExpenses: 5,
+                            maxSavingsPercent: 15,
+                            maxCategories: 3, 
+                            csvImport: false,
+                            voiceRecognition: false,
+                            colorCustomization: false,
+                            advancedFixedFormat: false,
+                            calendarExport: false
+                        },
+                        premium: { 
+                            maxTransactions: Infinity, 
+                            maxFixedExpenses: Infinity,
+                            maxSavingsPercent: 50,
+                            maxCategories: Infinity, 
+                            csvImport: true,
+                            voiceRecognition: true,
+                            colorCustomization: true,
+                            advancedFixedFormat: true,
+                            calendarExport: true
+                        }
                     };
                 }
                 checkPremiumStatus() { return false; }
@@ -685,15 +715,18 @@
                 hasFullPremiumAccess() { return false; }
                 canUseFeature(feature) { return this.limits.free[feature] === true; }
                 canAddTransaction(count) { return count < this.limits.free.maxTransactions; }
+                canAddFixedExpense(count) { return count < this.limits.free.maxFixedExpenses; }
                 getCurrentLimits() { return this.limits.free; }
+                getMaxSavingsPercent() { return 15; }
                 getUpgradeMessage(feature) { return 'Questa funzionalità è disponibile nella versione Premium! 💎'; }
+                isFeatureLocked() { return true; }
             }
             
             console.log('🔍 Verifica finale:', typeof BudgetWiseLicense !== 'undefined' ? '✅ OK' : '❌ FALLITO');
             
             // Carica app.js anche con fallback
             const appScript = document.createElement('script');
-appScript.src = 'app.js?v=20260226v54';
+            appScript.src = 'app.js?v=20260226v61';
             appScript.onload = function() {
                 console.log('🚀 App.js caricato con fallback');
             };
@@ -702,7 +735,7 @@ appScript.src = 'app.js?v=20260226v54';
         document.head.appendChild(script);
     </script>
     
-       <!-- PREMIUM UPGRADE MODAL -->
+    <!-- PREMIUM UPGRADE MODAL -->
     <div id="premiumModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(5px); z-index: 10002; align-items: center; justify-content: center;">
         <div class="modal-content" style="background: var(--card-bg); padding: 40px; border-radius: 24px; max-width: 500px; width: 90%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">
             <h2 style="margin-bottom: 20px; color: var(--accent); text-align: center;" data-i18n="upgradeBanner">💎 Upgrade a Premium</h2>
@@ -758,12 +791,12 @@ appScript.src = 'app.js?v=20260226v54';
             
             <div style="margin-bottom: 20px;">
                 <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);" data-i18n="email">Email</label>
-                <input type="email" id="licenseEmail" placeholder="" data-i18n-placeholder="emailPlaceholder" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-color); color: var(--text-primary);">
+                <input type="email" id="licenseEmail" placeholder="email@example.com" data-i18n-placeholder="emailPlaceholder" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-color); color: var(--text-primary);">
             </div>
             
             <div style="margin-bottom: 25px;">
                 <label style="display: block; margin-bottom: 8px; color: var(--text-secondary);" data-i18n="licenseKey">Chiave Licenza</label>
-                <input type="text" id="licenseKey" placeholder="" data-i18n-placeholder="licensePlaceholder" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-color); color: var(--text-primary);">
+                <input type="text" id="licenseKey" placeholder="XXXX-XXXX-XXXX-XXXX" data-i18n-placeholder="licensePlaceholder" style="width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-color); color: var(--text-primary);">
             </div>
             
             <div class="button-group" style="display: flex; gap: 10px;">
